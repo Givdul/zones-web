@@ -1,0 +1,15 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout
+  title="Zones Privacy Redirect"
+  description="Legacy privacy URL redirect for Zones."
+  pathname="/privacy"
+  robots="noindex,follow"
+>
+  <meta http-equiv="refresh" content="0;url=/zones/privacy" />
+  <main class="redirect-page">
+    <p>Redirecting to <a href="/zones/privacy">/zones/privacy</a>…</p>
+  </main>
+</BaseLayout>

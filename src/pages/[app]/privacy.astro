@@ -1,0 +1,51 @@
+---
+import SiteHeader from "../../components/SiteHeader.astro";
+import { apps, site } from "../../data/site";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+
+export function getStaticPaths() {
+  return apps.map((app) => ({
+    params: { app: app.slug },
+    props: { app },
+  }));
+}
+
+const { app } = Astro.props;
+---
+
+<BaseLayout
+  title={`${app.name} Privacy Policy | Privacy for the ${app.name} Mac app`}
+  description={app.privacySummary}
+  pathname={app.privacyPath}
+  keywords={[...app.keywords, ...site.keywords]}
+  ogImagePath={app.iconPath}
+>
+  <SiteHeader app={app} />
+
+  <main class="privacy-page">
+    <section class="privacy-hero">
+      <h1>Privacy Policy</h1>
+      <p>{app.description}</p>
+    </section>
+
+    <section class="privacy-grid">
+      {app.privacySections.map((section) => (
+        <article class="privacy-card">
+          <h2>{section.title}</h2>
+          {section.paragraphs.map((paragraph, index) => (
+            <p>
+              {paragraph === "If you have questions about privacy or support, contact support@givdul.com." ? (
+                <>
+                  If you have questions about privacy or support, contact{" "}
+                  <a class="inline-link" href={site.supportMailto}>{site.supportEmail}</a>.
+                </>
+              ) : (
+                paragraph
+              )}
+            </p>
+          ))}
+        </article>
+      ))}
+    </section>
+  </main>
+</BaseLayout>

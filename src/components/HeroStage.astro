@@ -1,0 +1,167 @@
+---
+interface Props {
+  variant?: "orbit";
+}
+
+const { variant = "orbit" } = Astro.props;
+
+const stageSteps = ["Halves", "Thirds", "2 x 2", "3 x 2"];
+---
+
+<div
+  class:list={["hero-stage", `hero-stage--${variant}`]}
+  data-hero-stage
+  data-variant={variant}
+  data-step="0"
+  aria-label="Animated preview of Zones window snapping"
+>
+  <div class="hero-stage__topline">
+    <div class="hero-stage__controls">
+      <div class="hero-stage__style-toggle" role="group" aria-label="Zone preview style">
+        <button type="button" class="is-active" data-style-toggle="glass" aria-pressed="true">
+          Liquid Glass
+        </button>
+        <button type="button" data-style-toggle="border" aria-pressed="false">
+          Border
+        </button>
+      </div>
+
+      <div class="hero-stage__steps" aria-hidden="true">
+        {stageSteps.map((step, index) => (
+          <span class:list={[index === 0 && "is-active"]}>{step}</span>
+        ))}
+      </div>
+    </div>
+  </div>
+
+  <p class="sr-only" aria-live="polite" data-stage-live>
+    Previewing {stageSteps[0]}.
+  </p>
+
+  <div class="desktop-surface desktop-surface--hero" data-style="glass">
+    <div class="desktop-toolbar">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+
+    <div class="desktop-grid" aria-hidden="true">
+      <div class="zone zone--a"></div>
+      <div class="zone zone--b"></div>
+      <div class="zone zone--c"></div>
+      <div class="zone zone--d"></div>
+      <div class="zone zone--e"></div>
+      <div class="zone zone--f"></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  const setupHeroStage = () => {
+    const stages = Array.from(document.querySelectorAll("[data-hero-stage]"));
+    if (stages.length === 0) return;
+
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const clientStageSteps = ["Halves", "Thirds", "2 x 2", "3 x 2"];
+
+    const configs = {
+      orbit: { interval: 3200, sequence: [0, 1, 2, 3] },
+    };
+
+    const startStage = (stage) => {
+      if (!(stage instanceof HTMLElement)) return () => {};
+
+      const variant = stage.dataset.variant ?? "orbit";
+      const config = configs[variant] ?? configs.orbit;
+      const surface = stage.querySelector(".desktop-surface");
+      const stepLabels = Array.from(stage.querySelectorAll(".hero-stage__steps span"));
+      const styleButtons = Array.from(stage.querySelectorAll("[data-style-toggle]"));
+      const liveRegion = stage.querySelector("[data-stage-live]");
+      let index = 0;
+      let timer;
+      let paused = false;
+
+      const applyStep = () => {
+        const step = config.sequence[index] ?? 0;
+        stage.dataset.step = String(step);
+        stepLabels.forEach((label, labelIndex) => {
+          label.classList.toggle("is-active", labelIndex === step);
+        });
+        if (liveRegion instanceof HTMLElement) {
+          liveRegion.textContent = `Previewing ${clientStageSteps[step]}.`;
+        }
+      };
+
+      const run = () => {
+        if (reduceMotion.matches) {
+          index = 0;
+          applyStep();
+          return;
+        }
+
+        applyStep();
+        timer = window.setInterval(() => {
+          if (paused) return;
+          index = (index + 1) % config.sequence.length;
+          applyStep();
+        }, config.interval);
+      };
+
+      styleButtons.forEach((button) => {
+        if (!(button instanceof HTMLButtonElement)) return;
+
+        button.addEventListener("click", () => {
+          const style = button.dataset.styleToggle;
+          if (!surface || !style) return;
+
+          surface.setAttribute("data-style", style);
+          styleButtons.forEach((candidate) => {
+            if (!(candidate instanceof HTMLButtonElement)) return;
+            const isActive = candidate === button;
+            candidate.classList.toggle("is-active", isActive);
+            candidate.setAttribute("aria-pressed", String(isActive));
+          });
+        });
+      });
+
+      stage.addEventListener("pointerenter", () => {
+        paused = true;
+      });
+
+      stage.addEventListener("pointerleave", () => {
+        paused = false;
+      });
+
+      run();
+
+      const onChange = () => {
+        if (timer) window.clearInterval(timer);
+        index = 0;
+        run();
+      };
+
+      reduceMotion.addEventListener("change", onChange);
+
+      return () => {
+        if (timer) window.clearInterval(timer);
+        reduceMotion.removeEventListener("change", onChange);
+      };
+    };
+
+    const cleanups = stages.map(startStage);
+    window.addEventListener(
+      "pagehide",
+      () => {
+        cleanups.forEach((cleanup) => cleanup());
+      },
+      { once: true },
+    );
+  };
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", setupHeroStage, { once: true });
+  } else {
+    setupHeroStage();
+  }
+</script>

@@ -1,0 +1,74 @@
+---
+import "../styles/global.css";
+import AgentationBridge from "../components/AgentationBridge.jsx";
+import { site } from "../data/site";
+
+interface Props {
+  title: string;
+  description: string;
+  pathname?: string;
+  robots?: string;
+  structuredData?: Record<string, unknown> | Array<Record<string, unknown>>;
+  keywords?: string[];
+  ogImagePath?: string;
+}
+
+const {
+  title,
+  description,
+  pathname = "/",
+  robots = "index,follow",
+  structuredData,
+  keywords = site.keywords,
+  ogImagePath = "/favicon.png",
+} = Astro.props;
+
+const canonical = new URL(pathname, site.origin).toString();
+const ogImage = new URL(ogImagePath, site.origin).toString();
+const structuredDataPayload = structuredData
+  ? JSON.stringify(Array.isArray(structuredData) ? structuredData : [structuredData])
+  : null;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="description" content={description} />
+    <meta name="robots" content={robots} />
+    <meta name="keywords" content={keywords.join(", ")} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:site_name" content={site.name} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+    <meta name="theme-color" content="#141517" />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href="/favicon.png" type="image/png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <title>{title}</title>
+    {structuredDataPayload && (
+      <script type="application/ld+json" set:html={structuredDataPayload} />
+    )}
+  </head>
+  <body>
+    <div class="site-shell">
+      <slot />
+    </div>
+    {import.meta.env.DEV && (
+      <AgentationBridge client:only="react" endpoint="http://localhost:4747" />
+    )}
+  </body>
+</html>

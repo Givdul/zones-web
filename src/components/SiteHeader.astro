@@ -1,0 +1,38 @@
+---
+import type { AppRecord } from "../data/site";
+import { site } from "../data/site";
+
+interface Props {
+  app?: AppRecord;
+  ctaLabel?: string;
+  revealOnScroll?: boolean;
+}
+
+const { app, ctaLabel = "Download on the App Store", revealOnScroll = false } = Astro.props;
+---
+
+<header class:list={["site-header", revealOnScroll && "site-header--scroll-reveal"]}>
+  <div class="site-header__inner">
+    <a class="brandmark" href={app ? app.landingPath : "/"} aria-label={`${app ? app.name : site.name} home`}>
+      {app?.iconPath ? (
+        <img src={app.iconPath} alt="" width="44" height="44" />
+      ) : (
+        <span class="brandmark__tile" aria-hidden="true">{site.brand.slice(0, 1)}</span>
+      )}
+      <span>
+        <strong>{app ? app.name : site.name}</strong>
+        <small>{app ? "Part of the app catalog" : "Focused Mac utilities"}</small>
+      </span>
+    </a>
+
+    <nav class="site-nav" aria-label="Primary">
+      <a href="/">Apps</a>
+      {app && <a href={app.supportPath}>Support</a>}
+      {app?.hasAppStoreUrl && (
+        <a class="app-store-badge" href={app.appStoreUrl!} target="_blank" rel="noreferrer" aria-label={ctaLabel}>
+          <img src="/download-on-the-app-store.svg" alt={ctaLabel} />
+        </a>
+      )}
+    </nav>
+  </div>
+</header>

@@ -1,0 +1,176 @@
+---
+import SiteHeader from "../../components/SiteHeader.astro";
+import { apps, site } from "../../data/site";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+
+export function getStaticPaths() {
+  return apps.map((app) => ({
+    params: { app: app.slug },
+    props: { app },
+  }));
+}
+
+const { app } = Astro.props;
+---
+
+<BaseLayout
+  title={`${app.name} Support | Help for the ${app.name} Mac app`}
+  description={app.supportSummary}
+  pathname={app.supportPath}
+  keywords={[...app.keywords, ...site.keywords]}
+  ogImagePath={app.iconPath}
+>
+  <SiteHeader app={app} />
+
+  <main class="quiet-orbit-page" data-motion-root>
+    <section class="quiet-orbit-hero">
+      <div class="quiet-orbit-hero__copy" data-reveal data-reveal-delay="0">
+        <h1>Support</h1>
+        <p class="quiet-orbit-hero__tagline">Quick answers, direct help</p>
+        <p class="quiet-orbit-hero__lede">
+          {app.name} is designed to stay simple, but macOS still has a few moving parts. Find answers to
+          common questions or reach out directly.
+        </p>
+      </div>
+    </section>
+
+    <section class="support-content" aria-label="Support information">
+      <article class="support-section" data-reveal data-reveal-delay="0">
+        <div class="support-section__header">
+          <span class="support-section__badge">Quick Facts</span>
+          <h2>What you need to know</h2>
+        </div>
+        <div class="support-section__body">
+          {app.supportFacts.map((fact) => (
+            <p>{fact}</p>
+          ))}
+        </div>
+      </article>
+
+      <article class="support-section support-section--faq" data-reveal data-reveal-delay="110">
+        <div class="support-section__header">
+          <span class="support-section__badge">FAQ</span>
+          <h2>Common questions</h2>
+        </div>
+        <div class="faq-list">
+          {app.faq.map((item, index) => (
+            <details class="faq-item" open={index === 0}>
+              <summary>{item.question}</summary>
+              <p>{item.answer}</p>
+            </details>
+          ))}
+        </div>
+      </article>
+
+      <div class="support-mini-grid">
+        <article class="support-mini-card" data-reveal data-reveal-delay="0">
+          <div class="support-mini-card__header">
+            <span class="support-mini-card__badge">Contact</span>
+            <h3>Get in touch</h3>
+          </div>
+          <div class="support-mini-card__body">
+            <p>
+              Email <a class="inline-link" href={site.supportMailto}>{site.supportEmail}</a> for app issues,
+              purchase questions, bug reports, or general feedback.
+            </p>
+            <p class="support-note">
+              This support URL is intended for App Store users and should remain publicly accessible.
+            </p>
+          </div>
+        </article>
+
+        <article class="support-mini-card" data-reveal data-reveal-delay="110">
+          <div class="support-mini-card__header">
+            <span class="support-mini-card__badge">Privacy</span>
+            <h3>Privacy policy</h3>
+          </div>
+          <div class="support-mini-card__body">
+            <p>
+              {app.name} has a separate privacy page that explains what the app stores locally, what it
+              does not collect, and how purchases are handled.
+            </p>
+            <p class="support-note">
+              Read it at <a class="inline-link" href={app.privacyPath}>{app.privacyPath}</a>.
+            </p>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+</BaseLayout>
+
+<script>
+  const setupSupportMotion = () => {
+    const root = document.querySelector("[data-motion-root]");
+    if (!(root instanceof HTMLElement)) return;
+
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const revealNodes = Array.from(root.querySelectorAll("[data-reveal]"));
+
+    const reveal = (element) => {
+      if (!(element instanceof HTMLElement)) return;
+      const delay = Number(element.dataset.revealDelay ?? "0");
+      element.style.setProperty("--reveal-delay", `${delay}ms`);
+      element.dataset.revealed = "true";
+    };
+
+    const clearReveal = (element) => {
+      if (!(element instanceof HTMLElement)) return;
+      element.dataset.revealed = "false";
+    };
+
+    if (reduceMotion.matches) {
+      revealNodes.forEach((node) => reveal(node));
+      return;
+    }
+
+    root.dataset.motionReady = "true";
+
+    const heroCopy = root.querySelector(".quiet-orbit-hero__copy");
+    if (heroCopy) reveal(heroCopy);
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          reveal(entry.target);
+          observer.unobserve(entry.target);
+        });
+      },
+      { threshold: 0.15, rootMargin: "0px 0px -5% 0px" },
+    );
+
+    revealNodes.forEach((node) => {
+      if (node === heroCopy) return;
+      clearReveal(node);
+      observer.observe(node);
+    });
+
+    const onChange = (event) => {
+      if (!event.matches) return;
+      revealNodes.forEach((node) => reveal(node));
+      observer.disconnect();
+    };
+
+    reduceMotion.addEventListener("change", onChange);
+
+    window.addEventListener(
+      "pagehide",
+      () => {
+        observer.disconnect();
+        reduceMotion.removeEventListener("change", onChange);
+      },
+      { once: true },
+    );
+  };
+
+  const init = () => {
+    setupSupportMotion();
+  };
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init, { once: true });
+  } else {
+    init();
+  }
+</script>

@@ -1,0 +1,280 @@
+---
+import SiteHeader from "../../components/SiteHeader.astro";
+import { apps, site } from "../../data/site";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+
+export function getStaticPaths() {
+  return apps.map((app) => ({
+    params: { app: app.slug },
+    props: { app },
+  }));
+}
+
+const { app } = Astro.props;
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  name: app.name,
+  applicationCategory: "UtilitiesApplication",
+  operatingSystem: "macOS",
+  description: app.description,
+  url: new URL(app.landingPath, site.origin).toString(),
+  ...(app.iconPath ? { image: new URL(app.iconPath, site.origin).toString() } : {}),
+  ...(app.appStoreUrl ? {
+    offers: {
+      "@type": "Offer",
+      price: "0",
+      priceCurrency: "USD",
+      availability: "https://schema.org/InStock",
+    },
+    downloadUrl: app.appStoreUrl,
+    sameAs: [app.appStoreUrl],
+  } : {}),
+};
+---
+
+<BaseLayout
+  title={`${app.title} | ${app.tagline}`}
+  description={app.description}
+  pathname={app.landingPath}
+  structuredData={structuredData}
+  keywords={[...app.keywords, ...site.keywords]}
+  ogImagePath={app.iconPath ?? "/favicon.png"}
+>
+  <SiteHeader app={app} />
+
+  <main class="quiet-orbit-page" data-motion-root>
+    <section class="quiet-orbit-hero">
+      <div class="quiet-orbit-hero__copy" data-reveal data-reveal-delay="0">
+        <h1>{app.heroTitle}</h1>
+        <p class="quiet-orbit-hero__tagline">{app.heroTagline}</p>
+        <p class="quiet-orbit-hero__lede">{app.heroLede}</p>
+        <div class="quiet-orbit-hero__actions">
+          {app.hasAppStoreUrl ? (
+            <a
+              class="app-store-badge app-store-badge--hero"
+              href={app.appStoreUrl!}
+              target="_blank"
+              rel="noreferrer"
+              aria-label={`Download ${app.name} on the App Store`}
+            >
+              <img src="/download-on-the-mac-app-store.svg" alt="Download on the App Store" />
+            </a>
+          ) : (
+            <span class="button button--catalog button--disabled" aria-disabled="true">App Store link pending</span>
+          )}
+        </div>
+        <div class="quiet-orbit-hero__workflow">
+          {app.workflowSteps.map((step, index) => (
+            <>
+              {index > 0 && <span class="workflow-step__arrow" aria-hidden="true"></span>}
+              {step.kind === "key" ? (
+                <span class="workflow-step workflow-step--key">
+                  <kbd>{step.label}</kbd>
+                </span>
+              ) : (
+                <span class="workflow-step">
+                  <span class="workflow-step__icon" aria-hidden="true">
+                    {step.icon === "window" ? (
+                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.5"/></svg>
+                    ) : (
+                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2v12M2 8h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                    )}
+                  </span>
+                  <span class="workflow-step__label">{step.label}</span>
+                </span>
+              )}
+            </>
+          ))}
+        </div>
+      </div>
+
+      <div class="quiet-orbit-hero__stage quiet-orbit-hero__stage--abstract" data-reveal data-reveal-delay="140">
+        <div class="app-stage" aria-label={app.heroVisualLabel}>
+          <div class="app-stage__topline">
+            <span class="app-stage__badge">{app.productLabel}</span>
+            <span class="app-stage__route">{app.landingPath}</span>
+          </div>
+          <div class="app-stage__grid" aria-hidden="true">
+            <div class="app-stage__panel app-stage__panel--primary"></div>
+            <div class="app-stage__panel app-stage__panel--secondary"></div>
+            <div class="app-stage__panel app-stage__panel--tertiary"></div>
+            <div class="app-stage__panel app-stage__panel--quaternary"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="quiet-orbit-proof" aria-label="Key product points">
+      {app.proofPoints.map((point, index) => (
+        <div class="quiet-orbit-proof__item" data-reveal data-reveal-delay={String(index * 90)}>
+          <div class="proof-item__icon" aria-hidden="true">
+            {point.icon === "window" && (
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <rect x="2" y="3" width="16" height="14" rx="2" stroke="currentColor" stroke-width="1.5"/>
+                <path d="M2 7h16" stroke="currentColor" stroke-width="1.5"/>
+                <circle cx="5" cy="5" r="1" fill="currentColor"/>
+              </svg>
+            )}
+            {point.icon === "gesture" && (
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+            )}
+            {point.icon === "star" && (
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <path d="M10 2l2.5 5.5L18 8l-4 4 1 5.5L10 14.5 5 17.5l1-5.5-4-4 5.5-.5L10 2z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+              </svg>
+            )}
+          </div>
+          <div class="proof-item__content">
+            <strong>{point.title}</strong>
+            <span>{point.copy}</span>
+          </div>
+        </div>
+      ))}
+    </section>
+
+    <section class="quiet-orbit-choices" aria-labelledby="download-options">
+      <div class="quiet-orbit-choices__intro" data-reveal>
+        <h2 id="download-options">
+          <span class="quiet-orbit-choices__headline">{app.pricing[0]?.title ?? "Available soon."}</span>
+          <span class="quiet-orbit-choices__subheadline">{app.pricing[1]?.title ?? "More details later."}</span>
+        </h2>
+      </div>
+
+      <div class="quiet-orbit-cards">
+        {app.pricing.map((tier, index) => (
+          <article class:list={["orbit-card", `orbit-card--${tier.name === "free" ? "free" : "pro"}`]} data-reveal data-reveal-delay={String(index * 110)}>
+            <div class="orbit-card__header">
+              <div class="orbit-card__badge">
+                <span class="orbit-card__label">{tier.label}</span>
+              </div>
+              <h3>{tier.title}</h3>
+              <p class="orbit-card__price">
+                <span class="price-value">{tier.price}</span>
+                <span class="price-note">{tier.note}</span>
+              </p>
+              <p class="orbit-card__lead">{tier.lead}</p>
+            </div>
+
+            {index > 0 && (
+              <div class="orbit-card__tier-divider">
+                <span class="tier-label">Built to evolve in place:</span>
+              </div>
+            )}
+
+            <ul class:list={["orbit-card__list", index > 0 && "orbit-card__list--pro"]}>
+              {tier.items.map((item) => (
+                <li>
+                  {index > 0 ? (
+                    <svg class="plus-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                      <path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                  ) : (
+                    <svg class="check-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                      <path d="M3 8l3.5 3.5L13 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  )}
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+
+            {app.hasAppStoreUrl ? (
+              <a class:list={["button", index > 0 ? "button--pro" : "button--free"]} href={app.appStoreUrl!} target="_blank" rel="noreferrer">
+                <span>{tier.cta}</span>
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                  <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </a>
+            ) : (
+              <span class:list={["button", index > 0 ? "button--pro" : "button--free", "button--disabled"]} aria-disabled="true">
+                {tier.cta}
+              </span>
+            )}
+          </article>
+        ))}
+      </div>
+    </section>
+  </main>
+</BaseLayout>
+
+<script>
+  const setupPageMotion = () => {
+    const root = document.querySelector("[data-motion-root]");
+    if (!(root instanceof HTMLElement)) return;
+
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const revealNodes = Array.from(root.querySelectorAll("[data-reveal]"));
+
+    const reveal = (element) => {
+      if (!(element instanceof HTMLElement)) return;
+      const delay = Number(element.dataset.revealDelay ?? "0");
+      element.style.setProperty("--reveal-delay", `${delay}ms`);
+      element.dataset.revealed = "true";
+    };
+
+    const clearReveal = (element) => {
+      if (!(element instanceof HTMLElement)) return;
+      element.dataset.revealed = "false";
+    };
+
+    if (reduceMotion.matches) {
+      revealNodes.forEach((node) => reveal(node));
+      return;
+    }
+
+    root.dataset.motionReady = "true";
+
+    const heroCopy = root.querySelector(".quiet-orbit-hero__copy");
+    const heroStage = root.querySelector(".quiet-orbit-hero__stage");
+    if (heroCopy) reveal(heroCopy);
+    if (heroStage) reveal(heroStage);
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          reveal(entry.target);
+          observer.unobserve(entry.target);
+        });
+      },
+      { threshold: 0.15, rootMargin: "0px 0px -5% 0px" },
+    );
+
+    revealNodes.forEach((node) => {
+      if (node === heroCopy || node === heroStage) return;
+      clearReveal(node);
+      observer.observe(node);
+    });
+
+    const onChange = (event) => {
+      if (!event.matches) return;
+      revealNodes.forEach((node) => reveal(node));
+      observer.disconnect();
+    };
+
+    reduceMotion.addEventListener("change", onChange);
+
+    window.addEventListener(
+      "pagehide",
+      () => {
+        observer.disconnect();
+        reduceMotion.removeEventListener("change", onChange);
+      },
+      { once: true },
+    );
+  };
+
+  const init = () => {
+    setupPageMotion();
+  };
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init, { once: true });
+  } else {
+    init();
+  }
+</script>
