@@ -20,72 +20,35 @@ const structuredData = {
 ---
 
 <BaseLayout
-  title="Givdul Apps | Focused Mac utilities"
-  description="A compact catalog of focused Mac apps with direct App Store links and public support pages."
+  title="Givdul Apps"
+  description="Focused Mac utilities. Browse the catalog and find the app that fits."
   pathname="/"
   structuredData={structuredData}
 >
   <SiteHeader />
 
-  <main class="apps-index-page">
-    <section class="apps-index-hero">
-      <div class="apps-index-hero__copy">
-        <p class="apps-index-hero__eyebrow">Givdul Apps</p>
-        <h1>Focused Mac apps, not a catch-all product suite.</h1>
-        <p class="apps-index-hero__lede">
-          Each app gets its own sharp landing page, public support surface, and direct path to the App
-          Store. The root stays simple: browse what exists, open the app that fits, move on.
-        </p>
-      </div>
-
-      <div class="apps-index-hero__aside">
-        <div class="catalog-note">
-          <span class="catalog-note__label">Structure</span>
-          <p>Published apps live at `/{'{app}'}` with support and privacy under that same root.</p>
-        </div>
-        <div class="catalog-note">
-          <span class="catalog-note__label">Infra</span>
-          <p>Astro stays a good fit here: static output, low hosting overhead, and clean file-based routes.</p>
-        </div>
-      </div>
-    </section>
-
-    <section class="apps-catalog" aria-labelledby="apps-catalog-title">
-      <div class="apps-catalog__header">
-        <h2 id="apps-catalog-title">Current apps</h2>
-        <p>One grid now, room for ten later.</p>
-      </div>
-
-      <div class="apps-catalog__grid">
-        {apps.map((app) => (
-          <article class="catalog-card catalog-card--live">
-            <div class="catalog-card__topline">
-              <span class="catalog-card__status">Live</span>
-              <span class="catalog-card__path">{app.landingPath}</span>
-            </div>
-
-            <div class="catalog-card__identity">
-              {app.iconPath ? (
-                <img src={app.iconPath} alt="" width="60" height="60" />
-              ) : (
-                <span class="catalog-card__placeholder" aria-hidden="true">{app.name.slice(0, 1)}</span>
-              )}
-              <div>
-                <h3>{app.name}</h3>
-                <p>{app.productLabel}</p>
-              </div>
-            </div>
-
-            <p class="catalog-card__summary">{app.cardSummary}</p>
-
-            <div class="catalog-card__links">
-              <a class="button button--catalog" href={app.landingPath}>Open app page</a>
-              <a class="catalog-card__text-link" href={app.supportPath}>Support</a>
-              <a class="catalog-card__text-link" href={app.privacyPath}>Privacy</a>
-            </div>
-          </article>
-        ))}
-      </div>
-    </section>
+  <main class="e1">
+    <div class="e1-list">
+      {apps.map((app, i) => (
+        <>
+          {i > 0 && <div class="e1-dot" aria-hidden="true" />}
+          <a class="e1-card" href={app.landingPath} style={`--i:${i}`}>
+            {app.iconPath
+              ? <img src={app.iconPath} alt="" width="88" height="88" class="e1-card__icon" />
+              : <span class="e1-card__mono">{app.name[0]}</span>}
+            <h2 class="e1-card__name">{app.name}</h2>
+            <span class="e1-card__type">{app.productLabel}</span>
+            <p class="e1-card__tag">{app.tagline}</p>
+            {app.hasAppStoreUrl
+              ? <span class="ed-badge ed-badge--live">Available on the App Store</span>
+              : <span class="ed-badge ed-badge--soon">Coming soon</span>}
+          </a>
+        </>
+      ))}
+    </div>
+    <footer class="ed-foot ed-foot--center">
+      <span>macOS utilities by Givdul</span>
+      <a href={`mailto:${site.supportEmail}`}>{site.supportEmail}</a>
+    </footer>
   </main>
 </BaseLayout>
