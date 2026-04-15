@@ -21,7 +21,7 @@ const { app, ctaLabel = "Download on the App Store", revealOnScroll = false } = 
       )}
       <span>
         <strong>{app ? app.name : site.name}</strong>
-        <small>{app ? "Part of the app catalog" : "Focused Mac utilities"}</small>
+        {!app && <small>Focused Mac utilities</small>}
       </span>
     </a>
 

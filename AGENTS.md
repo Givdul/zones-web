@@ -18,3 +18,9 @@ Dark-first editorial minimalism with a neutral macOS-adjacent palette, strong ty
 - Keep the layout distinctive and premium without imitating Apple page patterns directly.
 - Use motion to clarify interaction, and always honor reduced-motion preferences.
 - Keep contrast strong, semantics clean, and keyboard or focus behavior deliberate by default.
+
+### Shared theme (web + macOS)
+- **Canonical colors** are the Fancy palette (`--fancy-*` in `src/styles/global.css`), aligned with Zones macOS `FancyDesignSystem` / `FancyPalette`.
+- **Semantic layer**: prefer `--theme-*` variables for new CSS; they alias Fancy tokens and keep parity with native apps.
+- **Layout shell**: app index (`/`) uses `quiet-orbit-page givdul-catalog`; each app landing uses `quiet-orbit-page givdul-app-landing`. `html` carries `data-givdul-theme="fancy"` from `BaseLayout.astro`.
+- **Reference doc**: see `THEME.md` for the full token table and macOS implementation notes.

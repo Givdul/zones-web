@@ -1,0 +1,126 @@
+---
+---
+
+<div
+  class="zones-demo"
+  data-zones-demo
+  aria-label="Animated preview of Zones layout presets"
+>
+  <div class="zones-demo__canvas">
+    <div class="zones-demo__grid" data-zones-grid data-layout="halves" aria-hidden="true">
+      <div class="zones-demo__zone" data-zone="a"></div>
+      <div class="zones-demo__zone" data-zone="b"></div>
+      <div class="zones-demo__zone" data-zone="c"></div>
+      <div class="zones-demo__zone" data-zone="d"></div>
+      <div class="zones-demo__zone" data-zone="e"></div>
+      <div class="zones-demo__zone" data-zone="f"></div>
+    </div>
+  </div>
+
+  <div class="zones-demo__meta">
+    <span class="zones-demo__label" data-zones-label>Halves</span>
+    <div class="zones-demo__pips" aria-hidden="true">
+      <span data-zones-pip class="is-active"></span>
+      <span data-zones-pip></span>
+      <span data-zones-pip></span>
+      <span data-zones-pip></span>
+    </div>
+  </div>
+
+  <p class="sr-only" aria-live="polite" data-zones-live>Previewing Halves layout.</p>
+</div>
+
+<script>
+  const setupZonesDemo = () => {
+    const demos = document.querySelectorAll("[data-zones-demo]");
+    if (demos.length === 0) return;
+
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+    const LAYOUTS = [
+      { name: "Halves", key: "halves" },
+      { name: "Thirds", key: "thirds" },
+      { name: "2 × 2", key: "fourths" },
+      { name: "3 × 2", key: "sixths" },
+    ];
+
+    const STEPS = [
+      { layout: 0, active: "a" },
+      { layout: 1, active: "b" },
+      { layout: 2, active: "d" },
+      { layout: 3, active: "c" },
+      { layout: 2, active: "a" },
+      { layout: 1, active: "c" },
+    ];
+
+    demos.forEach((demo) => {
+      if (!(demo instanceof HTMLElement)) return;
+
+      const grid = demo.querySelector("[data-zones-grid]");
+      const label = demo.querySelector("[data-zones-label]");
+      const live = demo.querySelector("[data-zones-live]");
+      const pips = Array.from(demo.querySelectorAll("[data-zones-pip]"));
+      const zones = Array.from(demo.querySelectorAll("[data-zone]"));
+
+      if (!(grid instanceof HTMLElement)) return;
+
+      let step = 0;
+      let paused = false;
+      let interval = null;
+
+      const clearActive = () => zones.forEach((z) => z.classList.remove("is-active"));
+
+      const applyStep = (s) => {
+        const { layout: li, active } = STEPS[s];
+        const cfg = LAYOUTS[li];
+        if (label) label.textContent = cfg.name;
+        if (live instanceof HTMLElement) live.textContent = `Previewing ${cfg.name} layout.`;
+        pips.forEach((p, j) => p.classList.toggle("is-active", j === li));
+        clearActive();
+        grid.setAttribute("data-layout", cfg.key);
+        zones.forEach((z) => z.classList.toggle("is-active", z.getAttribute("data-zone") === active));
+      };
+
+      const advance = () => {
+        step = (step + 1) % STEPS.length;
+        applyStep(step);
+      };
+
+      const startInterval = () => {
+        if (interval) clearInterval(interval);
+        interval = setInterval(() => { if (!paused) advance(); }, 3200);
+      };
+
+      const start = () => {
+        applyStep(0);
+        if (reduceMotion.matches) return;
+        startInterval();
+      };
+
+      demo.addEventListener("pointerenter", () => { paused = true; });
+      demo.addEventListener("pointerleave", () => {
+        paused = false;
+        advance();
+        startInterval();
+      });
+
+      reduceMotion.addEventListener("change", () => {
+        if (interval) clearInterval(interval);
+        step = 0;
+        start();
+      });
+
+      start();
+
+      window.addEventListener("pagehide", () => {
+        if (interval) clearInterval(interval);
+      }, { once: true });
+    });
+  };
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", setupZonesDemo, { once: true });
+  } else {
+    setupZonesDemo();
+  }
+</script>

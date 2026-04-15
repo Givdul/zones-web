@@ -27,28 +27,30 @@ const structuredData = {
 >
   <SiteHeader />
 
-  <main class="e1">
-    <div class="e1-list">
-      {apps.map((app, i) => (
-        <>
-          {i > 0 && <div class="e1-dot" aria-hidden="true" />}
-          <a class="e1-card" href={app.landingPath} style={`--i:${i}`}>
-            {app.iconPath
-              ? <img src={app.iconPath} alt="" width="88" height="88" class="e1-card__icon" />
-              : <span class="e1-card__mono">{app.name[0]}</span>}
-            <h2 class="e1-card__name">{app.name}</h2>
-            <span class="e1-card__type">{app.productLabel}</span>
-            <p class="e1-card__tag">{app.tagline}</p>
-            {app.hasAppStoreUrl
-              ? <span class="ed-badge ed-badge--live">Available on the App Store</span>
-              : <span class="ed-badge ed-badge--soon">Coming soon</span>}
-          </a>
-        </>
-      ))}
+  <main class="quiet-orbit-page givdul-catalog">
+    <div class="e1">
+      <div class="e1-list">
+        {apps.map((app, i) => (
+          <>
+            {i > 0 && <div class="e1-dot" aria-hidden="true" />}
+            <a class="e1-card" href={app.landingPath} style={`--i:${i}`}>
+              {app.iconPath
+                ? <img src={app.iconPath} alt="" width="88" height="88" class="e1-card__icon" />
+                : <span class="e1-card__mono">{app.name[0]}</span>}
+              <h2 class="e1-card__name">{app.name}</h2>
+              <span class="e1-card__type">{app.productLabel}</span>
+              <p class="e1-card__tag">{app.tagline}</p>
+              {app.hasAppStoreUrl
+                ? <span class="ed-badge ed-badge--live">Available on the App Store</span>
+                : <span class="ed-badge ed-badge--soon">Coming soon</span>}
+            </a>
+          </>
+        ))}
+      </div>
+      <footer class="ed-foot ed-foot--center">
+        <span>macOS utilities by Givdul</span>
+        <a href={`mailto:${site.supportEmail}`}>{site.supportEmail}</a>
+      </footer>
     </div>
-    <footer class="ed-foot ed-foot--center">
-      <span>macOS utilities by Givdul</span>
-      <a href={`mailto:${site.supportEmail}`}>{site.supportEmail}</a>
-    </footer>
   </main>
 </BaseLayout>
