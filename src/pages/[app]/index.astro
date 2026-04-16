@@ -161,16 +161,13 @@ const structuredData = {
       <div class:list={["quiet-orbit-cards", isTrialThenPaid && "quiet-orbit-cards--trial-then-paid"]}>
         {app.pricing.map((tier, index) => {
           const dividerLabel = isTrialThenPaid
-            ? index === 0
-              ? "Trial includes"
-              : "Includes"
+            ? "Includes"
             : index === 0
               ? null
               : "Built to evolve in place:";
           const dividerIsSpacer = !isTrialThenPaid && index === 0;
           const usePlusIcon = !isTrialThenPaid && index > 0;
-          const cardTone =
-            tier.name === "free" ? "free" : tier.name === "trial" && isTrialThenPaid ? "trial" : "pro";
+          const cardTone = tier.name === "free" ? "free" : "pro";
 
           return (
             <article

@@ -154,7 +154,7 @@ export const apps: AppRecord[] = [
     title: "Zones for Mac",
     tagline: "Window snapping from your menu bar.",
     description:
-      "Zones is a lightweight macOS menu bar app for snapping windows into clean layouts. Start with a seven-day trial of the full app, then keep it with a small subscription or a one-time lifetime purchase—all your personal Macs. There is no permanent free tier.",
+      "Zones is a lightweight macOS menu bar app for snapping windows into clean layouts. Start the seven-day free trial on a monthly or yearly subscription, or pay once for lifetime access. Purchases are tied to your Apple Account. There is no permanent free tier.",
     cardSummary:
       "Snap windows into clean layouts from the menu bar with one gesture and no setup friction.",
     supportSummary:
@@ -183,60 +183,58 @@ export const apps: AppRecord[] = [
         icon: "gesture",
       },
       {
-        title: "Trial first",
-        copy: "Seven days of full access so you can judge it in real workflows—not a stripped-down mode.",
+        title: "Seven-day free trial",
+        copy: "Start the trial on a subscription and get the full app. Cancel anytime in the App Store before it renews.",
         icon: "star",
       },
     ],
     pricingIntro: {
       headline: "Simple pricing",
       subheadline:
-        "Seven-day trial with full access, then choose a small subscription or pay once—on all your personal Macs. No ongoing free tier.",
+        "Start the seven-day free trial on a subscription, or pay once for lifetime access. Every plan includes the full app. No ongoing free tier.",
     },
     pricingModel: "trial_then_paid",
     pricing: [
       {
-        name: "trial",
-        label: "Trial",
-        title: "Full access",
-        price: "7 days",
-        note: "Try before you pay",
-        lead:
-          "Every feature unlocked during the trial. When it ends, a subscription or lifetime purchase is required to keep using Zones.",
+        name: "monthly",
+        label: "Subscription",
+        title: "Monthly",
+        price: "$1.99",
+        note: "7-day free trial, then $1.99/month",
+        lead: "Start the free trial from the app. You won't be charged until the trial ends, and you can cancel anytime in the App Store.",
         items: [
-          "Built-in layouts (halves, thirds, 2×2, 3×2) and custom layouts",
-          "Shift-drag zone preview and custom layout editor",
-          "Unlimited saved layouts and per-display configuration",
-          "No account required",
+          "Full app during and after the trial",
+          "Cancel anytime in the App Store",
+          "Tied to your Apple Account",
         ],
-        cta: "Start trial",
+        cta: "Start free trial",
       },
       {
-        name: "pro-subscription",
-        label: "Pro",
-        title: "Subscription",
-        price: "$1.99",
-        note: "per month · $17.99/yr",
-        lead: "After your trial, subscribe in the app to keep full access. Cancel anytime.",
+        name: "yearly",
+        label: "Subscription",
+        title: "Yearly",
+        price: "$19.99",
+        note: "7-day free trial · save ~17% vs monthly",
+        lead: "Same seven-day free trial on the yearly plan. Best value if you know Zones is part of your workflow.",
         emphasis: "recommended",
         items: [
-          "Keeps the same full app you used in the trial",
-          "Cancel anytime in the App Store",
-          "All your personal Macs",
+          "Full app during and after the trial",
+          "Roughly two months free compared to monthly",
+          "Tied to your Apple Account",
         ],
-        cta: "Subscribe",
+        cta: "Start free trial",
       },
       {
         name: "lifetime",
-        label: "Pro",
+        label: "One-time",
         title: "Lifetime",
         price: "$49",
-        note: "One-time purchase",
-        lead: "Own Pro outright with a single payment—same features as subscription.",
+        note: "Pay once, no renewals",
+        lead: "One payment for the full app — no trial, no subscription. Tied to your Apple Account.",
         items: [
-          "One payment, same full feature set",
-          "No subscription or renewals",
-          "All your personal Macs",
+          "Same full feature set as the subscription",
+          "No renewals or recurring charges",
+          "Tied to your Apple Account",
         ],
         cta: "Buy lifetime",
       },
@@ -253,24 +251,24 @@ export const apps: AppRecord[] = [
           "macOS requires Accessibility permission for apps that inspect, move, and resize windows in other apps. Zones uses that permission only to preview and place windows when you trigger it.",
       },
       {
+        question: "How does the free trial work?",
+        answer:
+          "The seven-day free trial is Apple's introductory offer on the subscription. You start it from inside the app by tapping Start 7-Day Free Trial on the monthly or yearly plan. Nothing is charged during the trial, and you can cancel anytime in the App Store before it renews. The trial can only be redeemed once per Apple Account.",
+      },
+      {
         question: "What happens after the trial?",
         answer:
-          "Zones does not offer a permanent free tier. After the seven-day trial, you need an active subscription ($1.99/month or $17.99/year) or the lifetime purchase ($49) to continue using the app. Both paid options include the same full feature set.",
+          "If you don't cancel, the subscription renews at $1.99/month or $19.99/year depending on the plan you picked. Zones does not offer a permanent free tier, so you need an active subscription or the $49 lifetime purchase to keep using the app.",
       },
       {
-        question: "What do subscription and lifetime include?",
+        question: "What does each plan include?",
         answer:
-          "Both include the complete app: built-in layouts, the custom layout editor, unlimited saved layouts, Shift-drag preview, and per-display configuration. Start with a seven-day trial of everything, then pay through the App Store.",
+          "Every plan — monthly, yearly, and lifetime — includes the full app: built-in layouts, the custom layout editor, unlimited saved layouts, Shift-drag preview, and per-display configuration. There is no feature-limited mode.",
       },
       {
-        question: "How does the trial work?",
+        question: "How do I restore a purchase on a new Mac?",
         answer:
-          "New installs get seven days of unrestricted access. When the trial ends, choose a subscription or the lifetime option to keep going—there is no separate free mode afterward.",
-      },
-      {
-        question: "How do restore purchases work?",
-        answer:
-          "Open Settings, go to the layouts area, and use Restore Purchases in the Pro sheet. The restore flow is handled by the App Store for the Apple Account that owns the subscription or lifetime purchase.",
+          "Open Settings in Zones, go to Layouts, and open Choose Your Plan. Use Restore Purchases to re-check your entitlement with the App Store. As long as you're signed in to the same Apple Account that made the purchase, the app will unlock.",
       },
       {
         question: "What if Zones does not appear in Accessibility settings?",
@@ -284,7 +282,7 @@ export const apps: AppRecord[] = [
       },
     ],
     supportFacts: [
-      "Zones is a macOS menu bar app for window snapping. New installs get a seven-day trial of the full app; after that, a subscription ($1.99/month or $17.99/year) or a $49 lifetime purchase is required—there is no permanent free tier. Paid plans cover all your personal Macs.",
+      "Zones is a macOS menu bar app for window snapping. Access is gated from the start: begin the seven-day free trial on the monthly ($1.99/mo) or yearly ($19.99/yr) subscription, or pay $49 for a lifetime purchase. There is no permanent free tier. Purchases are tied to your Apple Account, not to a specific Mac.",
       "Accessibility access is required so Zones can inspect, move, and resize windows in other apps when you trigger snapping.",
     ],
     privacySections: [
@@ -305,8 +303,8 @@ export const apps: AppRecord[] = [
       {
         title: "Purchases",
         paragraphs: [
-          "After the trial period, Zones is available only through an auto-renewing subscription or a one-time in-app purchase (lifetime), handled by the App Store. Apple processes payment information and purchase receipts according to Apple’s policies.",
-          "Zones does not store your payment information on a developer-controlled server.",
+          "Zones is available through an auto-renewing subscription (monthly or yearly, with a seven-day free trial introductory offer) or a one-time in-app purchase (lifetime). All purchases are handled by the App Store, and Apple processes payment information and purchase receipts according to Apple's policies.",
+          "Zones does not store your payment information on a developer-controlled server. Entitlements are read from the App Store receipt on your Mac.",
         ],
       },
       {
