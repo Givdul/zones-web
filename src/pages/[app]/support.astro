@@ -19,6 +19,7 @@ const { app } = Astro.props;
   pathname={app.supportPath}
   keywords={[...app.keywords, ...site.keywords]}
   ogImagePath={app.iconPath}
+  app={app}
 >
   <SiteHeader app={app} />
 
@@ -62,35 +63,16 @@ const { app } = Astro.props;
         </div>
       </article>
 
-      <div class="support-mini-grid">
+      <div class="support-mini-grid support-mini-grid--single">
         <article class="support-mini-card" data-reveal data-reveal-delay="0">
           <div class="support-mini-card__header">
             <span class="support-mini-card__badge">Contact</span>
-            <h3>Get in touch</h3>
+            <h3>Still need help?</h3>
           </div>
           <div class="support-mini-card__body">
             <p>
               Email <a class="inline-link" href={site.supportMailto}>{site.supportEmail}</a> for app issues,
-              purchase questions, bug reports, or general feedback.
-            </p>
-            <p class="support-note">
-              This support URL is intended for App Store users and should remain publicly accessible.
-            </p>
-          </div>
-        </article>
-
-        <article class="support-mini-card" data-reveal data-reveal-delay="110">
-          <div class="support-mini-card__header">
-            <span class="support-mini-card__badge">Privacy</span>
-            <h3>Privacy policy</h3>
-          </div>
-          <div class="support-mini-card__body">
-            <p>
-              {app.name} has a separate privacy page that explains what the app stores locally, what it
-              does not collect, and how purchases are handled.
-            </p>
-            <p class="support-note">
-              Read it at <a class="inline-link" href={app.privacyPath}>{app.privacyPath}</a>.
+              purchase questions, bug reports, or general feedback. Replies usually come within a business day.
             </p>
           </div>
         </article>

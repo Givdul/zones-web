@@ -1,0 +1,28 @@
+---
+import type { AppRecord } from "../data/site";
+import { site } from "../data/site";
+
+interface Props {
+  app?: AppRecord;
+}
+
+const { app } = Astro.props;
+
+const privacyHref = app?.privacyPath ?? "/privacy";
+const supportHref = app?.supportPath ?? "/support";
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer" aria-label="Site footer">
+  <div class="site-footer__inner">
+    <p class="site-footer__copy">
+      <span>© {year} {site.brand}</span>
+      <span class="site-footer__sep" aria-hidden="true">·</span>
+      <a href={privacyHref}>Privacy</a>
+      <span class="site-footer__sep" aria-hidden="true">·</span>
+      <a href={supportHref}>Support</a>
+      <span class="site-footer__sep" aria-hidden="true">·</span>
+      <a href={site.supportMailto}>{site.supportEmail}</a>
+    </p>
+  </div>
+</footer>

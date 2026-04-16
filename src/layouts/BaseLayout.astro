@@ -1,6 +1,8 @@
 ---
 import "../styles/global.css";
 import AgentationBridge from "../components/AgentationBridge.jsx";
+import SiteFooter from "../components/SiteFooter.astro";
+import type { AppRecord } from "../data/site";
 import { site } from "../data/site";
 
 interface Props {
@@ -11,6 +13,7 @@ interface Props {
   structuredData?: Record<string, unknown> | Array<Record<string, unknown>>;
   keywords?: string[];
   ogImagePath?: string;
+  app?: AppRecord;
 }
 
 const {
@@ -21,6 +24,7 @@ const {
   structuredData,
   keywords = site.keywords,
   ogImagePath = "/favicon.png",
+  app,
 } = Astro.props;
 
 const canonical = new URL(pathname, site.origin).toString();
@@ -59,7 +63,10 @@ const structuredDataPayload = structuredData
   </head>
   <body>
     <div class="site-shell">
-      <slot />
+      <div class="site-shell__fill">
+        <slot />
+      </div>
+      <SiteFooter app={app} />
     </div>
     {import.meta.env.DEV && (
       <AgentationBridge client:only="react" endpoint="http://localhost:4747" />

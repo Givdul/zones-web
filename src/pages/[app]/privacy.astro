@@ -19,33 +19,124 @@ const { app } = Astro.props;
   pathname={app.privacyPath}
   keywords={[...app.keywords, ...site.keywords]}
   ogImagePath={app.iconPath}
+  app={app}
 >
   <SiteHeader app={app} />
 
-  <main class="privacy-page">
-    <section class="privacy-hero">
-      <h1>Privacy Policy</h1>
-      <p>{app.description}</p>
+  <main class="quiet-orbit-page" data-motion-root>
+    <section class="quiet-orbit-hero">
+      <div class="quiet-orbit-hero__copy" data-reveal data-reveal-delay="0">
+        <h1>Privacy</h1>
+        <p class="quiet-orbit-hero__tagline">What {app.name} stores and what it doesn't</p>
+        <p class="quiet-orbit-hero__lede">
+          A short, plain-English summary of how {app.name} handles your data. No accounts, no third-party
+          analytics, no hidden network activity.
+        </p>
+      </div>
     </section>
 
-    <section class="privacy-grid">
-      {app.privacySections.map((section) => (
-        <article class="privacy-card">
-          <h2>{section.title}</h2>
-          {section.paragraphs.map((paragraph, index) => (
-            <p>
-              {paragraph === "If you have questions about privacy or support, contact support@givdul.com." ? (
-                <>
-                  If you have questions about privacy or support, contact{" "}
-                  <a class="inline-link" href={site.supportMailto}>{site.supportEmail}</a>.
-                </>
-              ) : (
-                paragraph
-              )}
-            </p>
-          ))}
+    <section class="support-content" aria-label="Privacy details">
+      {app.privacySections.map((section, index) => (
+        <article
+          class="support-section"
+          data-reveal
+          data-reveal-delay={String(index * 110)}
+        >
+          <div class="support-section__header">
+            <h2>{section.title}</h2>
+          </div>
+          <div class="support-section__body">
+            {section.paragraphs.map((paragraph) => (
+              <p>
+                {paragraph === "If you have questions about privacy or support, contact support@givdul.com." ? (
+                  <>
+                    If you have questions about privacy or support, contact{" "}
+                    <a class="inline-link" href={site.supportMailto}>{site.supportEmail}</a>.
+                  </>
+                ) : (
+                  paragraph
+                )}
+              </p>
+            ))}
+          </div>
         </article>
       ))}
     </section>
   </main>
 </BaseLayout>
+
+<script>
+  const setupPrivacyMotion = () => {
+    const root = document.querySelector("[data-motion-root]");
+    if (!(root instanceof HTMLElement)) return;
+
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const revealNodes = Array.from(root.querySelectorAll("[data-reveal]"));
+
+    const reveal = (element) => {
+      if (!(element instanceof HTMLElement)) return;
+      const delay = Number(element.dataset.revealDelay ?? "0");
+      element.style.setProperty("--reveal-delay", `${delay}ms`);
+      element.dataset.revealed = "true";
+    };
+
+    const clearReveal = (element) => {
+      if (!(element instanceof HTMLElement)) return;
+      element.dataset.revealed = "false";
+    };
+
+    if (reduceMotion.matches) {
+      revealNodes.forEach((node) => reveal(node));
+      return;
+    }
+
+    root.dataset.motionReady = "true";
+
+    const heroCopy = root.querySelector(".quiet-orbit-hero__copy");
+    if (heroCopy) reveal(heroCopy);
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          reveal(entry.target);
+          observer.unobserve(entry.target);
+        });
+      },
+      { threshold: 0.15, rootMargin: "0px 0px -5% 0px" },
+    );
+
+    revealNodes.forEach((node) => {
+      if (node === heroCopy) return;
+      clearReveal(node);
+      observer.observe(node);
+    });
+
+    const onChange = (event) => {
+      if (!event.matches) return;
+      revealNodes.forEach((node) => reveal(node));
+      observer.disconnect();
+    };
+
+    reduceMotion.addEventListener("change", onChange);
+
+    window.addEventListener(
+      "pagehide",
+      () => {
+        observer.disconnect();
+        reduceMotion.removeEventListener("change", onChange);
+      },
+      { once: true },
+    );
+  };
+
+  const init = () => {
+    setupPrivacyMotion();
+  };
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init, { once: true });
+  } else {
+    init();
+  }
+</script>

@@ -40,7 +40,8 @@
   --shadow-soft: 0 6px 14px rgb(0 0 0 / 0.04);
   --radius-xl: 1.75rem;
   --site-width: min(1120px, calc(100vw - 2rem));
-  --hero-stage-width: min(960px, 100%);
+  /* Match `.quiet-orbit-page` / proof grid — same rail as `--site-width` (was 960px). */
+  --hero-stage-width: min(var(--site-width), 100%);
   --demo-zone-gap: 8px;
   --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
   --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
@@ -84,7 +85,9 @@ html {
 body {
   margin: 0;
   min-width: 320px;
-  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
   font-family: var(--font-sans);
   font-size: 15px;
   line-height: 1.45;
@@ -137,6 +140,75 @@ kbd {
 .site-shell {
   position: relative;
   overflow-x: clip;
+  flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+}
+
+.site-shell__fill {
+  flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.site-footer {
+  width: 100%;
+  flex-shrink: 0;
+  margin-top: 5rem;
+  padding: 1.75rem 0 2rem;
+}
+
+.site-footer__inner {
+  width: var(--site-width);
+  margin: 0 auto;
+}
+
+.site-footer__copy {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem 0.85rem;
+  color: var(--soft);
+  font-size: 0.88rem;
+  letter-spacing: 0.01em;
+}
+
+.site-footer__copy a {
+  color: var(--muted);
+  text-decoration: none;
+  border-radius: 0.35rem;
+  padding: 0.1rem 0.2rem;
+  transition: color 160ms ease;
+}
+
+.site-footer__copy a:hover,
+.site-footer__copy a:focus-visible {
+  color: var(--text);
+}
+
+.site-footer__copy a:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--fancy-text-primary) 45%, transparent);
+  outline-offset: 2px;
+}
+
+.site-footer__sep {
+  color: color-mix(in srgb, var(--soft) 55%, transparent);
+  user-select: none;
+}
+
+@media (max-width: 640px) {
+  .site-footer {
+    margin-top: 3.5rem;
+    padding: 1.5rem 0 2rem;
+  }
+
+  .site-footer__copy {
+    font-size: 0.82rem;
+    gap: 0.4rem 0.7rem;
+  }
 }
 
 .site-shell > * {
@@ -175,8 +247,7 @@ kbd {
 
 .page-hero,
 .section,
-.privacy-page,
-.site-footer {
+.privacy-page {
   width: var(--site-width);
   margin: 0 auto;
 }
@@ -1336,32 +1407,6 @@ kbd {
 .ed-badge--live { color: oklch(0.72 0.1 145); border-color: oklch(0.72 0.1 145 / 0.25); }
 .ed-badge--soon { color: var(--soft); }
 
-.ed-foot {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: clamp(1.5rem, 3vw, 2.5rem);
-  padding-top: clamp(1.5rem, 3vw, 2rem);
-  border-top: 1px solid var(--line);
-  font-family: var(--ed-body);
-  font-size: 0.8rem;
-  color: var(--soft);
-}
-
-.ed-foot--center {
-  display: grid;
-  justify-items: center;
-  gap: 0.3rem;
-}
-
-.ed-foot a {
-  color: var(--muted);
-  text-decoration: none;
-  transition: color 200ms ease;
-}
-
-.ed-foot a:hover { color: var(--accent); }
-
 /* ══ E1 — Centered Stack ═════════════════════════════════════ */
 
 .e1 {
@@ -1410,15 +1455,24 @@ kbd {
   transform: translateY(-2px);
 }
 
-.e1-card__icon {
+.e1-card__icon-wrap {
+  display: inline-block;
   width: clamp(4.5rem, 8vw, 5.5rem);
   height: clamp(4.5rem, 8vw, 5.5rem);
-  border-radius: 1.2rem;
+  line-height: 0;
+  border-radius: 27.5%;
+  overflow: hidden;
   box-shadow: 0 16px 36px oklch(0 0 0 / 0.3);
   transition: transform 500ms var(--ease-out-quint), box-shadow 500ms ease;
 }
 
-.e1-card:hover .e1-card__icon {
+.e1-card__icon {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.e1-card:hover .e1-card__icon-wrap {
   transform: translateY(-3px) scale(1.04);
   box-shadow: 0 24px 48px oklch(0 0 0 / 0.4);
 }
@@ -1497,18 +1551,14 @@ kbd {
 
 /* ══ Index responsive ═════════════════════════════════════════ */
 
-@media (max-width: 760px) {
-  .ed-foot:not(.ed-foot--center) {
-    flex-direction: column;
-    text-align: center;
-    gap: 0.4rem;
-  }
-}
-
 .support-mini-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1rem;
+}
+
+.support-mini-grid--single {
+  grid-template-columns: minmax(0, 1fr);
 }
 
 .redirect-page {
@@ -1552,10 +1602,6 @@ kbd {
   grid-template-columns: repeat(2, minmax(0, 1fr));
   width: var(--site-width);
   margin: 0 auto;
-}
-
-.site-footer {
-  padding-bottom: 2rem;
 }
 
 .footer-card {
@@ -1625,7 +1671,8 @@ kbd {
 }
 
 .quiet-orbit-hero__stage--abstract {
-  width: min(100%, 54rem);
+  width: 100%;
+  max-width: 100%;
 }
 
 .quiet-orbit-hero__copy {
@@ -1999,13 +2046,36 @@ kbd {
   align-items: stretch;
 }
 
-/* Trial spans full width; subscription + lifetime sit side by side below */
+/* Monthly, yearly, and lifetime in one row (stacks to 1 col ≤760px). */
 .quiet-orbit-cards--trial-then-paid {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
-.quiet-orbit-cards--trial-then-paid > .orbit-card--trial {
-  grid-column: 1 / -1;
+/* Shared row tracks across the three cards: header, divider, features, CTA line up. */
+@supports (grid-template-rows: subgrid) {
+  .quiet-orbit-cards--trial-then-paid {
+    grid-template-rows: repeat(4, auto);
+  }
+
+  .quiet-orbit-cards--trial-then-paid > .orbit-card {
+    display: grid;
+    grid-template-rows: subgrid;
+    grid-row: span 4;
+    align-content: stretch;
+  }
+
+  .quiet-orbit-cards--trial-then-paid > .orbit-card .button {
+    margin-top: 0;
+  }
+
+  .quiet-orbit-cards--trial-then-paid .orbit-card__list li {
+    align-items: flex-start;
+  }
+
+  .quiet-orbit-cards--trial-then-paid .orbit-card__list li .check-icon,
+  .quiet-orbit-cards--trial-then-paid .orbit-card__list li .plus-icon {
+    margin-top: 0.18em;
+  }
 }
 
 .quiet-orbit-footer {
@@ -2431,6 +2501,10 @@ kbd {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: clamp(1rem, 2vw, 1.5rem);
+  }
+
+  .support-mini-grid--single {
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .support-mini-card {
@@ -2882,6 +2956,11 @@ kbd {
   .theme-pass--control,
   .theme-pass--stageleft {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  /* Keep Zones’ three plans on one row; other `.quiet-orbit-cards` stay 2-up. */
+  .quiet-orbit-cards--trial-then-paid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .theme-pass--stageleft {

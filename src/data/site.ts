@@ -174,7 +174,7 @@ export const apps: AppRecord[] = [
     proofPoints: [
       {
         title: "Menu bar first",
-        copy: "Click the icon and start arranging windows immediately. No learning curve.",
+        copy: "Zones sits in your menu bar for quick access—snap windows by holding Shift while you drag. No learning curve.",
         icon: "window",
       },
       {
@@ -191,7 +191,7 @@ export const apps: AppRecord[] = [
     pricingIntro: {
       headline: "Simple pricing",
       subheadline:
-        "Start the seven-day free trial on a subscription, or pay once for lifetime access. Every plan includes the full app. No ongoing free tier.",
+        "Start the seven-day free trial on a subscription, or pay once for lifetime access. Every plan includes the full app.",
     },
     pricingModel: "trial_then_paid",
     pricing: [
