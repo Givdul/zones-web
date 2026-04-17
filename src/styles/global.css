@@ -39,7 +39,8 @@
   --shadow: 0 14px 36px rgb(0 0 0 / 0.12);
   --shadow-soft: 0 6px 14px rgb(0 0 0 / 0.04);
   --radius-xl: 1.75rem;
-  --site-width: min(1120px, calc(100vw - 2rem));
+  /* dvw avoids horizontal scrollbar gutter skew; shell adds safe-area + side gutter */
+  --site-width: min(1120px, calc(100dvw - 2rem));
   /* Match `.quiet-orbit-page` / proof grid — same rail as `--site-width` (was 960px). */
   --hero-stage-width: min(var(--site-width), 100%);
   --demo-zone-gap: 8px;
@@ -80,11 +81,15 @@
 
 html {
   scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 body {
   margin: 0;
   min-width: 320px;
+  width: 100%;
+  overflow-x: clip;
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
@@ -100,6 +105,13 @@ body {
     radial-gradient(circle at 0% 0%, rgb(255 255 255 / 0.1), transparent 42%),
     linear-gradient(180deg, rgb(255 255 255 / 0.03), transparent 40%);
   background-attachment: fixed;
+}
+
+@media (max-width: 900px) {
+  body {
+    /* Fixed backgrounds are heavy on mobile Safari and can cause repaint jank */
+    background-attachment: scroll;
+  }
 }
 
 a {
@@ -150,6 +162,9 @@ kbd {
   flex: 1 0 auto;
   display: flex;
   flex-direction: column;
+  min-width: 0;
+  /* Extra gutter when safe-area is 0 keeps content off screen edges on phones */
+  padding-inline: max(0.75rem, env(safe-area-inset-left, 0px)) max(0.75rem, env(safe-area-inset-right, 0px));
 }
 
 .site-footer {
@@ -160,8 +175,10 @@ kbd {
 }
 
 .site-footer__inner {
-  width: var(--site-width);
+  width: 100%;
+  max-width: var(--site-width);
   margin: 0 auto;
+  box-sizing: border-box;
 }
 
 .site-footer__copy {
@@ -174,6 +191,8 @@ kbd {
   color: var(--soft);
   font-size: 0.88rem;
   letter-spacing: 0.01em;
+  overflow-wrap: anywhere;
+  text-wrap: balance;
 }
 
 .site-footer__copy a {
@@ -248,8 +267,10 @@ kbd {
 .page-hero,
 .section,
 .privacy-page {
-  width: var(--site-width);
+  width: 100%;
+  max-width: var(--site-width);
   margin: 0 auto;
+  box-sizing: border-box;
 }
 
 .site-header {
@@ -277,18 +298,21 @@ kbd {
 }
 
 .site-header__inner {
-  width: var(--site-width);
+  width: 100%;
+  max-width: var(--site-width);
   margin: 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
+  min-width: 0;
 }
 
 .brandmark {
   display: inline-flex;
   align-items: center;
   gap: 0.85rem;
+  min-width: 0;
   transition: transform 280ms var(--ease-out-quart), opacity 180ms ease;
   padding: 0.25rem;
   margin: -0.25rem;
@@ -315,6 +339,7 @@ kbd {
 
 .brandmark span {
   display: grid;
+  min-width: 0;
 }
 
 .brandmark strong {
@@ -350,9 +375,11 @@ kbd {
 
 .site-nav {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 0.5rem;
   justify-content: flex-end;
+  min-width: 0;
 }
 
 .app-store-badge {
@@ -1410,10 +1437,12 @@ kbd {
 /* ══ E1 — Centered Stack ═════════════════════════════════════ */
 
 .e1 {
+  width: 100%;
   max-width: min(38rem, var(--site-width));
   margin: 0 auto;
   padding: clamp(1.5rem, 3vw, 2.5rem) 0 clamp(2rem, 4vw, 3rem);
   text-align: center;
+  box-sizing: border-box;
 }
 
 .e1-list { display: grid; gap: 0; }
@@ -1562,11 +1591,13 @@ kbd {
 }
 
 .redirect-page {
-  width: var(--site-width);
+  width: 100%;
+  max-width: var(--site-width);
   margin: 0 auto;
   padding: 5rem 0 6rem;
   text-align: center;
   color: var(--muted);
+  box-sizing: border-box;
 }
 
 .redirect-page a {
@@ -1653,9 +1684,11 @@ kbd {
 }
 
 .quiet-orbit-page {
-  width: var(--site-width);
+  width: 100%;
+  max-width: var(--site-width);
   margin: 0 auto;
   padding: clamp(2rem, 5vw, 3.5rem) 0 4rem;
+  box-sizing: border-box;
 }
 
 /* App index + per-app landings share this shell (see THEME.md). */
@@ -1682,8 +1715,8 @@ kbd {
   gap: 0.8rem;
   max-width: 48rem;
   margin: 0 auto;
-  width: max-content;
-  max-width: 100%;
+  width: 100%;
+  min-width: 0;
   position: relative;
 }
 
@@ -2010,8 +2043,9 @@ kbd {
   justify-items: center;
   text-align: center;
   gap: 0.6rem;
-  width: max-content;
-  max-width: 100%;
+  width: 100%;
+  min-width: 0;
+  max-width: 42rem;
   margin: 0 auto;
 }
 
@@ -2093,6 +2127,7 @@ kbd {
   border: 1px solid var(--line);
   position: relative;
   overflow: hidden;
+  overflow-wrap: break-word;
   background:
     linear-gradient(180deg, oklch(1 0 0 / 0.05), transparent 28%),
     oklch(0.17 0.01 250 / 0.72);
@@ -2350,15 +2385,16 @@ kbd {
   transform: translateY(0);
 }
 
-  /* Support page specific styles */
-  .support-content {
-    width: min(100%, 44rem);
-    max-width: 100%;
-    margin: 0 auto;
-    padding: clamp(2rem, 4vw, 3rem) 0 4rem;
-    display: grid;
-    gap: clamp(1.5rem, 3vw, 2.25rem);
-  }
+/* Support page */
+.support-content {
+  width: 100%;
+  max-width: 44rem;
+  margin: 0 auto;
+  padding: clamp(2rem, 4vw, 3rem) 0 4rem;
+  display: grid;
+  gap: clamp(1.5rem, 3vw, 2.25rem);
+  box-sizing: border-box;
+}
 
   .support-section {
     position: relative;
@@ -2473,7 +2509,10 @@ kbd {
 
   .faq-item summary {
     cursor: pointer;
-    padding: 0.95rem 1.1rem;
+    min-height: 2.75rem;
+    padding: 0.85rem 1.1rem;
+    display: flex;
+    align-items: center;
     font-weight: 600;
     font-size: 0.94rem;
     list-style: none;
@@ -2614,6 +2653,8 @@ kbd {
 
 .zones-demo,
 .zones-editor-demo {
+  /* Match editor cells: small gutter between zone strokes (see .zed-zone --gap). */
+  --zones-anim-cell-gap: 3px;
   /* One canvas treatment so hero and showcase read as the same product. */
   --zones-anim-canvas-bg:
     radial-gradient(ellipse 60% 50% at 20% 10%, oklch(1 0 0 / 0.03), transparent),
@@ -2663,8 +2704,10 @@ kbd {
 }
 
 .zd-zone {
+  --gap: var(--zones-anim-cell-gap);
   position: absolute;
   box-sizing: border-box;
+  padding: var(--gap);
   border-radius: var(--zd-radius);
   background: transparent;
   border: 1px dashed transparent;
@@ -2676,14 +2719,10 @@ kbd {
   opacity: 1;
 }
 
-/* Layer geometry: stored as padded-inset percentages so layer rects remain
-   visually distinguishable when stacked (thirds slightly inset inside halves,
-   quads slightly inset inside thirds). We use padding-style margins via the
-   element itself (box-sizing: border-box) plus a small outline offset per
-   layer via a CSS variable. */
-.zd-zone[data-layer="halves"] { --zd-layer-pad: 0px;  --zd-layer-hue: 235; }
-.zd-zone[data-layer="thirds"] { --zd-layer-pad: 4px;  --zd-layer-hue: 95;  }
-.zd-zone[data-layer="quads"]  { --zd-layer-pad: 8px;  --zd-layer-hue: 305; }
+/* Stacked layers share the same geometry; hue differentiates halves / thirds / corners. */
+.zd-zone[data-layer="halves"] { --zd-layer-hue: 235; }
+.zd-zone[data-layer="thirds"] { --zd-layer-hue: 95; }
+.zd-zone[data-layer="quads"] { --zd-layer-hue: 305; }
 
 /* Halves layer — two rects spanning full height */
 .zd-zone[data-id="halves-left"]   { top: 0; left: 0;      width: 50%; height: 100%; }
@@ -2700,12 +2739,11 @@ kbd {
 .zd-zone[data-id="quads-bl"] { top: 50%; left: 0;   width: 50%; height: 50%; }
 .zd-zone[data-id="quads-br"] { top: 50%; left: 50%; width: 50%; height: 50%; }
 
-/* The visible border/fill lives on a ::before inset by each layer's
-   pad, so stacked zones from different layers show as nested rectangles. */
+/* Same gutter as .zed-zone: strokes sit inset so adjacent zones show a slim gap. */
 .zd-zone::before {
   content: "";
   position: absolute;
-  inset: var(--zd-layer-pad, 0px);
+  inset: var(--gap);
   border-radius: calc(var(--zd-radius) - 0.1rem);
   border: 1px solid oklch(0.92 0.015 var(--zd-layer-hue, 250) / 0.18);
   background: oklch(0.92 0.015 var(--zd-layer-hue, 250) / 0.01);
@@ -2734,7 +2772,8 @@ kbd {
 
 .zones-demo__meta {
   display: flex;
-  align-items: center;
+  flex-wrap: wrap;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 0.7rem;
   padding: 0 0.15rem;
@@ -2813,7 +2852,7 @@ kbd {
 
 /* Zones are appended by JS. CSS vars --t/--l/--w/--h are 0–100 percentages. */
 .zed-zone {
-  --gap: 3px;
+  --gap: var(--zones-anim-cell-gap);
   position: absolute;
   box-sizing: border-box;
   top: calc(var(--t, 0) * 1%);
@@ -2951,8 +2990,10 @@ kbd {
 
 .zed-chips {
   display: inline-flex;
+  flex-wrap: wrap;
   gap: 0.4rem;
   align-items: center;
+  max-width: 100%;
 }
 
 .zed-chip {
@@ -3023,6 +3064,8 @@ kbd {
 }
 
 .zones-showcase__copy {
+  width: 100%;
+  min-width: 0;
   max-width: 48rem;
   text-align: center;
   display: grid;
@@ -3115,7 +3158,7 @@ kbd {
 }
 
 .zones-landing__inner {
-  width: min(var(--site-width), calc(100vw - 1.5rem));
+  width: min(var(--site-width), 100%);
   max-width: 100%;
   margin-inline: auto;
   display: flex;
@@ -3361,9 +3404,9 @@ kbd {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  /* Keep Zones’ three plans on one row; other `.quiet-orbit-cards` stay 2-up. */
+  /* Trial + paid tiers: wrap like the editor grid so narrow tablets don’t squeeze 3 columns */
   .quiet-orbit-cards--trial-then-paid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 15.5rem), 1fr));
   }
 
   .theme-pass--stageleft {
@@ -3402,7 +3445,7 @@ kbd {
   .site-nav .button {
     grid-column: 1 / -1;
     width: auto;
-    min-width: min(18rem, calc(100vw - 3rem));
+    min-width: min(18rem, 100%);
   }
 
 
@@ -3579,7 +3622,7 @@ kbd {
 
   .site-nav .button {
     width: auto;
-    min-width: min(18rem, calc(100vw - 3rem));
+    min-width: min(18rem, 100%);
   }
 }
 
@@ -3604,9 +3647,11 @@ kbd {
 }
 
 .catalog-page {
-  width: var(--site-width);
+  width: 100%;
+  max-width: var(--site-width);
   margin: 0 auto;
   padding: clamp(2.5rem, 6vw, 5rem) 0 4rem;
+  box-sizing: border-box;
 }
 
 .catalog-hero {
