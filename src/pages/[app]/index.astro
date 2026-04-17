@@ -1,6 +1,6 @@
 ---
 import SiteHeader from "../../components/SiteHeader.astro";
-import ZonesDemo from "../../components/ZonesDemo.astro";
+import ZonesLandingDeck from "../../components/ZonesLandingDeck.astro";
 import { apps, site } from "../../data/site";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 
@@ -49,6 +49,9 @@ const structuredData = {
 >
   <SiteHeader app={app} />
 
+  {app.slug === "zones" ? (
+    <ZonesLandingDeck app={app} />
+  ) : (
   <main class="quiet-orbit-page givdul-app-landing" data-motion-root>
     <section class="quiet-orbit-hero">
       <div class="quiet-orbit-hero__copy">
@@ -95,26 +98,20 @@ const structuredData = {
         </div>
       </div>
 
-      {app.slug === "zones" ? (
-        <div class="quiet-orbit-hero__stage quiet-orbit-hero__stage--abstract" data-reveal data-reveal-delay="140">
-          <ZonesDemo />
-        </div>
-      ) : (
-        <div class="quiet-orbit-hero__stage quiet-orbit-hero__stage--abstract" data-reveal data-reveal-delay="140">
-          <div class="app-stage" aria-label={app.heroVisualLabel}>
-            <div class="app-stage__topline">
-              <span class="app-stage__badge">{app.productLabel}</span>
-              <span class="app-stage__route">{app.landingPath}</span>
-            </div>
-            <div class="app-stage__grid" aria-hidden="true">
-              <div class="app-stage__panel app-stage__panel--primary"></div>
-              <div class="app-stage__panel app-stage__panel--secondary"></div>
-              <div class="app-stage__panel app-stage__panel--tertiary"></div>
-              <div class="app-stage__panel app-stage__panel--quaternary"></div>
-            </div>
+      <div class="quiet-orbit-hero__stage quiet-orbit-hero__stage--abstract" data-reveal data-reveal-delay="140">
+        <div class="app-stage" aria-label={app.heroVisualLabel}>
+          <div class="app-stage__topline">
+            <span class="app-stage__badge">{app.productLabel}</span>
+            <span class="app-stage__route">{app.landingPath}</span>
+          </div>
+          <div class="app-stage__grid" aria-hidden="true">
+            <div class="app-stage__panel app-stage__panel--primary"></div>
+            <div class="app-stage__panel app-stage__panel--secondary"></div>
+            <div class="app-stage__panel app-stage__panel--tertiary"></div>
+            <div class="app-stage__panel app-stage__panel--quaternary"></div>
           </div>
         </div>
-      )}
+      </div>
     </section>
 
     <section class="quiet-orbit-proof" aria-label="Key product points">
@@ -244,6 +241,7 @@ const structuredData = {
       </div>
     </section>
   </main>
+  )}
 </BaseLayout>
 
 <script>

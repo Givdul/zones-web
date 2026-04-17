@@ -2610,156 +2610,559 @@ kbd {
     font-size: 0.88rem;
   }
 
-/* ══ Zones Demo ═══════════════════════════════════════════════ */
+/* ══ Zones landing demos — shared shell (layer + editor match) ═ */
 
-.zones-demo {
-  --zd-g: 3px;
-  --zd-radius: 0.65rem;
-  --zd-border: oklch(1 0 0 / 0.13);
-  --zd-border-active: oklch(1 0 0 / 0.32);
-  --zd-fill: oklch(1 0 0 / 0.02);
-  --zd-fill-active: oklch(1 0 0 / 0.05);
+.zones-demo,
+.zones-editor-demo {
+  /* One canvas treatment so hero and showcase read as the same product. */
+  --zones-anim-canvas-bg:
+    radial-gradient(ellipse 60% 50% at 20% 10%, oklch(1 0 0 / 0.03), transparent),
+    oklch(0.09 0.005 250);
+  --zones-anim-zone-radius: 0.65rem;
+  --zones-anim-snap-curve: cubic-bezier(0.22, 1, 0.36, 1);
+  /* Editor cells read as one bento layer; stroke language matches .zd-zone::before. */
+  --zones-anim-editor-hue: 250;
   width: 100%;
   display: grid;
   gap: 0.55rem;
 }
 
-.zones-demo__canvas {
+.zones-demo__canvas,
+.zones-editor-demo__canvas {
   position: relative;
   aspect-ratio: 2.35 / 1;
   border-radius: 1.15rem;
   border: 1px solid oklch(1 0 0 / 0.1);
-  background:
-    radial-gradient(ellipse 60% 50% at 20% 10%, oklch(1 0 0 / 0.03), transparent),
-    oklch(0.09 0.005 250);
+  background: var(--zones-anim-canvas-bg);
   box-shadow:
     0 20px 50px oklch(0 0 0 / 0.25),
     0 4px 12px oklch(0 0 0 / 0.15);
   overflow: hidden;
+  isolation: isolate;
 }
 
-.zones-demo__grid {
+/* ══ Zones Demo — Layer System ═══════════════════════════════ */
+
+.zones-demo {
+  --zd-radius: var(--zones-anim-zone-radius);
+  --zd-ring: oklch(1 0 0 / 0.14);
+  --zd-ring-strong: oklch(1 0 0 / 0.38);
+  --zd-fill: oklch(1 0 0 / 0.018);
+  --zd-fill-strong: oklch(1 0 0 / 0.055);
+  /* Per-layer accents stay restrained; glass-like whites with slight hues. */
+  --zd-accent-halves: oklch(0.86 0.05 235);
+  --zd-accent-thirds: oklch(0.88 0.04 95);
+  --zd-accent-quads:  oklch(0.86 0.05 305);
+  --zd-snap-curve: var(--zones-anim-snap-curve);
+}
+
+.zones-demo__layers {
   position: absolute;
   inset: 0.65rem;
+  pointer-events: none;
 }
 
-.zones-demo__zone {
+.zd-zone {
   position: absolute;
-  inset: 50%;
+  box-sizing: border-box;
   border-radius: var(--zd-radius);
-  border: 1.5px solid var(--zd-border);
-  background: var(--zd-fill);
-  opacity: 0;
+  background: transparent;
+  border: 1px dashed transparent;
   transition:
-    inset 650ms var(--ease-out-quint),
-    opacity 380ms ease,
-    border-color 280ms ease,
-    background-color 280ms ease,
-    box-shadow 280ms ease;
-}
-
-.zones-demo__zone.is-active {
-  border-color: var(--zd-border-active);
-  background: var(--zd-fill-active);
-  box-shadow: 0 0 0 3px oklch(1 0 0 / 0.06);
-}
-
-[data-layout="halves"] [data-zone="a"] {
-  inset: 0 calc(50% + var(--zd-g)) 0 0;
-  opacity: 1;
-}
-[data-layout="halves"] [data-zone="b"] {
-  inset: 0 0 0 calc(50% + var(--zd-g));
+    border-color 240ms ease,
+    background-color 240ms ease,
+    box-shadow 240ms ease,
+    opacity 240ms ease;
   opacity: 1;
 }
 
-[data-layout="thirds"] [data-zone="a"] {
-  inset: 0 calc(66.667% + var(--zd-g)) 0 0;
-  opacity: 1;
-}
-[data-layout="thirds"] [data-zone="b"] {
-  inset: 0 calc(33.333% + var(--zd-g)) 0 calc(33.333% + var(--zd-g));
-  opacity: 1;
-}
-[data-layout="thirds"] [data-zone="c"] {
-  inset: 0 0 0 calc(66.667% + var(--zd-g));
-  opacity: 1;
+/* Layer geometry: stored as padded-inset percentages so layer rects remain
+   visually distinguishable when stacked (thirds slightly inset inside halves,
+   quads slightly inset inside thirds). We use padding-style margins via the
+   element itself (box-sizing: border-box) plus a small outline offset per
+   layer via a CSS variable. */
+.zd-zone[data-layer="halves"] { --zd-layer-pad: 0px;  --zd-layer-hue: 235; }
+.zd-zone[data-layer="thirds"] { --zd-layer-pad: 4px;  --zd-layer-hue: 95;  }
+.zd-zone[data-layer="quads"]  { --zd-layer-pad: 8px;  --zd-layer-hue: 305; }
+
+/* Halves layer — two rects spanning full height */
+.zd-zone[data-id="halves-left"]   { top: 0; left: 0;      width: 50%; height: 100%; }
+.zd-zone[data-id="halves-right"]  { top: 0; left: 50%;    width: 50%; height: 100%; }
+
+/* Thirds layer — three rects spanning full height */
+.zd-zone[data-id="thirds-left"]   { top: 0; left: 0;       width: 33.33%; height: 100%; }
+.zd-zone[data-id="thirds-center"] { top: 0; left: 33.335%; width: 33.33%; height: 100%; }
+.zd-zone[data-id="thirds-right"]  { top: 0; left: 66.67%;  width: 33.33%; height: 100%; }
+
+/* Quadrants layer — 2x2 corners */
+.zd-zone[data-id="quads-tl"] { top: 0;   left: 0;   width: 50%; height: 50%; }
+.zd-zone[data-id="quads-tr"] { top: 0;   left: 50%; width: 50%; height: 50%; }
+.zd-zone[data-id="quads-bl"] { top: 50%; left: 0;   width: 50%; height: 50%; }
+.zd-zone[data-id="quads-br"] { top: 50%; left: 50%; width: 50%; height: 50%; }
+
+/* The visible border/fill lives on a ::before inset by each layer's
+   pad, so stacked zones from different layers show as nested rectangles. */
+.zd-zone::before {
+  content: "";
+  position: absolute;
+  inset: var(--zd-layer-pad, 0px);
+  border-radius: calc(var(--zd-radius) - 0.1rem);
+  border: 1px solid oklch(0.92 0.015 var(--zd-layer-hue, 250) / 0.18);
+  background: oklch(0.92 0.015 var(--zd-layer-hue, 250) / 0.01);
+  transition:
+    border-color 240ms ease,
+    background-color 240ms ease,
+    box-shadow 240ms ease,
+    opacity 240ms ease;
 }
 
-[data-layout="fourths"] [data-zone="a"] {
-  inset: 0 calc(50% + var(--zd-g)) calc(50% + var(--zd-g)) 0;
-  opacity: 1;
-}
-[data-layout="fourths"] [data-zone="b"] {
-  inset: 0 0 calc(50% + var(--zd-g)) calc(50% + var(--zd-g));
-  opacity: 1;
-}
-[data-layout="fourths"] [data-zone="c"] {
-  inset: calc(50% + var(--zd-g)) calc(50% + var(--zd-g)) 0 0;
-  opacity: 1;
-}
-[data-layout="fourths"] [data-zone="d"] {
-  inset: calc(50% + var(--zd-g)) 0 0 calc(50% + var(--zd-g));
-  opacity: 1;
+/* When a layer is supplying the current snap target, its sibling zones
+   brighten slightly so the layer reads as the one driving the snap. */
+.zd-zone.is-active-layer::before {
+  border-color: oklch(0.94 0.02 var(--zd-layer-hue, 250) / 0.38);
+  background: oklch(0.94 0.02 var(--zd-layer-hue, 250) / 0.02);
 }
 
-[data-layout="sixths"] [data-zone="a"] {
-  inset: 0 calc(66.667% + var(--zd-g)) calc(50% + var(--zd-g)) 0;
-  opacity: 1;
-}
-[data-layout="sixths"] [data-zone="b"] {
-  inset: 0 calc(33.333% + var(--zd-g)) calc(50% + var(--zd-g)) calc(33.333% + var(--zd-g));
-  opacity: 1;
-}
-[data-layout="sixths"] [data-zone="c"] {
-  inset: 0 0 calc(50% + var(--zd-g)) calc(66.667% + var(--zd-g));
-  opacity: 1;
-}
-[data-layout="sixths"] [data-zone="d"] {
-  inset: calc(50% + var(--zd-g)) calc(66.667% + var(--zd-g)) 0 0;
-  opacity: 1;
-}
-[data-layout="sixths"] [data-zone="e"] {
-  inset: calc(50% + var(--zd-g)) calc(33.333% + var(--zd-g)) 0 calc(33.333% + var(--zd-g));
-  opacity: 1;
-}
-[data-layout="sixths"] [data-zone="f"] {
-  inset: calc(50% + var(--zd-g)) 0 0 calc(66.667% + var(--zd-g));
-  opacity: 1;
+.zd-zone.is-target::before {
+  border-width: 1.5px;
+  border-color: oklch(0.97 0.02 var(--zd-layer-hue, 250) / 0.95);
+  background: oklch(0.97 0.04 var(--zd-layer-hue, 250) / 0.08);
+  box-shadow:
+    0 0 0 1px oklch(1 0 0 / 0.08),
+    0 10px 26px oklch(0 0 0 / 0.28);
 }
 
 .zones-demo__meta {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 0.7rem;
   padding: 0 0.15rem;
 }
+
+.zones-demo__chips {
+  display: flex;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+}
+
+.zd-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid oklch(1 0 0 / 0.1);
+  background: oklch(1 0 0 / 0.02);
+  color: oklch(1 0 0 / 0.55);
+  transition:
+    border-color 260ms ease,
+    background-color 260ms ease,
+    color 260ms ease,
+    transform 260ms var(--zones-anim-snap-curve);
+}
+
+.zd-chip.is-active {
+  border-color: oklch(1 0 0 / 0.22);
+  background: oklch(1 0 0 / 0.04);
+  color: oklch(1 0 0 / 0.82);
+}
+
+.zd-chip.is-firing {
+  transform: translateY(-1px);
+  border-color: oklch(1 0 0 / 0.36);
+  background: oklch(1 0 0 / 0.07);
+  color: oklch(1 0 0 / 0.95);
+}
+
+.zd-chip__swatch {
+  width: 7px;
+  height: 7px;
+  border-radius: 2px;
+  background: oklch(1 0 0 / 0.3);
+}
+
+.zd-chip__swatch[data-swatch="halves"] { background: var(--zd-accent-halves); }
+.zd-chip__swatch[data-swatch="thirds"] { background: var(--zd-accent-thirds); }
+.zd-chip__swatch[data-swatch="quads"]  { background: var(--zd-accent-quads); }
 
 .zones-demo__label {
   font-size: 0.76rem;
   font-weight: 500;
   color: var(--soft);
   letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
 }
 
-.zones-demo__pips {
-  display: flex;
-  gap: 0.4rem;
+/* ══ Zones Editor Demo — Slice + per-zone enable/disable ════ */
+
+.zones-editor-demo {
+  --zed-radius: var(--zones-anim-zone-radius);
+  /* Layout resize curve (bento spring in app); chips still use --zones-anim-snap-curve. */
+  --zed-spring: cubic-bezier(0.34, 1.15, 0.64, 1);
 }
 
-.zones-demo__pips span {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: oklch(1 0 0 / 0.14);
+.zones-editor-demo__grid {
+  position: absolute;
+  inset: 0.65rem;
+  pointer-events: none;
+}
+
+/* Zones are appended by JS. CSS vars --t/--l/--w/--h are 0–100 percentages. */
+.zed-zone {
+  --gap: 3px;
+  position: absolute;
+  box-sizing: border-box;
+  top: calc(var(--t, 0) * 1%);
+  left: calc(var(--l, 0) * 1%);
+  width: calc(var(--w, 100) * 1%);
+  height: calc(var(--h, 100) * 1%);
+  padding: var(--gap);
+  pointer-events: none;
   transition:
-    background-color 300ms ease,
-    transform 300ms var(--ease-out-quart);
+    top 620ms var(--zed-spring),
+    left 620ms var(--zed-spring),
+    width 620ms var(--zed-spring),
+    height 620ms var(--zed-spring),
+    opacity 360ms ease;
 }
 
-.zones-demo__pips span.is-active {
-  background: oklch(1 0 0 / 0.52);
-  transform: scale(1.25);
+.zed-zone::before {
+  content: "";
+  position: absolute;
+  inset: var(--gap);
+  border-radius: calc(var(--zed-radius) - 0.1rem);
+  border: 1px solid oklch(0.92 0.015 var(--zones-anim-editor-hue, 250) / 0.18);
+  background: oklch(0.92 0.015 var(--zones-anim-editor-hue, 250) / 0.01);
+  transition:
+    border-color 240ms ease,
+    background-color 240ms ease,
+    box-shadow 240ms ease,
+    opacity 240ms ease;
+}
+
+/* Matches .zd-zone.is-active-layer — bento cells read as the “live” layer surface. */
+.zed-zone[data-enabled="true"]::before {
+  border-color: oklch(0.94 0.02 var(--zones-anim-editor-hue, 250) / 0.38);
+  background: oklch(0.94 0.02 var(--zones-anim-editor-hue, 250) / 0.02);
+  box-shadow: 0 0 0 1px oklch(1 0 0 / 0.06);
+}
+
+.zed-zone[data-enabled="false"]::before {
+  border-color: oklch(0.92 0.015 var(--zones-anim-editor-hue, 250) / 0.1);
+  background: oklch(0.92 0.015 var(--zones-anim-editor-hue, 250) / 0.004);
+  opacity: 0.48;
+  box-shadow: none;
+}
+
+/* Faint hatch inside disabled zones so they still read as "off" on a dark bg */
+.zed-zone[data-enabled="false"]::after {
+  content: "";
+  position: absolute;
+  inset: var(--gap);
+  border-radius: var(--zed-radius);
+  background-image: repeating-linear-gradient(
+    45deg,
+    oklch(1 0 0 / 0.022) 0,
+    oklch(1 0 0 / 0.022) 3px,
+    transparent 3px,
+    transparent 8px
+  );
+  opacity: 0.8;
+  pointer-events: none;
+  transition: opacity 280ms ease;
+}
+
+/* Enter + exit states */
+.zed-zone[data-state="entering"] {
+  opacity: 0;
+}
+
+.zed-zone[data-state="idle"] {
+  opacity: 1;
+}
+
+.zed-zone[data-state="exiting"] {
+  opacity: 0;
+}
+
+/* Slice-flash cue: a hairline highlight drawn on the freshly-committed
+   divider, just long enough to register as the moment the split landed. */
+.zones-editor-demo__slice {
+  --sx: 50;
+  --sy: 50;
+  --span: 100;
+  position: absolute;
+  inset: 0.65rem;
+  pointer-events: none;
+  z-index: 3;
+  opacity: 0;
+}
+
+.zones-editor-demo__slice::before {
+  content: "";
+  position: absolute;
+  border-radius: 999px;
+  background:
+    linear-gradient(90deg, transparent, oklch(1 0 0 / 0.65) 15%, oklch(1 0 0 / 0.65) 85%, transparent);
+  box-shadow: 0 0 12px oklch(1 0 0 / 0.35);
+}
+
+.zones-editor-demo__slice[data-axis="v"]::before {
+  top: calc(var(--sy) * 1%);
+  left: calc(var(--sx) * 1%);
+  height: calc(var(--span) * 1%);
+  width: 2px;
+  transform: translateX(-1px);
+  background:
+    linear-gradient(180deg, transparent, oklch(1 0 0 / 0.65) 15%, oklch(1 0 0 / 0.65) 85%, transparent);
+}
+
+.zones-editor-demo__slice[data-axis="h"]::before {
+  top: calc(var(--sy) * 1%);
+  left: calc(var(--sx) * 1%);
+  width: calc(var(--span) * 1%);
+  height: 2px;
+  transform: translateY(-1px);
+}
+
+.zones-editor-demo__slice.is-firing {
+  animation: zed-slice-flash 780ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes zed-slice-flash {
+  0%   { opacity: 0; }
+  30%  { opacity: 0.95; }
+  60%  { opacity: 0.6; }
+  100% { opacity: 0; }
+}
+
+.zones-editor-demo__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.7rem;
+  padding: 0 0.15rem;
+  flex-wrap: wrap;
+}
+
+.zed-chips {
+  display: inline-flex;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.zed-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid oklch(1 0 0 / 0.1);
+  background: oklch(1 0 0 / 0.02);
+  color: oklch(1 0 0 / 0.55);
+  transition:
+    border-color 260ms ease,
+    background-color 260ms ease,
+    color 260ms ease,
+    transform 260ms var(--zones-anim-snap-curve);
+  font-variant-numeric: tabular-nums;
+}
+
+.zed-chip kbd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.05rem 0.38rem;
+  border-radius: 0.3rem;
+  border: 1px solid oklch(1 0 0 / 0.16);
+  background: oklch(1 0 0 / 0.04);
+  color: oklch(1 0 0 / 0.82);
+  font-family: inherit;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.zed-chip[data-zed-chip="shift"].is-firing,
+.zed-chip[data-zed-chip="click"].is-firing {
+  transform: translateY(-1px);
+  border-color: oklch(1 0 0 / 0.36);
+  background: oklch(1 0 0 / 0.07);
+  color: oklch(1 0 0 / 0.95);
+}
+
+.zed-chip[data-zed-chip="shift"].is-firing kbd,
+.zed-chip[data-zed-chip="click"].is-firing kbd {
+  border-color: oklch(1 0 0 / 0.42);
+  background: oklch(1 0 0 / 0.14);
+  color: oklch(1 0 0 / 1);
+}
+
+.zones-editor-demo__caption {
+  font-size: 0.76rem;
+  font-weight: 500;
+  color: var(--soft);
+  letter-spacing: 0.02em;
+}
+
+/* ══ Zones Showcase Section (full-width, copy-over-stage) ═══ */
+
+.zones-showcase {
+  margin-top: clamp(3rem, 7vw, 5.25rem);
+  display: grid;
+  justify-items: center;
+  gap: clamp(1.5rem, 3vw, 2.25rem);
+  width: 100%;
+}
+
+.zones-showcase__copy {
+  max-width: 48rem;
+  text-align: center;
+  display: grid;
+  justify-items: center;
+  gap: 0.55rem;
+}
+
+.zones-showcase__copy h2 {
+  margin: 0;
+  font-size: clamp(1.35rem, 2.4vw, 1.7rem);
+  letter-spacing: -0.01em;
+  color: var(--text);
+}
+
+.zones-showcase__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--accent) 55%, var(--muted) 45%);
+  font-weight: 600;
+}
+
+.zones-showcase__eyebrow::before {
+  content: "";
+  width: 18px;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.45;
+}
+
+.zones-showcase__lede {
+  margin: 0;
+  color: var(--soft);
+  line-height: 1.55;
+  font-size: 0.98rem;
+  max-width: 40rem;
+}
+
+.zones-showcase__lede--muted {
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.zones-showcase__stage {
+  width: var(--hero-stage-width, 100%);
+  max-width: 100%;
+}
+
+/* ══ Zones landing — long page layout (natural scroll, generous spacing) ═ */
+
+.zones-landing {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.zones-landing__main {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  overflow: visible;
+}
+
+.zones-landing__section {
+  width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
+  overflow-y: visible;
+  padding-block: clamp(2.75rem, 7vw, 5rem);
+}
+
+.zones-landing__section--hero {
+  padding-block-start: clamp(1.5rem, 4vw, 2.75rem);
+  padding-block-end: clamp(3rem, 8vw, 5.5rem);
+}
+
+.zones-landing__section--showcase {
+  padding-block-start: clamp(3rem, 8vw, 5.5rem);
+  padding-block-end: clamp(3rem, 8vw, 5.5rem);
+}
+
+.zones-landing__section--pricing {
+  padding-block-start: clamp(3rem, 8vw, 5.5rem);
+  padding-block-end: clamp(2.5rem, 6vw, 4rem);
+}
+
+.zones-landing__inner {
+  width: min(var(--site-width), calc(100vw - 1.5rem));
+  max-width: 100%;
+  margin-inline: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: clamp(2.25rem, 5vw, 3.5rem);
+  padding-inline: 0;
+  padding-block: 0;
+  box-sizing: border-box;
+}
+
+.zones-landing__inner > .zones-showcase:first-child {
+  margin-top: 0;
+}
+
+.zones-landing__inner .quiet-orbit-hero,
+.zones-landing__inner .zones-showcase {
+  width: 100%;
+}
+
+/* Proof + pricing cards read better left-aligned inside the centered column */
+.zones-landing__inner .quiet-orbit-proof,
+.zones-landing__inner .quiet-orbit-choices {
+  text-align: start;
+  width: 100%;
+}
+
+.zones-landing__inner .quiet-orbit-proof__item {
+  justify-items: start;
+}
+
+.zones-landing__inner .quiet-orbit-choices__intro {
+  justify-self: center;
+}
+
+@media (max-width: 720px) {
+  .zones-landing__inner .quiet-orbit-proof {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .zones-demo[data-in-viewport="false"] .zones-demo__canvas {
+    animation-play-state: paused;
+  }
 }
 
 /* App landing: subtle motion (honors global prefers-reduced-motion) */

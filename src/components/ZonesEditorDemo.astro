@@ -1,0 +1,306 @@
+---
+---
+
+<div
+  class="zones-editor-demo"
+  data-zones-editor
+  aria-label="Animated preview of slicing a custom zone layout and toggling zones on and off"
+>
+  <div class="zones-editor-demo__canvas">
+    <div class="zones-editor-demo__grid" data-zed-grid aria-hidden="true"></div>
+
+    <!-- Brief divider flash drawn over a freshly-committed split -->
+    <div class="zones-editor-demo__slice" data-zed-slice aria-hidden="true"></div>
+  </div>
+
+  <div class="zones-editor-demo__meta">
+    <div class="zed-chips" role="list" aria-label="Editor status">
+      <span class="zed-chip" data-zed-chip="click" role="listitem">
+        <kbd>Click</kbd>
+        <span>Vertical slice</span>
+      </span>
+      <span class="zed-chip" data-zed-chip="shift" role="listitem">
+        <kbd>Shift</kbd>
+        <span>Shift-click · horizontal</span>
+      </span>
+      <span class="zed-chip" data-zed-chip="count" role="listitem" data-zed-count>1 zone</span>
+    </div>
+    <span class="zones-editor-demo__caption" data-zed-caption>Start with a single zone</span>
+  </div>
+
+  <p class="sr-only" aria-live="polite" data-zed-live>One zone on the canvas.</p>
+</div>
+
+<script>
+  const setupZonesEditorDemo = () => {
+    const demos = document.querySelectorAll("[data-zones-editor]");
+    if (demos.length === 0) return;
+
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+    // Each keyframe is the full state of the canvas at that beat. Zones are
+    // matched across keyframes by `id` so CSS transitions animate the
+    // position/size changes (like the real bento editor's spring layout).
+    //
+    //   t, l, w, h   = top, left, width, height as 0–100 percentages
+    //   enabled      = visual on/off state
+    //   slice        = optional { axis: 'v' | 'h', pos: % } to flash a
+    //                  freshly-committed divider for this beat
+    //   modifier     = 'shift' highlights the Shift chip for horizontal slices
+    const FRAMES = [
+      // Step 0 — one zone
+      {
+        caption: "Start with a single zone",
+        zones: [{ id: "a", t: 0, l: 0, w: 100, h: 100, enabled: true }],
+      },
+      // Step 1 — first vertical slice → 2 zones
+      {
+        caption: "Click for a vertical slice",
+        slice: { axis: "v", x: 50, y: 0, span: 100 },
+        zones: [
+          { id: "a", t: 0, l: 0,  w: 50, h: 100, enabled: true },
+          { id: "b", t: 0, l: 50, w: 50, h: 100, enabled: true },
+        ],
+      },
+      // Step 2 — horizontal slice on b → 3 zones
+      {
+        caption: "Shift-click for a horizontal slice",
+        modifier: "shift",
+        slice: { axis: "h", x: 50, y: 58, span: 50 },
+        zones: [
+          { id: "a", t: 0,  l: 0,  w: 50, h: 100, enabled: true },
+          { id: "b", t: 0,  l: 50, w: 50, h: 58,  enabled: true },
+          { id: "c", t: 58, l: 50, w: 50, h: 42,  enabled: true },
+        ],
+      },
+      // Step 3 — vertical slice on a → 4 zones
+      {
+        caption: "Click again for another vertical slice",
+        slice: { axis: "v", x: 25, y: 0, span: 100 },
+        zones: [
+          { id: "a",  t: 0,  l: 0,  w: 25, h: 100, enabled: true },
+          { id: "a2", t: 0,  l: 25, w: 25, h: 100, enabled: true },
+          { id: "b",  t: 0,  l: 50, w: 50, h: 58,  enabled: true },
+          { id: "c",  t: 58, l: 50, w: 50, h: 42,  enabled: true },
+        ],
+      },
+      // Step 4 — horizontal slice on a2 → 5 zones
+      {
+        caption: "Shift-click to slice horizontally",
+        modifier: "shift",
+        slice: { axis: "h", x: 25, y: 48, span: 25 },
+        zones: [
+          { id: "a",  t: 0,  l: 0,  w: 25, h: 100, enabled: true },
+          { id: "a2", t: 0,  l: 25, w: 25, h: 48,  enabled: true },
+          { id: "a3", t: 48, l: 25, w: 25, h: 52,  enabled: true },
+          { id: "b",  t: 0,  l: 50, w: 50, h: 58,  enabled: true },
+          { id: "c",  t: 58, l: 50, w: 50, h: 42,  enabled: true },
+        ],
+      },
+      // Step 5 — toggle zone "c" off
+      {
+        caption: "Turn any zone off",
+        zones: [
+          { id: "a",  t: 0,  l: 0,  w: 25, h: 100, enabled: true },
+          { id: "a2", t: 0,  l: 25, w: 25, h: 48,  enabled: true },
+          { id: "a3", t: 48, l: 25, w: 25, h: 52,  enabled: true },
+          { id: "b",  t: 0,  l: 50, w: 50, h: 58,  enabled: true },
+          { id: "c",  t: 58, l: 50, w: 50, h: 42,  enabled: false },
+        ],
+      },
+      // Step 6 — toggle "a2" off too
+      {
+        caption: "Keep only the zones you use",
+        zones: [
+          { id: "a",  t: 0,  l: 0,  w: 25, h: 100, enabled: true },
+          { id: "a2", t: 0,  l: 25, w: 25, h: 48,  enabled: false },
+          { id: "a3", t: 48, l: 25, w: 25, h: 52,  enabled: true },
+          { id: "b",  t: 0,  l: 50, w: 50, h: 58,  enabled: true },
+          { id: "c",  t: 58, l: 50, w: 50, h: 42,  enabled: false },
+        ],
+      },
+      // Step 7 — bring "a2" and "c" back
+      {
+        caption: "Bring zones back any time",
+        zones: [
+          { id: "a",  t: 0,  l: 0,  w: 25, h: 100, enabled: true },
+          { id: "a2", t: 0,  l: 25, w: 25, h: 48,  enabled: true },
+          { id: "a3", t: 48, l: 25, w: 25, h: 52,  enabled: true },
+          { id: "b",  t: 0,  l: 50, w: 50, h: 58,  enabled: true },
+          { id: "c",  t: 58, l: 50, w: 50, h: 42,  enabled: true },
+        ],
+      },
+      // Step 8 — reset back to a single zone
+      {
+        caption: "Start fresh",
+        zones: [{ id: "a", t: 0, l: 0, w: 100, h: 100, enabled: true }],
+      },
+    ];
+
+    demos.forEach((demo) => {
+      if (!(demo instanceof HTMLElement)) return;
+
+      const grid = demo.querySelector("[data-zed-grid]");
+      const slice = demo.querySelector("[data-zed-slice]");
+      const caption = demo.querySelector("[data-zed-caption]");
+      const count = demo.querySelector("[data-zed-count]");
+      const clickChip = demo.querySelector('[data-zed-chip="click"]');
+      const shiftChip = demo.querySelector('[data-zed-chip="shift"]');
+      const live = demo.querySelector("[data-zed-live]");
+
+      if (!(grid instanceof HTMLElement)) return;
+
+      const pool = new Map();
+      let step = 0;
+      let paused = false;
+      let deckPaused = false;
+
+      const syncViewport = (visible) => {
+        deckPaused = !visible;
+      };
+
+      const io = new IntersectionObserver(
+        (entries) => {
+          const e = entries[0];
+          if (!e) return;
+          const visible = e.isIntersecting && e.intersectionRatio >= 0.12;
+          syncViewport(visible);
+        },
+        { root: null, rootMargin: "-5% 0px -12% 0px", threshold: [0, 0.08, 0.12, 0.22, 0.4] },
+      );
+      io.observe(demo);
+      syncViewport(true);
+
+      let interval = null;
+
+      const applyFrame = (index) => {
+        const frame = FRAMES[index];
+        if (!frame) return;
+
+        const nextIds = new Set();
+        frame.zones.forEach((z) => nextIds.add(z.id));
+
+        // Fade out any zones that no longer exist in this frame.
+        pool.forEach((el, id) => {
+          if (!nextIds.has(id)) {
+            el.dataset.state = "exiting";
+            window.setTimeout(() => {
+              el.remove();
+              pool.delete(id);
+            }, 360);
+          }
+        });
+
+        // Upsert each zone in the next frame, animating its position/size.
+        frame.zones.forEach((z) => {
+          let el = pool.get(z.id);
+          if (!el) {
+            el = document.createElement("div");
+            el.className = "zed-zone";
+            el.dataset.zid = z.id;
+            el.dataset.state = "entering";
+            grid.appendChild(el);
+            pool.set(z.id, el);
+            // Flip to "idle" on the next frame so the opacity transition fires.
+            requestAnimationFrame(() => {
+              el.dataset.state = "idle";
+            });
+          } else {
+            el.dataset.state = "idle";
+          }
+          el.style.setProperty("--t", String(z.t));
+          el.style.setProperty("--l", String(z.l));
+          el.style.setProperty("--w", String(z.w));
+          el.style.setProperty("--h", String(z.h));
+          el.dataset.enabled = z.enabled ? "true" : "false";
+        });
+
+        // Slice-flash cue for beats that commit a new divider.
+        if (slice instanceof HTMLElement) {
+          if (frame.slice) {
+            slice.dataset.axis = frame.slice.axis;
+            slice.style.setProperty("--sx", String(frame.slice.x));
+            slice.style.setProperty("--sy", String(frame.slice.y));
+            slice.style.setProperty("--span", String(frame.slice.span));
+            slice.classList.remove("is-firing");
+            void slice.offsetWidth;
+            slice.classList.add("is-firing");
+          } else {
+            slice.classList.remove("is-firing");
+          }
+        }
+
+        // Modifier chips cue which input mode the beat represents.
+        if (shiftChip instanceof HTMLElement) {
+          shiftChip.classList.toggle("is-firing", frame.modifier === "shift");
+        }
+        const clickCue =
+          Boolean(frame.slice) &&
+          frame.slice.axis === "v" &&
+          frame.modifier !== "shift";
+        if (clickChip instanceof HTMLElement) {
+          clickChip.classList.toggle("is-firing", clickCue);
+        }
+
+        const enabledCount = frame.zones.filter((z) => z.enabled).length;
+        const totalCount = frame.zones.length;
+        if (count) {
+          count.textContent = totalCount === 1
+            ? "1 zone"
+            : `${enabledCount} of ${totalCount} zones`;
+        }
+        if (caption && frame.caption) caption.textContent = frame.caption;
+        if (live instanceof HTMLElement) {
+          live.textContent = totalCount === 1
+            ? "One zone on the canvas."
+            : `${enabledCount} of ${totalCount} zones enabled.`;
+        }
+      };
+
+      const advance = () => {
+        step = (step + 1) % FRAMES.length;
+        applyFrame(step);
+      };
+
+      const startInterval = () => {
+        if (interval) clearInterval(interval);
+        interval = setInterval(() => { if (!paused && !deckPaused) advance(); }, 2200);
+      };
+
+      const start = () => {
+        applyFrame(0);
+        if (reduceMotion.matches) return;
+        requestAnimationFrame(() => {
+          demo.classList.add("is-live");
+          startInterval();
+        });
+      };
+
+      demo.addEventListener("pointerenter", () => { paused = true; });
+      demo.addEventListener("pointerleave", () => {
+        paused = false;
+        advance();
+        startInterval();
+      });
+
+      reduceMotion.addEventListener("change", () => {
+        if (interval) clearInterval(interval);
+        step = 0;
+        start();
+      });
+
+      start();
+
+      window.addEventListener("pagehide", () => {
+        io.disconnect();
+        if (interval) clearInterval(interval);
+      }, { once: true });
+    });
+  };
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", setupZonesEditorDemo, { once: true });
+  } else {
+    setupZonesEditorDemo();
+  }
+</script>

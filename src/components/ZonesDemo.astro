@@ -4,30 +4,43 @@
 <div
   class="zones-demo"
   data-zones-demo
-  aria-label="Animated preview of Zones layout presets"
+  aria-label="Animated preview of Zones layer system"
 >
   <div class="zones-demo__canvas">
-    <div class="zones-demo__grid" data-zones-grid data-layout="halves" aria-hidden="true">
-      <div class="zones-demo__zone" data-zone="a"></div>
-      <div class="zones-demo__zone" data-zone="b"></div>
-      <div class="zones-demo__zone" data-zone="c"></div>
-      <div class="zones-demo__zone" data-zone="d"></div>
-      <div class="zones-demo__zone" data-zone="e"></div>
-      <div class="zones-demo__zone" data-zone="f"></div>
+    <div class="zones-demo__layers" aria-hidden="true">
+      <div class="zd-zone" data-layer="halves" data-id="halves-left"></div>
+      <div class="zd-zone" data-layer="halves" data-id="halves-right"></div>
+
+      <div class="zd-zone" data-layer="thirds" data-id="thirds-left"></div>
+      <div class="zd-zone" data-layer="thirds" data-id="thirds-center"></div>
+      <div class="zd-zone" data-layer="thirds" data-id="thirds-right"></div>
+
+      <div class="zd-zone" data-layer="quads" data-id="quads-tl"></div>
+      <div class="zd-zone" data-layer="quads" data-id="quads-tr"></div>
+      <div class="zd-zone" data-layer="quads" data-id="quads-bl"></div>
+      <div class="zd-zone" data-layer="quads" data-id="quads-br"></div>
     </div>
   </div>
 
   <div class="zones-demo__meta">
-    <span class="zones-demo__label" data-zones-label>Halves</span>
-    <div class="zones-demo__pips" aria-hidden="true">
-      <span data-zones-pip class="is-active"></span>
-      <span data-zones-pip></span>
-      <span data-zones-pip></span>
-      <span data-zones-pip></span>
+    <div class="zones-demo__chips" role="list" aria-label="Active zone layers">
+      <span class="zd-chip is-active" data-chip="halves" role="listitem">
+        <span class="zd-chip__swatch" data-swatch="halves"></span>
+        Halves
+      </span>
+      <span class="zd-chip is-active" data-chip="thirds" role="listitem">
+        <span class="zd-chip__swatch" data-swatch="thirds"></span>
+        Thirds
+      </span>
+      <span class="zd-chip is-active" data-chip="quads" role="listitem">
+        <span class="zd-chip__swatch" data-swatch="quads"></span>
+        Corners
+      </span>
     </div>
+    <span class="zones-demo__label" data-zones-label>Left Half</span>
   </div>
 
-  <p class="sr-only" aria-live="polite" data-zones-live>Previewing Halves layout.</p>
+  <p class="sr-only" aria-live="polite" data-zones-live>Halves, thirds, and corners enabled simultaneously.</p>
 </div>
 
 <script>
@@ -37,48 +50,70 @@
 
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 
-    const LAYOUTS = [
-      { name: "Halves", key: "halves" },
-      { name: "Thirds", key: "thirds" },
-      { name: "2 × 2", key: "fourths" },
-      { name: "3 × 2", key: "sixths" },
-    ];
-
+    // Each step highlights a single zone from one of the three active layers.
+    // The zone lights up; its layer chip pulses; the label below updates.
     const STEPS = [
-      { layout: 0, active: "a" },
-      { layout: 1, active: "b" },
-      { layout: 2, active: "d" },
-      { layout: 3, active: "c" },
-      { layout: 2, active: "a" },
-      { layout: 1, active: "c" },
+      { id: "halves-left",   layer: "halves", label: "Left Half" },
+      { id: "quads-tr",      layer: "quads",  label: "Top-Right Corner" },
+      { id: "thirds-center", layer: "thirds", label: "Center Third" },
+      { id: "quads-bl",      layer: "quads",  label: "Bottom-Left Corner" },
+      { id: "thirds-right",  layer: "thirds", label: "Right Third" },
+      { id: "quads-tl",      layer: "quads",  label: "Top-Left Corner" },
+      { id: "halves-right",  layer: "halves", label: "Right Half" },
+      { id: "thirds-left",   layer: "thirds", label: "Left Third" },
+      { id: "quads-br",      layer: "quads",  label: "Bottom-Right Corner" },
     ];
 
     demos.forEach((demo) => {
       if (!(demo instanceof HTMLElement)) return;
 
-      const grid = demo.querySelector("[data-zones-grid]");
       const label = demo.querySelector("[data-zones-label]");
       const live = demo.querySelector("[data-zones-live]");
-      const pips = Array.from(demo.querySelectorAll("[data-zones-pip]"));
-      const zones = Array.from(demo.querySelectorAll("[data-zone]"));
-
-      if (!(grid instanceof HTMLElement)) return;
+      const zones = Array.from(demo.querySelectorAll(".zd-zone"));
+      const chips = Array.from(demo.querySelectorAll("[data-chip]"));
 
       let step = 0;
       let paused = false;
+      let deckPaused = false;
+
+      const syncViewport = (visible) => {
+        deckPaused = !visible;
+        demo.dataset.inViewport = visible ? "true" : "false";
+      };
+
+      const io = new IntersectionObserver(
+        (entries) => {
+          const e = entries[0];
+          if (!e) return;
+          const visible = e.isIntersecting && e.intersectionRatio >= 0.12;
+          syncViewport(visible);
+        },
+        { root: null, rootMargin: "-5% 0px -12% 0px", threshold: [0, 0.08, 0.12, 0.22, 0.4] },
+      );
+      io.observe(demo);
+      syncViewport(true);
+
       let interval = null;
 
-      const clearActive = () => zones.forEach((z) => z.classList.remove("is-active"));
-
       const applyStep = (s) => {
-        const { layout: li, active } = STEPS[s];
-        const cfg = LAYOUTS[li];
-        if (label) label.textContent = cfg.name;
-        if (live instanceof HTMLElement) live.textContent = `Previewing ${cfg.name} layout.`;
-        pips.forEach((p, j) => p.classList.toggle("is-active", j === li));
-        clearActive();
-        grid.setAttribute("data-layout", cfg.key);
-        zones.forEach((z) => z.classList.toggle("is-active", z.getAttribute("data-zone") === active));
+        const cfg = STEPS[s];
+
+        zones.forEach((z) => {
+          const isTarget = z.getAttribute("data-id") === cfg.id;
+          z.classList.toggle("is-target", isTarget);
+          const layer = z.getAttribute("data-layer");
+          z.classList.toggle("is-active-layer", layer === cfg.layer);
+        });
+
+        chips.forEach((c) => {
+          const matches = c.getAttribute("data-chip") === cfg.layer;
+          c.classList.toggle("is-firing", matches);
+        });
+
+        if (label) label.textContent = cfg.label;
+        if (live instanceof HTMLElement) {
+          live.textContent = `Highlighting ${cfg.label}. Halves, thirds, and corners all active.`;
+        }
       };
 
       const advance = () => {
@@ -88,13 +123,16 @@
 
       const startInterval = () => {
         if (interval) clearInterval(interval);
-        interval = setInterval(() => { if (!paused) advance(); }, 3200);
+        interval = setInterval(() => { if (!paused && !deckPaused) advance(); }, 2600);
       };
 
       const start = () => {
         applyStep(0);
         if (reduceMotion.matches) return;
-        startInterval();
+        requestAnimationFrame(() => {
+          demo.classList.add("is-live");
+          startInterval();
+        });
       };
 
       demo.addEventListener("pointerenter", () => { paused = true; });
@@ -113,6 +151,7 @@
       start();
 
       window.addEventListener("pagehide", () => {
+        io.disconnect();
         if (interval) clearInterval(interval);
       }, { once: true });
     });
