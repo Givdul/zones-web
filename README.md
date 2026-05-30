@@ -7,14 +7,14 @@ Static Astro site for a multi-app macOS catalog. The root acts as the app index,
 Set these before production deployment:
 
 - `PUBLIC_SITE_ORIGIN`: final public origin, for example `https://apps.givdul.com`
-- `PUBLIC_ZONES_APP_STORE_URL`: final App Store listing URL for Zones
-- `PUBLIC_PORTAL_APP_STORE_URL`: optional App Store listing URL for Portal when it exists
+- `PUBLIC_ZONES_DOWNLOAD_URL`: direct download URL for Zones
+- `PUBLIC_PORTAL_DOWNLOAD_URL`: direct download URL for Portal
+- `PUBLIC_POLAR_PORTAL_INTRO_CHECKOUT_URL`: Polar checkout URL for Portal's $19 launch license
+- `PUBLIC_POLAR_PORTAL_LICENSE_CHECKOUT_URL`: Polar checkout URL for Portal's $29 one-time license
+- `PUBLIC_POLAR_PORTAL_ANNUAL_CHECKOUT_URL`: Polar checkout URL for Portal's optional $19/year plan
+- `PUBLIC_POLAR_PORTAL_MONTHLY_CHECKOUT_URL`: Polar checkout URL for Portal's optional $2.99/month plan
 
-Legacy compatibility:
-
-- `PUBLIC_APP_STORE_URL` is still accepted as a fallback for Zones so older deployment configs do not break immediately.
-
-If an app-specific App Store URL is omitted, its page falls back to support/privacy links instead of rendering a dead App Store destination.
+If an app-specific download or checkout URL is omitted, its page falls back to support/privacy links or disabled purchase buttons instead of rendering a dead destination.
 
 ## Commands
 

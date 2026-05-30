@@ -8,8 +8,17 @@ interface Props {
 }
 
 const { app } = Astro.props;
-const pricingModel = app.pricingModel ?? "freemium";
-const isTrialThenPaid = pricingModel === "trial_then_paid";
+const freeTier = app.pricing[0] ?? {
+  name: "free",
+  label: "Free",
+  title: "Zones",
+  price: "Coming soon",
+  note: "Download details will be published shortly",
+  lead: "Join the waitlist to hear when the download goes live.",
+  items: ["Full app access", "No subscription"],
+  cta: "Join waitlist",
+};
+const ctaHref = app.downloadUrl ?? app.appStoreUrl;
 ---
 
 <div class="zones-landing">
@@ -30,18 +39,20 @@ const isTrialThenPaid = pricingModel === "trial_then_paid";
             <p class="quiet-orbit-hero__tagline" data-reveal data-reveal-delay="75">{app.heroTagline}</p>
             <p class="quiet-orbit-hero__lede" data-reveal data-reveal-delay="150">{app.heroLede}</p>
             <div class="quiet-orbit-hero__actions" data-reveal data-reveal-delay="220">
-              {app.hasAppStoreUrl ? (
+              {ctaHref ? (
                 <a
-                  class="app-store-badge app-store-badge--hero"
-                  href={app.appStoreUrl!}
-                  target="_blank"
+                  class="button button--pro"
+                  href={ctaHref}
                   rel="noreferrer"
-                  aria-label={`Download ${app.name} on the App Store`}
+                  aria-label={`Download ${app.name} for Mac`}
                 >
-                  <img src="/download-on-the-mac-app-store.svg" alt="Download on the App Store" />
+                  <span>Download for Mac</span>
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                    <path d="M8 2v8M5 7l3 3 3-3M3 13h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
                 </a>
               ) : (
-                <span class="button button--catalog button--disabled" aria-disabled="true">App Store link pending</span>
+                <span class="button button--catalog button--disabled" aria-disabled="true">Download pending</span>
               )}
             </div>
             <div class="quiet-orbit-hero__workflow" data-reveal data-reveal-delay="290">
@@ -152,88 +163,56 @@ const isTrialThenPaid = pricingModel === "trial_then_paid";
             </h2>
           </div>
 
-          <div class:list={["quiet-orbit-cards", isTrialThenPaid && "quiet-orbit-cards--trial-then-paid"]}>
-            {app.pricing.map((tier, index) => {
-              const dividerLabel = isTrialThenPaid
-                ? "Includes"
-                : index === 0
-                  ? null
-                  : "Built to evolve in place:";
-              const dividerIsSpacer = !isTrialThenPaid && index === 0;
-              const usePlusIcon = !isTrialThenPaid && index > 0;
-              const cardTone = tier.name === "free" ? "free" : "pro";
+          <div class="quiet-orbit-cards quiet-orbit-cards--simple-monthly">
+            <article
+              class="orbit-card orbit-card--free orbit-card--recommended"
+              data-reveal
+              data-reveal-delay="110"
+            >
+              <div class="orbit-card__header">
+                <div class="orbit-card__badge">
+                  <span class="orbit-card__label">{freeTier.label}</span>
+                </div>
+                <h3>{freeTier.title}</h3>
+                <p class="orbit-card__price">
+                  <span class="price-value">{freeTier.price}</span>
+                  <span class="price-note">{freeTier.note}</span>
+                </p>
+                <p class="orbit-card__lead">{freeTier.lead}</p>
+              </div>
 
-              return (
-                <article
-                  class:list={[
-                    "orbit-card",
-                    `orbit-card--${cardTone}`,
-                    tier.emphasis === "recommended" && "orbit-card--recommended",
-                  ]}
-                  data-reveal
-                  data-reveal-delay={String(index * 110)}
+              <div class="orbit-card__tier-divider">
+                <span class="tier-label">Includes</span>
+              </div>
+
+              <ul class="orbit-card__list">
+                {freeTier.items.map((item) => (
+                  <li>
+                    <svg class="check-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                      <path d="M3 8l3.5 3.5L13 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+
+              {ctaHref ? (
+                <a
+                  class="button button--pro"
+                  href={ctaHref}
+                  rel="noreferrer"
                 >
-                  <div class="orbit-card__header">
-                    <div class="orbit-card__badge">
-                      <span class="orbit-card__label">{tier.label}</span>
-                    </div>
-                    <h3>{tier.title}</h3>
-                    <p class="orbit-card__price">
-                      <span class="price-value">{tier.price}</span>
-                      <span class="price-note">{tier.note}</span>
-                    </p>
-                    <p class="orbit-card__lead">{tier.lead}</p>
-                  </div>
-
-                  <div
-                    class:list={["orbit-card__tier-divider", dividerIsSpacer && "orbit-card__tier-divider--empty"]}
-                    aria-hidden={dividerIsSpacer ? "true" : undefined}
-                  >
-                    <span class:list={["tier-label", !dividerLabel && "tier-label--invisible"]}>
-                      {dividerLabel ?? "Built to evolve in place:"}
-                    </span>
-                  </div>
-
-                  <ul class="orbit-card__list">
-                    {tier.items.map((item) => (
-                      <li>
-                        {usePlusIcon ? (
-                          <svg class="plus-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                            <path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
-                          </svg>
-                        ) : (
-                          <svg class="check-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                            <path d="M3 8l3.5 3.5L13 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                          </svg>
-                        )}
-                        <span>{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-
-                  {app.hasAppStoreUrl ? (
-                    <a
-                      class:list={["button", tier.name === "free" ? "button--free" : "button--pro"]}
-                      href={app.appStoreUrl!}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      <span>{tier.cta}</span>
-                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                        <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                      </svg>
-                    </a>
-                  ) : (
-                    <span
-                      class:list={["button", tier.name === "free" ? "button--free" : "button--pro", "button--disabled"]}
-                      aria-disabled="true"
-                    >
-                      {tier.cta}
-                    </span>
-                  )}
-                </article>
-              );
-            })}
+                  <span>{freeTier.cta}</span>
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                    <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                </a>
+              ) : (
+                <span class="button button--pro button--disabled" aria-disabled="true">
+                  {freeTier.cta}
+                </span>
+              )}
+            </article>
           </div>
         </section>
       </div>

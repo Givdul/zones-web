@@ -44,7 +44,9 @@ const structuredData = {
               <h2 class="e1-card__name">{app.name}</h2>
               <span class="e1-card__type">{app.productLabel}</span>
               <p class="e1-card__tag">{app.tagline}</p>
-              {app.hasAppStoreUrl
+              {app.hasDownloadUrl
+                ? <span class="ed-badge ed-badge--live">Direct download</span>
+                : app.hasAppStoreUrl
                 ? <span class="ed-badge ed-badge--live">Available on the App Store</span>
                 : <span class="ed-badge ed-badge--soon">Coming soon</span>}
             </a>

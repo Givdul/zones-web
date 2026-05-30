@@ -29,8 +29,8 @@ const { app } = Astro.props;
         <h1>Support</h1>
         <p class="quiet-orbit-hero__tagline">Quick answers, direct help</p>
         <p class="quiet-orbit-hero__lede">
-          {app.name} is designed to stay simple, but macOS still has a few moving parts. Find answers to
-          common questions or reach out directly.
+          The basics for getting {app.name} running, understanding permissions, and reaching support when
+          you need it.
         </p>
       </div>
     </section>
@@ -48,23 +48,8 @@ const { app } = Astro.props;
         </div>
       </article>
 
-      <article class="support-section support-section--faq" data-reveal data-reveal-delay="110">
-        <div class="support-section__header">
-          <span class="support-section__badge">FAQ</span>
-          <h2>Common questions</h2>
-        </div>
-        <div class="faq-list">
-          {app.faq.map((item, index) => (
-            <details class="faq-item" open={index === 0}>
-              <summary>{item.question}</summary>
-              <p>{item.answer}</p>
-            </details>
-          ))}
-        </div>
-      </article>
-
       <div class="support-mini-grid support-mini-grid--single">
-        <article class="support-mini-card" data-reveal data-reveal-delay="0">
+        <article class="support-mini-card" data-reveal data-reveal-delay="110">
           <div class="support-mini-card__header">
             <span class="support-mini-card__badge">Contact</span>
             <h3>Still need help?</h3>
@@ -89,14 +74,14 @@ const { app } = Astro.props;
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
     const revealNodes = Array.from(root.querySelectorAll("[data-reveal]"));
 
-    const reveal = (element) => {
+    const reveal = (element: Element) => {
       if (!(element instanceof HTMLElement)) return;
       const delay = Number(element.dataset.revealDelay ?? "0");
       element.style.setProperty("--reveal-delay", `${delay}ms`);
       element.dataset.revealed = "true";
     };
 
-    const clearReveal = (element) => {
+    const clearReveal = (element: Element) => {
       if (!(element instanceof HTMLElement)) return;
       element.dataset.revealed = "false";
     };
@@ -128,7 +113,7 @@ const { app } = Astro.props;
       observer.observe(node);
     });
 
-    const onChange = (event) => {
+    const onChange = (event: MediaQueryListEvent) => {
       if (!event.matches) return;
       revealNodes.forEach((node) => reveal(node));
       observer.disconnect();

@@ -1,0 +1,26 @@
+---
+/** Illustrates: large physical display → one highlighted region → what matters for the call. */
+interface Props {
+  variant?: "hero" | "showcase";
+}
+
+const { variant = "hero" } = Astro.props;
+---
+
+<div class:list={["portal-region-diagram", variant === "showcase" && "portal-region-diagram--showcase"]} aria-hidden="true">
+  <div class="portal-region-diagram__row">
+    <div class="portal-region-diagram__source">
+      <span class="portal-region-diagram__source-label">Your display</span>
+      <div class="portal-region-diagram__region">
+        <span class="portal-region-diagram__region-label">Shared region</span>
+      </div>
+    </div>
+    <div class="portal-region-diagram__arrow" aria-hidden="true"></div>
+    <div class="portal-region-diagram__output">
+      <span class="portal-region-diagram__output-label">What you share</span>
+      <div class="portal-region-diagram__output-frame">
+        <span class="portal-region-diagram__output-aspect">16:9 stage</span>
+      </div>
+    </div>
+  </div>
+</div>

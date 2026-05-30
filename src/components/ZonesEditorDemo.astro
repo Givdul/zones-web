@@ -33,6 +33,29 @@
 
 <script>
   const setupZonesEditorDemo = () => {
+    type EditorZone = {
+      id: string;
+      t: number;
+      l: number;
+      w: number;
+      h: number;
+      enabled: boolean;
+    };
+
+    type EditorSlice = {
+      axis: "v" | "h";
+      x: number;
+      y: number;
+      span: number;
+    };
+
+    type EditorFrame = {
+      caption: string;
+      zones: EditorZone[];
+      slice?: EditorSlice;
+      modifier?: "shift";
+    };
+
     const demos = document.querySelectorAll("[data-zones-editor]");
     if (demos.length === 0) return;
 
@@ -47,7 +70,7 @@
     //   slice        = optional { axis: 'v' | 'h', pos: % } to flash a
     //                  freshly-committed divider for this beat
     //   modifier     = 'shift' highlights the Shift chip for horizontal slices
-    const FRAMES = [
+    const FRAMES: EditorFrame[] = [
       // Step 0 — one zone
       {
         caption: "Start with a single zone",
@@ -150,12 +173,12 @@
 
       if (!(grid instanceof HTMLElement)) return;
 
-      const pool = new Map();
+      const pool = new Map<string, HTMLDivElement>();
       let step = 0;
       let paused = false;
       let deckPaused = false;
 
-      const syncViewport = (visible) => {
+      const syncViewport = (visible: boolean) => {
         deckPaused = !visible;
       };
 
@@ -171,11 +194,12 @@
       io.observe(demo);
       syncViewport(true);
 
-      let interval = null;
+      let interval: number | undefined;
 
-      const applyFrame = (index) => {
-        const frame = FRAMES[index];
+      const applyFrame = (index: number) => {
+        const frame = FRAMES[index] ?? FRAMES[0];
         if (!frame) return;
+        const frameSlice = frame.slice;
 
         const nextIds = new Set();
         frame.zones.forEach((z) => nextIds.add(z.id));
@@ -201,9 +225,10 @@
             el.dataset.state = "entering";
             grid.appendChild(el);
             pool.set(z.id, el);
+            const createdEl = el;
             // Flip to "idle" on the next frame so the opacity transition fires.
             requestAnimationFrame(() => {
-              el.dataset.state = "idle";
+              createdEl.dataset.state = "idle";
             });
           } else {
             el.dataset.state = "idle";
@@ -217,11 +242,11 @@
 
         // Slice-flash cue for beats that commit a new divider.
         if (slice instanceof HTMLElement) {
-          if (frame.slice) {
-            slice.dataset.axis = frame.slice.axis;
-            slice.style.setProperty("--sx", String(frame.slice.x));
-            slice.style.setProperty("--sy", String(frame.slice.y));
-            slice.style.setProperty("--span", String(frame.slice.span));
+          if (frameSlice) {
+            slice.dataset.axis = frameSlice.axis;
+            slice.style.setProperty("--sx", String(frameSlice.x));
+            slice.style.setProperty("--sy", String(frameSlice.y));
+            slice.style.setProperty("--span", String(frameSlice.span));
             slice.classList.remove("is-firing");
             void slice.offsetWidth;
             slice.classList.add("is-firing");
@@ -235,8 +260,7 @@
           shiftChip.classList.toggle("is-firing", frame.modifier === "shift");
         }
         const clickCue =
-          Boolean(frame.slice) &&
-          frame.slice.axis === "v" &&
+          frameSlice?.axis === "v" &&
           frame.modifier !== "shift";
         if (clickChip instanceof HTMLElement) {
           clickChip.classList.toggle("is-firing", clickCue);
@@ -263,8 +287,8 @@
       };
 
       const startInterval = () => {
-        if (interval) clearInterval(interval);
-        interval = setInterval(() => { if (!paused && !deckPaused) advance(); }, 2200);
+        if (interval) window.clearInterval(interval);
+        interval = window.setInterval(() => { if (!paused && !deckPaused) advance(); }, 2200);
       };
 
       const start = () => {
@@ -284,7 +308,7 @@
       });
 
       reduceMotion.addEventListener("change", () => {
-        if (interval) clearInterval(interval);
+        if (interval) window.clearInterval(interval);
         step = 0;
         start();
       });
@@ -293,7 +317,7 @@
 
       window.addEventListener("pagehide", () => {
         io.disconnect();
-        if (interval) clearInterval(interval);
+        if (interval) window.clearInterval(interval);
       }, { once: true });
     });
   };

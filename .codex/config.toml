@@ -1,3 +1,10 @@
+[features]
+rmcp_client = true
+
 [mcp_servers.agentation]
 command = "npx"
 args = [ "-y", "agentation-mcp", "server" ]
+
+[mcp_servers.polar]
+type = "http"
+url = "https://mcp.polar.sh/mcp/polar-mcp"

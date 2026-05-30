@@ -2085,29 +2085,113 @@ kbd {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
+/* Single-offer pricing layout: short trial + one monthly plan. */
+.quiet-orbit-cards--simple-monthly {
+  grid-template-columns: minmax(0, min(34rem, 100%));
+  justify-content: center;
+}
+
+.quiet-orbit-cards--simple-monthly .orbit-card {
+  width: 100%;
+}
+
+.quiet-orbit-cards--portal-license {
+  grid-template-columns: minmax(0, 0.96fr) minmax(0, 1.08fr) minmax(0, 0.96fr);
+  max-width: 72rem;
+  margin-inline: auto;
+  padding-top: 1.75rem;
+  align-items: center;
+}
+
+.quiet-orbit-cards--portal-license .orbit-card {
+  border-radius: 1.05rem;
+  overflow: visible;
+}
+
+.quiet-orbit-cards--portal-license .orbit-card--recommended {
+  transform: translateY(-1.05rem) scale(1.055);
+  z-index: 2;
+  border-color: color-mix(in srgb, var(--line-strong) 75%, white 25%);
+  background:
+    linear-gradient(180deg, oklch(1 0 0 / 0.075), transparent 30%),
+    color-mix(in srgb, var(--fancy-menu-canvas) 78%, var(--fancy-menu-preview-fill) 22%);
+  box-shadow:
+    var(--shadow-soft),
+    0 0 0 1px color-mix(in srgb, var(--line-strong) 78%, transparent),
+    0 1.4rem 4rem oklch(0 0 0 / 0.34);
+}
+
+.quiet-orbit-cards--portal-license .orbit-card--recommended .orbit-card__badge {
+  position: absolute;
+  top: -1.25rem;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.quiet-orbit-cards--portal-license .orbit-card--recommended .orbit-card__label {
+  background: var(--text);
+  color: var(--fancy-canvas-bottom);
+  border-color: var(--text);
+  box-shadow: 0 0.65rem 1.4rem oklch(0 0 0 / 0.26);
+}
+
+.portal-trial-strip {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.65rem;
+  margin: -0.35rem 0 1.2rem;
+}
+
+.portal-trial-strip span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2rem;
+  padding: 0.4rem 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: color-mix(in oklab, var(--text) 76%, var(--muted) 24%);
+  background: color-mix(in srgb, var(--fancy-menu-preview-fill) 24%, transparent);
+  font-size: 0.84rem;
+  font-weight: 650;
+}
+
+.portal-price-was {
+  color: color-mix(in oklab, var(--muted) 88%, var(--text) 12%);
+  text-decoration-line: line-through;
+  text-decoration-style: dashed;
+  text-decoration-thickness: 1px;
+  text-decoration-color: color-mix(in oklab, var(--muted) 74%, transparent);
+}
+
 /* Shared row tracks across the three cards: header, divider, features, CTA line up. */
 @supports (grid-template-rows: subgrid) {
-  .quiet-orbit-cards--trial-then-paid {
+  .quiet-orbit-cards--trial-then-paid,
+  .quiet-orbit-cards--portal-license {
     grid-template-rows: repeat(4, auto);
   }
 
-  .quiet-orbit-cards--trial-then-paid > .orbit-card {
+  .quiet-orbit-cards--trial-then-paid > .orbit-card,
+  .quiet-orbit-cards--portal-license > .orbit-card {
     display: grid;
     grid-template-rows: subgrid;
     grid-row: span 4;
     align-content: stretch;
   }
 
-  .quiet-orbit-cards--trial-then-paid > .orbit-card .button {
+  .quiet-orbit-cards--trial-then-paid > .orbit-card .button,
+  .quiet-orbit-cards--portal-license > .orbit-card .button {
     margin-top: 0;
   }
 
-  .quiet-orbit-cards--trial-then-paid .orbit-card__list li {
+  .quiet-orbit-cards--trial-then-paid .orbit-card__list li,
+  .quiet-orbit-cards--portal-license .orbit-card__list li {
     align-items: flex-start;
   }
 
   .quiet-orbit-cards--trial-then-paid .orbit-card__list li .check-icon,
-  .quiet-orbit-cards--trial-then-paid .orbit-card__list li .plus-icon {
+  .quiet-orbit-cards--trial-then-paid .orbit-card__list li .plus-icon,
+  .quiet-orbit-cards--portal-license .orbit-card__list li .check-icon {
     margin-top: 0.18em;
   }
 }
@@ -2385,6 +2469,32 @@ kbd {
   transform: translateY(0);
 }
 
+.button--secondary-paid {
+  background: color-mix(in srgb, var(--fancy-menu-preview-fill) 70%, var(--fancy-graphite) 30%);
+  border-color: var(--line-strong);
+  color: var(--text);
+  box-shadow: none;
+}
+
+.button--secondary-paid:hover {
+  background: color-mix(in srgb, var(--fancy-menu-preview-fill) 58%, var(--fancy-graphite) 42%);
+  transform: translateY(-1px);
+}
+
+.button--secondary-paid:hover svg {
+  transform: translateX(2px);
+}
+
+.button--secondary-paid:active {
+  transform: translateY(0);
+}
+
+.button--disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
 /* Support page */
 .support-content {
   width: 100%;
@@ -2480,60 +2590,6 @@ kbd {
     color: var(--muted);
     line-height: 1.65;
     font-size: 0.95rem;
-  }
-
-  .support-section--faq {
-    padding: clamp(1.5rem, 2.5vw, 2rem);
-  }
-
-  .faq-list {
-    display: grid;
-    gap: 0.7rem;
-  }
-
-  .faq-item {
-    border-radius: 0.7rem;
-    border: 1px solid var(--line);
-    background:
-      linear-gradient(180deg, oklch(1 0 0 / 0.04), transparent 42%),
-      color-mix(in srgb, var(--fancy-menu-canvas) 88%, var(--fancy-menu-preview-fill) 12%);
-    overflow: hidden;
-    transition:
-      border-color 220ms ease,
-      background-color 220ms ease;
-  }
-
-  .faq-item:hover {
-    border-color: var(--line-strong);
-  }
-
-  .faq-item summary {
-    cursor: pointer;
-    min-height: 2.75rem;
-    padding: 0.85rem 1.1rem;
-    display: flex;
-    align-items: center;
-    font-weight: 600;
-    font-size: 0.94rem;
-    list-style: none;
-    color: var(--text);
-    transition: color 180ms ease;
-  }
-
-  .faq-item summary:hover {
-    color: color-mix(in oklab, var(--text) 85%, var(--accent) 15%);
-  }
-
-  .faq-item summary::-webkit-details-marker {
-    display: none;
-  }
-
-  .faq-item p {
-    margin: 0;
-    padding: 0 1.1rem 1rem;
-    color: var(--muted);
-    font-size: 0.93rem;
-    line-height: 1.6;
   }
 
   .support-mini-grid {
@@ -3117,6 +3173,184 @@ kbd {
   max-width: 100%;
 }
 
+.portal-inline-kbd {
+  display: inline-block;
+  padding: 0.08rem 0.42rem;
+  margin: 0 0.12rem;
+  border-radius: 0.4rem;
+  border: 1px solid var(--line-strong);
+  background: color-mix(in srgb, var(--fancy-menu-preview-fill) 72%, transparent);
+  box-shadow: inset 0 1px 0 var(--fancy-inner-line);
+  font-size: 0.82em;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.portal-hero-shell {
+  width: var(--hero-stage-width);
+  max-width: 100%;
+  margin-inline: auto;
+  justify-self: center;
+}
+
+/* Portal marketing: large display → shared region → 16:9 stage (region story, not rail snapping). */
+.portal-region-diagram {
+  width: 100%;
+  padding: 0.15rem 0;
+}
+
+.portal-region-diagram__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(0.75rem, 2.2vw, 1.65rem);
+}
+
+.portal-region-diagram__source {
+  position: relative;
+  flex: 1 1 min(26rem, 100%);
+  max-width: 100%;
+  aspect-ratio: 2.65 / 1;
+  border-radius: 1.05rem;
+  border: 1px solid oklch(1 0 0 / 0.12);
+  background:
+    linear-gradient(165deg, oklch(0.2 0.02 255 / 0.92), oklch(0.11 0.015 250)),
+    repeating-linear-gradient(
+      90deg,
+      oklch(1 0 0 / 0.028) 0,
+      oklch(1 0 0 / 0.028) 1px,
+      transparent 1px,
+      transparent 20px
+    );
+  box-shadow: var(--shadow-soft);
+}
+
+.portal-region-diagram__source-label {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.65rem;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: oklch(1 0 0 / 0.38);
+}
+
+.portal-region-diagram__region {
+  position: absolute;
+  inset: 16% 30% 20% 22%;
+  border-radius: 0.65rem;
+  border: 2px solid color-mix(in oklab, var(--accent) 50%, oklch(1 0 0 / 0.45));
+  box-shadow:
+    0 0 0 1px oklch(0 0 0 / 0.35),
+    0 12px 28px oklch(0 0 0 / 0.22),
+    inset 0 0 0 1px oklch(1 0 0 / 0.1);
+  background: oklch(0.96 0.02 250 / 0.07);
+}
+
+.portal-region-diagram__region-label {
+  position: absolute;
+  bottom: 0.32rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: oklch(1 0 0 / 0.78);
+  white-space: nowrap;
+}
+
+.portal-region-diagram__arrow {
+  flex: 0 0 auto;
+  width: 1.85rem;
+  height: 0.45rem;
+  position: relative;
+  background: linear-gradient(90deg, transparent, color-mix(in oklab, var(--muted) 70%, transparent), transparent);
+  opacity: 0.55;
+}
+
+.portal-region-diagram__arrow::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  border-left: 6px solid var(--muted);
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
+}
+
+.portal-region-diagram__output {
+  flex: 0 1 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.42rem;
+  min-width: min(100%, 11rem);
+}
+
+.portal-region-diagram__output-label {
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: oklch(1 0 0 / 0.42);
+}
+
+.portal-region-diagram__output-frame {
+  width: min(100%, 12.5rem);
+  aspect-ratio: 16 / 9;
+  border-radius: 0.55rem;
+  border: 1px solid var(--line-strong);
+  background:
+    linear-gradient(180deg, oklch(1 0 0 / 0.09), transparent 55%),
+    oklch(0.17 0.015 250 / 0.88);
+  display: grid;
+  place-items: center;
+  box-shadow: var(--shadow);
+}
+
+.portal-region-diagram__output-aspect {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+}
+
+.portal-region-diagram--showcase .portal-region-diagram__source {
+  flex-basis: min(100%, 34rem);
+}
+
+.portal-region-diagram--showcase .portal-region-diagram__output-frame {
+  width: min(100%, 15.5rem);
+}
+
+@media (max-width: 640px) {
+  .portal-region-diagram__row {
+    flex-direction: column;
+  }
+
+  .portal-region-diagram__arrow {
+    transform: rotate(90deg);
+    width: 0.45rem;
+    height: 1.85rem;
+    background: linear-gradient(180deg, transparent, color-mix(in oklab, var(--muted) 70%, transparent), transparent);
+  }
+
+  .portal-region-diagram__arrow::after {
+    right: 50%;
+    top: auto;
+    bottom: 0;
+    transform: translateX(50%);
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-top: 6px solid var(--muted);
+    border-bottom: none;
+  }
+}
+
 /* ══ Zones landing — long page layout (natural scroll, generous spacing) ═ */
 
 .zones-landing {
@@ -3405,7 +3639,8 @@ kbd {
   }
 
   /* Trial + paid tiers: wrap like the editor grid so narrow tablets don’t squeeze 3 columns */
-  .quiet-orbit-cards--trial-then-paid {
+  .quiet-orbit-cards--trial-then-paid,
+  .quiet-orbit-cards--portal-license {
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 15.5rem), 1fr));
   }
 

@@ -11,6 +11,7 @@ export function getStaticPaths() {
 }
 
 const { app } = Astro.props;
+const splitSupportEmail = (paragraph: string) => paragraph.split(site.supportEmail);
 ---
 
 <BaseLayout
@@ -29,8 +30,8 @@ const { app } = Astro.props;
         <h1>Privacy</h1>
         <p class="quiet-orbit-hero__tagline">What {app.name} stores and what it doesn't</p>
         <p class="quiet-orbit-hero__lede">
-          A short, plain-English summary of how {app.name} handles your data. No accounts, no third-party
-          analytics, no hidden network activity.
+          A short, plain-English summary of the data {app.name} uses, what stays on your Mac, and how
+          purchases or downloads are handled.
         </p>
       </div>
     </section>
@@ -48,11 +49,8 @@ const { app } = Astro.props;
           <div class="support-section__body">
             {section.paragraphs.map((paragraph) => (
               <p>
-                {paragraph === "If you have questions about privacy or support, contact support@givdul.com." ? (
-                  <>
-                    If you have questions about privacy or support, contact{" "}
-                    <a class="inline-link" href={site.supportMailto}>{site.supportEmail}</a>.
-                  </>
+                {paragraph.includes(site.supportEmail) ? (
+                  <>{splitSupportEmail(paragraph)[0]}<a class="inline-link" href={site.supportMailto}>{site.supportEmail}</a>{splitSupportEmail(paragraph)[1]}</>
                 ) : (
                   paragraph
                 )}
@@ -73,14 +71,14 @@ const { app } = Astro.props;
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
     const revealNodes = Array.from(root.querySelectorAll("[data-reveal]"));
 
-    const reveal = (element) => {
+    const reveal = (element: Element) => {
       if (!(element instanceof HTMLElement)) return;
       const delay = Number(element.dataset.revealDelay ?? "0");
       element.style.setProperty("--reveal-delay", `${delay}ms`);
       element.dataset.revealed = "true";
     };
 
-    const clearReveal = (element) => {
+    const clearReveal = (element: Element) => {
       if (!(element instanceof HTMLElement)) return;
       element.dataset.revealed = "false";
     };
@@ -112,7 +110,7 @@ const { app } = Astro.props;
       observer.observe(node);
     });
 
-    const onChange = (event) => {
+    const onChange = (event: MediaQueryListEvent) => {
       if (!event.matches) return;
       revealNodes.forEach((node) => reveal(node));
       observer.disconnect();

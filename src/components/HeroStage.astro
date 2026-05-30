@@ -59,7 +59,12 @@ const stageSteps = ["Halves", "Thirds", "2 x 2", "3 x 2"];
 
 <script>
   const setupHeroStage = () => {
-    const stages = Array.from(document.querySelectorAll("[data-hero-stage]"));
+    type HeroStageConfig = {
+      interval: number;
+      sequence: number[];
+    };
+
+    const stages = Array.from(document.querySelectorAll<HTMLElement>("[data-hero-stage]"));
     if (stages.length === 0) return;
 
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -67,19 +72,17 @@ const stageSteps = ["Halves", "Thirds", "2 x 2", "3 x 2"];
 
     const configs = {
       orbit: { interval: 3200, sequence: [0, 1, 2, 3] },
-    };
+    } satisfies Record<"orbit", HeroStageConfig>;
 
-    const startStage = (stage) => {
-      if (!(stage instanceof HTMLElement)) return () => {};
-
-      const variant = stage.dataset.variant ?? "orbit";
-      const config = configs[variant] ?? configs.orbit;
+    const startStage = (stage: HTMLElement) => {
+      const variant = (stage.dataset.variant as keyof typeof configs | undefined) ?? "orbit";
+      const config = configs[variant];
       const surface = stage.querySelector(".desktop-surface");
       const stepLabels = Array.from(stage.querySelectorAll(".hero-stage__steps span"));
       const styleButtons = Array.from(stage.querySelectorAll("[data-style-toggle]"));
       const liveRegion = stage.querySelector("[data-stage-live]");
       let index = 0;
-      let timer;
+      let timer: number | undefined;
       let paused = false;
 
       const applyStep = () => {
@@ -89,7 +92,8 @@ const stageSteps = ["Halves", "Thirds", "2 x 2", "3 x 2"];
           label.classList.toggle("is-active", labelIndex === step);
         });
         if (liveRegion instanceof HTMLElement) {
-          liveRegion.textContent = `Previewing ${clientStageSteps[step]}.`;
+          const stepLabel = clientStageSteps[step] ?? clientStageSteps[0];
+          liveRegion.textContent = `Previewing ${stepLabel}.`;
         }
       };
 

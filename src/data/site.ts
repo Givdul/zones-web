@@ -22,11 +22,19 @@ const siteOrigin = configuredSiteOrigin
   : fallbackSiteOrigin;
 
 const appStoreUrls = {
-  zones: resolveAppStoreUrl(
-    import.meta.env.PUBLIC_ZONES_APP_STORE_URL?.trim() ??
-      import.meta.env.PUBLIC_APP_STORE_URL?.trim(),
-  ),
   portal: resolveAppStoreUrl(import.meta.env.PUBLIC_PORTAL_APP_STORE_URL?.trim()),
+} as const;
+
+const downloadUrls = {
+  zones: import.meta.env.PUBLIC_ZONES_DOWNLOAD_URL?.trim() || null,
+  portal: import.meta.env.PUBLIC_PORTAL_DOWNLOAD_URL?.trim() || null,
+} as const;
+
+const checkoutUrls = {
+  portalIntro: import.meta.env.PUBLIC_POLAR_PORTAL_INTRO_CHECKOUT_URL?.trim() || null,
+  portalLicense: import.meta.env.PUBLIC_POLAR_PORTAL_LICENSE_CHECKOUT_URL?.trim() || null,
+  portalAnnual: import.meta.env.PUBLIC_POLAR_PORTAL_ANNUAL_CHECKOUT_URL?.trim() || null,
+  portalMonthly: import.meta.env.PUBLIC_POLAR_PORTAL_MONTHLY_CHECKOUT_URL?.trim() || null,
 } as const;
 
 export interface AppProofPoint {
@@ -44,13 +52,9 @@ export interface AppPricingTier {
   lead: string;
   items: string[];
   cta: string;
+  ctaUrl?: string | null;
   /** Optional visual emphasis on the pricing card (e.g. recommended paid tier). */
   emphasis?: "recommended";
-}
-
-export interface AppFaqItem {
-  question: string;
-  answer: string;
 }
 
 export interface AppPrivacySection {
@@ -76,6 +80,8 @@ export interface AppRecord {
   appStoreUrl: string | null;
   appStoreId: string | null;
   hasAppStoreUrl: boolean;
+  downloadUrl: string | null;
+  hasDownloadUrl: boolean;
   title: string;
   tagline: string;
   description: string;
@@ -94,9 +100,8 @@ export interface AppRecord {
    * `freemium`: first tier reads as a permanent free base; later tiers use “+” list markers.
    * `trial_then_paid`: time-limited trial, then parallel paid options (checks on all tiers).
    */
-  pricingModel?: "freemium" | "trial_then_paid";
+  pricingModel?: "freemium" | "trial_then_paid" | "free" | "license_first";
   pricing: AppPricingTier[];
-  faq: AppFaqItem[];
   supportFacts: string[];
   privacySections: AppPrivacySection[];
   keywords: string[];
@@ -105,8 +110,10 @@ export interface AppRecord {
 interface AppInput extends Omit<
   AppRecord,
   "landingPath" | "supportPath" | "privacyPath" | "appStoreUrl" | "appStoreId" | "hasAppStoreUrl"
+  | "downloadUrl" | "hasDownloadUrl"
 > {
   appStoreUrl: string | null;
+  downloadUrl?: string | null;
 }
 
 const createApp = (input: AppInput): AppRecord => {
@@ -122,6 +129,8 @@ const createApp = (input: AppInput): AppRecord => {
     privacyPath,
     appStoreId: appStoreIdMatch?.[1] ?? null,
     hasAppStoreUrl: input.appStoreUrl !== null,
+    downloadUrl: input.downloadUrl ?? null,
+    hasDownloadUrl: Boolean(input.downloadUrl),
   };
 };
 
@@ -131,7 +140,7 @@ export const site = {
   domain: new URL(siteOrigin).hostname,
   origin: siteOrigin,
   description:
-    "A compact catalog of focused Mac apps with direct App Store calls to action and public support pages.",
+    "A compact catalog of focused Mac utilities from Givdul: window layout tools, region-based screen sharing for calls, direct downloads, and public support pages.",
   supportEmail: "support@givdul.com",
   supportMailto: "mailto:support@givdul.com",
   keywords: [
@@ -139,7 +148,6 @@ export const site = {
     "Mac utilities",
     "macOS apps",
     "indie Mac apps",
-    "App Store Mac apps",
   ],
 };
 
@@ -150,17 +158,18 @@ export const apps: AppRecord[] = [
     name: "Zones",
     productLabel: "Mac window manager",
     iconPath: "/zones-icon.png",
-    appStoreUrl: appStoreUrls.zones,
+    appStoreUrl: null,
+    downloadUrl: downloadUrls.zones,
     title: "Zones for Mac",
     tagline: "Window snapping from your menu bar.",
     description:
-      "Zones is a lightweight macOS menu bar app for snapping windows into clean layouts. Start the seven-day free trial on a monthly or yearly subscription, or pay once for lifetime access. Purchases are tied to your Apple Account. There is no permanent free tier.",
+      "Zones is a free, lightweight macOS menu bar app for snapping windows into clean layouts with a Shift-drag gesture. Download it directly from the website, signed and notarized for Mac.",
     cardSummary:
       "Snap windows into clean layouts from the menu bar with one gesture and no setup friction.",
     supportSummary:
       "Official support for Zones, including common setup questions, Accessibility guidance, and direct contact.",
     privacySummary:
-      "Privacy details for Zones, including local-only preferences, Accessibility use, and App Store purchase handling.",
+      "Privacy details for Zones, including local-only preferences, Accessibility use, and direct downloads.",
     heroTitle: "Zones for Mac",
     heroTagline: "Snap windows in one gesture",
     heroLede:
@@ -183,135 +192,61 @@ export const apps: AppRecord[] = [
         icon: "gesture",
       },
       {
-        title: "Seven-day free trial",
-        copy: "Start the trial on a subscription and get the full app. Cancel anytime in the App Store before it renews.",
+        title: "Free direct download",
+        copy: "Zones is free. Download it directly, grant Accessibility once, and use it without an account or subscription.",
         icon: "star",
       },
     ],
     pricingIntro: {
-      headline: "Simple pricing",
+      headline: "Free for Mac",
       subheadline:
-        "Start the seven-day free trial on a subscription, or pay once for lifetime access. Every plan includes the full app.",
+        "Zones is a direct download, signed and notarized for macOS. Optional support links can come later.",
     },
-    pricingModel: "trial_then_paid",
+    pricingModel: "free",
     pricing: [
       {
-        name: "monthly",
-        label: "Subscription",
-        title: "Monthly",
-        price: "$1.99",
-        note: "7-day free trial, then $1.99/month",
-        lead: "Start the free trial from the app. You won't be charged until the trial ends, and you can cancel anytime in the App Store.",
+        name: "free",
+        label: "Free",
+        title: "Zones",
+        price: "$0",
+        note: "Direct download",
+        lead: "The full window manager is free. No account, no trial timer, no subscription.",
         items: [
-          "Full app during and after the trial",
-          "Cancel anytime in the App Store",
-          "Tied to your Apple Account",
+          "Shift-drag snapping",
+          "Custom layouts and preset zones",
+          "Local preferences on your Mac",
         ],
-        cta: "Start free trial",
-      },
-      {
-        name: "yearly",
-        label: "Subscription",
-        title: "Yearly",
-        price: "$19.99",
-        note: "7-day free trial · save ~17% vs monthly",
-        lead: "Same seven-day free trial on the yearly plan. Best value if you know Zones is part of your workflow.",
-        emphasis: "recommended",
-        items: [
-          "Full app during and after the trial",
-          "Roughly two months free compared to monthly",
-          "Tied to your Apple Account",
-        ],
-        cta: "Start free trial",
-      },
-      {
-        name: "lifetime",
-        label: "One-time",
-        title: "Lifetime",
-        price: "$49",
-        note: "Pay once, no renewals",
-        lead: "One payment for the full app — no trial, no subscription. Tied to your Apple Account.",
-        items: [
-          "Same full feature set as the subscription",
-          "No renewals or recurring charges",
-          "Tied to your Apple Account",
-        ],
-        cta: "Buy lifetime",
-      },
-    ],
-    faq: [
-      {
-        question: "How do I start using Zones?",
-        answer:
-          "Install the app, launch it, and grant Accessibility access once. After that, hold Shift while dragging a window to preview zones and drop it into place.",
-      },
-      {
-        question: "Why does Zones ask for Accessibility access?",
-        answer:
-          "macOS requires Accessibility permission for apps that inspect, move, and resize windows in other apps. Zones uses that permission only to preview and place windows when you trigger it.",
-      },
-      {
-        question: "How does the free trial work?",
-        answer:
-          "The seven-day free trial is Apple's introductory offer on the subscription. You start it from inside the app by tapping Start 7-Day Free Trial on the monthly or yearly plan. Nothing is charged during the trial, and you can cancel anytime in the App Store before it renews. The trial can only be redeemed once per Apple Account.",
-      },
-      {
-        question: "What happens after the trial?",
-        answer:
-          "If you don't cancel, the subscription renews at $1.99/month or $19.99/year depending on the plan you picked. Zones does not offer a permanent free tier, so you need an active subscription or the $49 lifetime purchase to keep using the app.",
-      },
-      {
-        question: "What does each plan include?",
-        answer:
-          "Every plan — monthly, yearly, and lifetime — includes the full app: built-in layouts, the custom layout editor, unlimited saved layouts, Shift-drag preview, and per-display configuration. There is no feature-limited mode.",
-      },
-      {
-        question: "How do I restore a purchase on a new Mac?",
-        answer:
-          "Open Settings in Zones, go to Layouts, and open Choose Your Plan. Use Restore Purchases to re-check your entitlement with the App Store. As long as you're signed in to the same Apple Account that made the purchase, the app will unlock.",
-      },
-      {
-        question: "What if Zones does not appear in Accessibility settings?",
-        answer:
-          "Open the Accessibility section in System Settings and add Zones from Finder if macOS does not list it automatically. Reinstalling or re-signing a build can require granting access again.",
-      },
-      {
-        question: "Does Zones require an account or send my layout data anywhere?",
-        answer:
-          "No. Zones does not require an account, does not include third-party analytics or advertising SDKs, and stores app preferences locally on your Mac.",
+        cta: "Download free",
       },
     ],
     supportFacts: [
-      "Zones is a macOS menu bar app for window snapping. Access is gated from the start: begin the seven-day free trial on the monthly ($1.99/mo) or yearly ($19.99/yr) subscription, or pay $49 for a lifetime purchase. There is no permanent free tier. Purchases are tied to your Apple Account, not to a specific Mac.",
-      "Accessibility access is required so Zones can inspect, move, and resize windows in other apps when you trigger snapping.",
+      "Zones is a macOS menu bar app for snapping windows into saved layouts with a simple Shift-drag gesture.",
+      "Accessibility access is required so Zones can inspect, move, and resize other app windows when you trigger snapping.",
+      "Zones is free and distributed as a direct Developer ID signed and notarized download.",
     ],
     privacySections: [
       {
-        title: "Data Zones stores",
+        title: "What Zones uses",
         paragraphs: [
-          "Zones stores app preferences and layout choices locally on your Mac so the app can remember your setup between launches.",
-          "Zones uses the macOS Accessibility permission only to inspect, move, and resize windows after you trigger the window-zoning interaction.",
+          "Zones stores app preferences and layout choices locally on your Mac, and uses the macOS Accessibility permission only when you trigger snapping.",
         ],
       },
       {
-        title: "Data Zones does not collect",
+        title: "What Zones does not collect",
         paragraphs: [
-          "Zones does not require an account and does not collect personal information through a sign-in or profile system.",
-          "Zones does not include third-party analytics, advertising SDKs, or external crash-reporting services. It does not transmit layout preferences, Accessibility state, or purchase intent to an external server.",
+          "Zones does not require an account, does not include third-party analytics or advertising SDKs, and does not send your layouts or preferences to a developer-controlled server.",
         ],
       },
       {
-        title: "Purchases",
+        title: "Distribution",
         paragraphs: [
-          "Zones is available through an auto-renewing subscription (monthly or yearly, with a seven-day free trial introductory offer) or a one-time in-app purchase (lifetime). All purchases are handled by the App Store, and Apple processes payment information and purchase receipts according to Apple's policies.",
-          "Zones does not store your payment information on a developer-controlled server. Entitlements are read from the App Store receipt on your Mac.",
+          "Zones is distributed directly from the website. The app is free, so there is no purchase account or subscription entitlement for Zones.",
         ],
       },
       {
         title: "Contact",
         paragraphs: [
-          "If you have questions about privacy or support, contact support@givdul.com.",
-          "If the app’s data handling changes in the future, this policy should be updated before the changed version is distributed.",
+          "Questions about privacy or support: support@givdul.com. If the app’s data handling changes, this policy will be updated before the changed version is distributed.",
         ],
       },
     ],
@@ -329,126 +264,156 @@ export const apps: AppRecord[] = [
     slug: "portal",
     status: "live",
     name: "Portal",
-    productLabel: "Mac launcher and switcher",
+    productLabel: "Region screen sharing",
     appStoreUrl: appStoreUrls.portal,
+    downloadUrl: downloadUrls.portal,
     title: "Portal for Mac",
-    tagline: "Open the right thing without hunting for it.",
+    tagline: "Share part of a big screen—not the whole canvas.",
     description:
-      "Portal is a focused macOS utility for getting back to active work faster. It gives you one compact surface for the items, destinations, and contexts you return to all day.",
+      "Portal is a paid macOS utility for people on large or ultrawide displays who do not want every pixel in the call: capture a chosen region, expose it through a shareable app window, and share that window instead of your entire desktop. Start with a 14-day full-featured trial, then buy once or choose an optional subscription.",
     cardSummary:
-      "A staged landing page for a future Mac utility focused on fast context switching and repeat access.",
+      "Define what matters on a large monitor, pipe it through a 16:9 stage, and share it with one shortcut. Optional snap rails and bring-to-stage are extras for tidying the stage—not the headline.",
     supportSummary:
-      "Public support for Portal, including setup notes, early-product answers, and direct contact.",
+      "Support for Portal: region capture, Screen Recording, camera, Accessibility (optional), shortcuts, purchases, and contact.",
     privacySummary:
-      "Privacy details for Portal, including local storage expectations and the absence of accounts or tracking by default.",
+      "How Portal uses Screen Recording for your chosen region, optional Accessibility for snapping, direct purchases, and what stays on your Mac.",
     heroTitle: "Portal for Mac",
-    heroTagline: "Jump back into context",
+    heroTagline: "Region first. Calls stay legible.",
     heroLede:
-      "A compact launcher for the things you reopen constantly. Less browsing, less hunting, less friction between tasks.",
-    heroVisualLabel: "Illustrated preview of Portal shortcuts and recent destinations",
+      "Stop sending the entire ultrawide. Portal lets you point at the rectangle you care about, then feeds a composed 16:9 surface you can drop into Zoom, Meet, or Teams like any other window.",
+    heroVisualLabel: "Diagram: wide display with one highlighted shared region flowing into a 16:9 stage",
     workflowSteps: [
-      { kind: "action", label: "Open", icon: "plus" },
-      { kind: "key", label: "Portal" },
-      { kind: "action", label: "Resume", icon: "window" },
+      { kind: "action", label: "Region", icon: "plus" },
+      { kind: "key", label: "⇧⌘P" },
+      { kind: "action", label: "Share", icon: "window" },
     ],
     proofPoints: [
       {
-        title: "Immediate recall",
-        copy: "Bring back the destinations you use repeatedly instead of rebuilding context from scratch.",
+        title: "Big desk, small signal",
+        copy: "Ultrawide and 4K monitors are great for you and noisy for viewers. Portal keeps the share surface bounded to the content you choose.",
         icon: "window",
       },
       {
-        title: "Low-friction flow",
-        copy: "One small surface for switching tasks quickly without managing a heavy workspace system.",
+        title: "One predictable stage",
+        copy: "That region is normalized into a 16:9 stage so remote participants see a familiar aspect—not your full bezel-to-bezel layout.",
         icon: "gesture",
       },
       {
-        title: "Staged early",
-        copy: "The product page and support routes are ready before the App Store release is wired in.",
+        title: "Shortcut in muscle memory",
+        copy: "Shift-Command-P toggles capture once permissions are set. Screen Recording covers the pixels; camera is optional; Accessibility only if you use window moves or snap rails inside the stage.",
         icon: "star",
       },
     ],
+    pricingIntro: {
+      headline: "Buy once. Use it forever.",
+      subheadline:
+        "Start with a 14-day full-featured trial. Portal is $19 during launch, then $29 with 1 year of updates included.",
+    },
+    pricingModel: "license_first",
     pricing: [
       {
-        name: "free",
-        label: "Stage",
-        title: "Product page live",
-        price: "Soon",
-        note: "App Store link pending",
-        lead: "The routing, content model, support page, and privacy page are staged now.",
+        name: "intro",
+        label: "Launch price",
+        title: "Intro license",
+        price: "$19",
+        note: "One-time purchase",
+        lead: "Buy Portal once during launch. Use it forever, with 1 year of updates included.",
         items: [
-          "Landing page under /portal",
-          "Public support URL",
-          "Dedicated privacy policy",
-          "App Store wiring can be added later via env var",
+          "14-day full-featured trial",
+          "No account required for trial",
+          "Keep your current version forever",
+          "Renew only for another year of updates",
         ],
-        cta: "App Store soon",
+        cta: "Buy intro license",
+        ctaUrl: checkoutUrls.portalIntro,
+        emphasis: "recommended",
       },
       {
-        name: "pro",
-        label: "Roadmap",
-        title: "Ready for launch details",
-        price: "TBD",
-        note: "Content can evolve in place",
-        lead: "This slot can absorb real pricing, screenshots, and feature detail without changing the route structure.",
+        name: "license",
+        label: "Standard",
+        title: "One-time license",
+        price: "$29",
+        note: "Includes 1 year of updates",
+        lead: "The long-term default: a native Mac utility you own, without needing an ongoing plan.",
         items: [
-          "Real App Store URL via PUBLIC_PORTAL_APP_STORE_URL",
-          "Product-specific FAQ",
-          "Launch pricing and CTA copy",
+          "14-day full-featured trial",
+          "Region sharing window",
+          "Optional snapping helpers",
+          "Use the last eligible version forever",
         ],
-        cta: "Launch later",
-      },
-    ],
-    faq: [
-      {
-        question: "Is Portal available yet?",
-        answer:
-          "The public site structure is staged, but the App Store release is not wired in yet. Once the product is ready, the App Store URL can be added without changing the route structure.",
+        cta: "Buy once",
+        ctaUrl: checkoutUrls.portalLicense,
       },
       {
-        question: "Why is the support page live before the app launches?",
-        answer:
-          "The support and privacy routes are part of the launch surface. Staging them early keeps the site structure stable and reduces release-day cleanup.",
+        name: "annual",
+        label: "Optional",
+        title: "Annual",
+        price: "$19",
+        note: "per year",
+        lead: "For users who prefer ongoing updates as a plan instead of renewing a one-time license.",
+        items: [
+          "Same full Portal app",
+          "Updates while subscribed",
+          "Cancel future renewals anytime",
+        ],
+        cta: "Choose annual",
+        ctaUrl: checkoutUrls.portalAnnual,
       },
       {
-        question: "Will Portal require an account?",
-        answer:
-          "The current plan assumes a lightweight Mac utility with no account requirement by default. If that changes, the privacy policy should be updated before launch.",
+        name: "monthly",
+        label: "Optional",
+        title: "Monthly",
+        price: "$2.99",
+        note: "per month",
+        lead: "Low-friction access for short projects. Not the primary offer.",
+        items: [
+          "Same full Portal app",
+          "Month-to-month billing",
+          "Cancel future renewals anytime",
+        ],
+        cta: "Choose monthly",
+        ctaUrl: checkoutUrls.portalMonthly,
       },
     ],
     supportFacts: [
-      "Portal is staged as a future macOS utility focused on fast context switching and repeat access to frequently used destinations.",
-      "This public support URL is already in place so product, App Store, and privacy references can point to a stable path from day one.",
+      "Portal lets you share a chosen region of a large display through a dedicated 16:9 stage window instead of broadcasting your entire screen.",
+      "Screen Recording feeds the stage, camera is optional, and Accessibility is only needed for features that move other app windows.",
+      "Portal is distributed directly from the website with a 14-day full-featured trial, one-time licenses, and optional subscription plans.",
     ],
     privacySections: [
       {
-        title: "Current privacy expectation",
+        title: "What Portal uses",
         paragraphs: [
-          "Portal is currently staged as a lightweight Mac utility with no account requirement and no default third-party analytics or advertising SDKs.",
-          "If the shipping product stores preferences, the intention is for that data to remain local unless a later feature clearly requires sync.",
+          "Portal uses macOS Screen Recording to read pixels for the region you include in the stage, and may use the camera for an optional overlay. Composition happens locally on your Mac.",
         ],
       },
       {
-        title: "What will be updated before launch",
+        title: "Optional permissions and local data",
         paragraphs: [
-          "If Portal ships with different data handling than described here, this page should be updated before the App Store release goes live.",
-          "Any change involving accounts, sync, analytics, or remote storage should be documented here first.",
+          "If you grant Accessibility, Portal can help align windows inside the stage or move another app window with Bring to Stage. Region capture still works without it, and app preferences such as presets and onboarding state are stored locally on your Mac.",
+        ],
+      },
+      {
+        title: "Accounts, analytics, and purchases",
+        paragraphs: [
+          "Portal does not include an in-app advertising SDK. Purchases are managed directly on the website, and license access is verified by the app when needed.",
         ],
       },
       {
         title: "Contact",
         paragraphs: [
-          "If you have questions about privacy or support, contact support@givdul.com.",
-          "This staged page exists so the privacy route is stable before launch assets are finalized.",
+          "Questions about privacy or support: support@givdul.com. If data handling changes, this policy will be updated before a new build is distributed.",
         ],
       },
     ],
     keywords: [
       "Portal",
       "Portal for Mac",
-      "Mac launcher",
-      "context switcher Mac",
-      "productivity utility Mac",
+      "region screen share",
+      "ultrawide screen share Mac",
+      "share part of screen",
+      "16:9 screen stage",
+      "ScreenCaptureKit",
     ],
   }),
 ];

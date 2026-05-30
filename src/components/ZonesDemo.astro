@@ -45,6 +45,12 @@
 
 <script>
   const setupZonesDemo = () => {
+    type ZoneDemoStep = {
+      id: string;
+      layer: "halves" | "thirds" | "quads";
+      label: string;
+    };
+
     const demos = document.querySelectorAll("[data-zones-demo]");
     if (demos.length === 0) return;
 
@@ -52,7 +58,7 @@
 
     // Each step highlights a single zone from one of the three active layers.
     // The zone lights up; its layer chip pulses; the label below updates.
-    const STEPS = [
+    const STEPS: ZoneDemoStep[] = [
       { id: "halves-left",   layer: "halves", label: "Left Half" },
       { id: "quads-tr",      layer: "quads",  label: "Top-Right Corner" },
       { id: "thirds-center", layer: "thirds", label: "Center Third" },
@@ -76,7 +82,7 @@
       let paused = false;
       let deckPaused = false;
 
-      const syncViewport = (visible) => {
+      const syncViewport = (visible: boolean) => {
         deckPaused = !visible;
         demo.dataset.inViewport = visible ? "true" : "false";
       };
@@ -93,10 +99,11 @@
       io.observe(demo);
       syncViewport(true);
 
-      let interval = null;
+      let interval: number | undefined;
 
-      const applyStep = (s) => {
-        const cfg = STEPS[s];
+      const applyStep = (s: number) => {
+        const cfg = STEPS[s] ?? STEPS[0];
+        if (!cfg) return;
 
         zones.forEach((z) => {
           const isTarget = z.getAttribute("data-id") === cfg.id;
@@ -122,8 +129,8 @@
       };
 
       const startInterval = () => {
-        if (interval) clearInterval(interval);
-        interval = setInterval(() => { if (!paused && !deckPaused) advance(); }, 2600);
+        if (interval) window.clearInterval(interval);
+        interval = window.setInterval(() => { if (!paused && !deckPaused) advance(); }, 2600);
       };
 
       const start = () => {
@@ -143,7 +150,7 @@
       });
 
       reduceMotion.addEventListener("change", () => {
-        if (interval) clearInterval(interval);
+        if (interval) window.clearInterval(interval);
         step = 0;
         start();
       });
@@ -152,7 +159,7 @@
 
       window.addEventListener("pagehide", () => {
         io.disconnect();
-        if (interval) clearInterval(interval);
+        if (interval) window.clearInterval(interval);
       }, { once: true });
     });
   };

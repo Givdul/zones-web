@@ -1,0 +1,257 @@
+---
+import "../styles/portal.css";
+import PortalUsecaseShowcase from "./PortalUsecaseShowcase.astro";
+import type { AppRecord } from "../data/site";
+
+interface Props {
+  app: AppRecord;
+}
+
+const { app } = Astro.props;
+const introTier = app.pricing.find((tier) => tier.name === "intro");
+const licenseTier = app.pricing.find((tier) => tier.name === "license") ?? app.pricing[0] ?? {
+  name: "license",
+  label: "One-time license",
+  title: "Portal",
+  price: "Coming soon",
+  note: "Pricing details will be published shortly",
+  lead: "Join the waitlist to hear when pricing goes live.",
+  items: ["Full app access", "Simple billing"],
+  cta: "Join waitlist",
+  ctaUrl: null,
+};
+const annualTier = app.pricing.find((tier) => tier.name === "annual");
+const monthlyTier = app.pricing.find((tier) => tier.name === "monthly");
+const subscriptionTiers = [annualTier, monthlyTier].filter(Boolean);
+const oneTimeItems = [
+  "Full app during and after the trial",
+  "Includes 1 year of updates",
+  "Keep your current version forever",
+];
+const monthlyItems = [
+  "Full app during and after the trial",
+  "Month-to-month billing",
+  "Best for short projects",
+];
+const annualItems = [
+  "Full app during and after the trial",
+  "Updates while subscribed",
+  "Saves vs paying monthly",
+];
+const whyPoints = [
+  {
+    icon: "window",
+    title: "Why big-screen sharing breaks down",
+    copy: "Ultrawide and 4K shares look fine to you, but on laptop-sized calls they become tiny, cramped, and hard to follow.",
+  },
+  {
+    icon: "gesture",
+    title: "Why window-only sharing is high friction",
+    copy: "In tools like Teams, switching apps means stopping share, picking a new window, then repeating that cycle again and again.",
+  },
+  {
+    icon: "star",
+    title: "Why Portal helps",
+    copy: "Keep your full desktop, but share one clean region with practical presets in a format that stays clear across common meeting devices.",
+  },
+];
+---
+
+<div class="portal-page">
+  <main class="quiet-orbit-page givdul-app-landing portal-landing-simple" data-motion-root aria-label="Portal for Mac">
+    <section class="portal-usecases" aria-label="Portal showcase animation">
+      <div class="portal-usecases__animation" data-reveal data-reveal-delay="0">
+        <PortalUsecaseShowcase />
+      </div>
+    </section>
+
+    <section class="portal-story" aria-labelledby="portal-why-heading">
+      <div class="portal-story__intro" data-reveal data-reveal-delay="0">
+        <h2 id="portal-why-heading">Why Portal</h2>
+        <p>The same pain point, from three angles.</p>
+      </div>
+      <div class="quiet-orbit-proof portal-story__proof" aria-label="Why Portal">
+        {whyPoints.map((point, index) => (
+          <div class="quiet-orbit-proof__item" data-reveal data-reveal-delay={String(index * 90)}>
+            <div class="proof-item__icon" aria-hidden="true">
+              {point.icon === "window" && (
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                  <rect x="2" y="3" width="16" height="14" rx="2" stroke="currentColor" stroke-width="1.5"></rect>
+                  <path d="M2 7h16" stroke="currentColor" stroke-width="1.5"></path>
+                  <circle cx="5" cy="5" r="1" fill="currentColor"></circle>
+                </svg>
+              )}
+              {point.icon === "gesture" && (
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                  <path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+                </svg>
+              )}
+              {point.icon === "star" && (
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                  <path d="M10 2l2.5 5.5L18 8l-4 4 1 5.5L10 14.5 5 17.5l1-5.5-4-4 5.5-.5L10 2z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"></path>
+                </svg>
+              )}
+            </div>
+            <strong>{point.title}</strong>
+            <span>{point.copy}</span>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <section class="portal-pricing-simple">
+      <section class="quiet-orbit-choices">
+        <div class="quiet-orbit-cards quiet-orbit-cards--portal-license">
+          <article
+            class="orbit-card orbit-card--pro orbit-card--trial"
+            data-reveal
+            data-reveal-delay="130"
+          >
+            <div class="orbit-card__header">
+              <h3>Monthly</h3>
+              <p class="orbit-card__price">
+                <span class="price-value">{monthlyTier?.price ?? "$2.99"}</span>
+                <span class="price-note">per month</span>
+              </p>
+              <p class="orbit-card__lead">
+                Low-friction access for short projects or occasional meetings.
+              </p>
+            </div>
+
+            <div class="orbit-card__tier-divider">
+              <span class="tier-label">Includes</span>
+            </div>
+
+            <ul class="orbit-card__list">
+              {monthlyItems.map((item) => (
+                <li>
+                  <svg class="check-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                    <path d="M3 8l3.5 3.5L13 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+
+            {monthlyTier?.ctaUrl ? (
+              <a class="button button--secondary-paid" href={monthlyTier.ctaUrl} rel="noreferrer">
+                <span>Choose monthly</span>
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                  <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </a>
+            ) : (
+              <span class="button button--secondary-paid button--disabled" aria-disabled="true">Choose monthly</span>
+            )}
+          </article>
+
+          <article
+            class="orbit-card orbit-card--pro orbit-card--trial orbit-card--recommended"
+            data-reveal
+            data-reveal-delay="210"
+          >
+            <div class="orbit-card__header">
+              <div class="orbit-card__badge">
+                <span class="orbit-card__label">Best value</span>
+              </div>
+              <h3>Annual</h3>
+              <p class="orbit-card__price">
+                <span class="price-value">{annualTier?.price ?? "$19"}</span>
+                <span class="price-note">
+                  per year · <span class="portal-price-was">$35.88</span> monthly
+                </span>
+              </p>
+              <p class="orbit-card__lead">
+                Same full Portal app, paid yearly at a discount.
+              </p>
+            </div>
+
+            <div class="orbit-card__tier-divider">
+              <span class="tier-label">Includes</span>
+            </div>
+
+            <ul class="orbit-card__list">
+              {annualItems.map((item) => (
+                <li>
+                  <svg class="check-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                    <path d="M3 8l3.5 3.5L13 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+
+            {annualTier?.ctaUrl ? (
+              <a class="button button--pro" href={annualTier.ctaUrl} rel="noreferrer">
+                <span>Choose annual</span>
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                  <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </a>
+            ) : (
+              <span class="button button--pro button--disabled" aria-disabled="true">
+                Choose annual
+              </span>
+            )}
+          </article>
+
+          <article
+            class="orbit-card orbit-card--pro orbit-card--trial"
+            data-reveal
+            data-reveal-delay="290"
+          >
+            <div class="orbit-card__header">
+              <h3>One-time</h3>
+              <p class="orbit-card__price">
+                {introTier ? (
+                  <>
+                    <span class="price-value">{introTier.price}</span>
+                    <span class="price-note">
+                      intro · <span class="portal-price-was">{licenseTier.price}</span> normally
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <span class="price-value">{licenseTier.price}</span>
+                    <span class="price-note">{licenseTier.note}</span>
+                  </>
+                )}
+              </p>
+              <p class="orbit-card__lead">
+                Pay once and keep using your current version forever.
+              </p>
+            </div>
+
+            <div class="orbit-card__tier-divider">
+              <span class="tier-label">Includes</span>
+            </div>
+
+            <ul class="orbit-card__list">
+              {oneTimeItems.map((item) => (
+                <li>
+                  <svg class="check-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                    <path d="M3 8l3.5 3.5L13 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+
+            {introTier?.ctaUrl ? (
+              <a class="button button--secondary-paid" href={introTier.ctaUrl} rel="noreferrer">
+                <span>Buy for {introTier.price}</span>
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                  <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </a>
+            ) : (
+              <span class="button button--secondary-paid button--disabled" aria-disabled="true">
+                {licenseTier.cta}
+              </span>
+            )}
+          </article>
+        </div>
+      </section>
+    </section>
+  </main>
+</div>

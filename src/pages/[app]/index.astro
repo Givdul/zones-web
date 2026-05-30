@@ -1,5 +1,6 @@
 ---
 import SiteHeader from "../../components/SiteHeader.astro";
+import PortalLandingDeck from "../../components/PortalLandingDeck.astro";
 import ZonesLandingDeck from "../../components/ZonesLandingDeck.astro";
 import { apps, site } from "../../data/site";
 import BaseLayout from "../../layouts/BaseLayout.astro";
@@ -15,6 +16,7 @@ const { app } = Astro.props;
 
 const pricingModel = app.pricingModel ?? "freemium";
 const isTrialThenPaid = pricingModel === "trial_then_paid";
+const downloadUrl = app.downloadUrl ?? app.appStoreUrl;
 
 const structuredData = {
   "@context": "https://schema.org",
@@ -25,15 +27,15 @@ const structuredData = {
   description: app.description,
   url: new URL(app.landingPath, site.origin).toString(),
   ...(app.iconPath ? { image: new URL(app.iconPath, site.origin).toString() } : {}),
-  ...(app.appStoreUrl ? {
+  ...(downloadUrl ? {
     offers: {
       "@type": "Offer",
-      price: "0",
+      price: app.pricing[0]?.price.replace(/[^0-9.]/g, "") ?? "0",
       priceCurrency: "USD",
       availability: "https://schema.org/InStock",
     },
-    downloadUrl: app.appStoreUrl,
-    sameAs: [app.appStoreUrl],
+    downloadUrl,
+    ...(app.appStoreUrl ? { sameAs: [app.appStoreUrl] } : {}),
   } : {}),
 };
 ---
@@ -51,6 +53,8 @@ const structuredData = {
 
   {app.slug === "zones" ? (
     <ZonesLandingDeck app={app} />
+  ) : app.slug === "portal" ? (
+    <PortalLandingDeck app={app} />
   ) : (
   <main class="quiet-orbit-page givdul-app-landing" data-motion-root>
     <section class="quiet-orbit-hero">
@@ -59,18 +63,27 @@ const structuredData = {
         <p class="quiet-orbit-hero__tagline" data-reveal data-reveal-delay="75">{app.heroTagline}</p>
         <p class="quiet-orbit-hero__lede" data-reveal data-reveal-delay="150">{app.heroLede}</p>
         <div class="quiet-orbit-hero__actions" data-reveal data-reveal-delay="220">
-          {app.hasAppStoreUrl ? (
+          {downloadUrl ? (
             <a
-              class="app-store-badge app-store-badge--hero"
-              href={app.appStoreUrl!}
-              target="_blank"
+              class:list={app.downloadUrl ? ["button", "button--pro"] : ["app-store-badge", "app-store-badge--hero"]}
+              href={downloadUrl}
+              target={app.downloadUrl ? undefined : "_blank"}
               rel="noreferrer"
-              aria-label={`Download ${app.name} on the App Store`}
+              aria-label={`Download ${app.name}${app.downloadUrl ? " for Mac" : " on the App Store"}`}
             >
-              <img src="/download-on-the-mac-app-store.svg" alt="Download on the App Store" />
+              {app.downloadUrl ? (
+                <>
+                  <span>Download for Mac</span>
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                    <path d="M8 2v8M5 7l3 3 3-3M3 13h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                </>
+              ) : (
+                <img src="/download-on-the-mac-app-store.svg" alt="Download on the App Store" />
+              )}
             </a>
           ) : (
-            <span class="button button--catalog button--disabled" aria-disabled="true">App Store link pending</span>
+            <span class="button button--catalog button--disabled" aria-disabled="true">Download pending</span>
           )}
         </div>
         <div class="quiet-orbit-hero__workflow" data-reveal data-reveal-delay="290">
@@ -215,11 +228,11 @@ const structuredData = {
                 ))}
               </ul>
 
-              {app.hasAppStoreUrl ? (
+              {downloadUrl ? (
                 <a
                   class:list={["button", tier.name === "free" ? "button--free" : "button--pro"]}
-                  href={app.appStoreUrl!}
-                  target="_blank"
+                  href={downloadUrl}
+                  target={app.downloadUrl ? undefined : "_blank"}
                   rel="noreferrer"
                 >
                   <span>{tier.cta}</span>
@@ -252,14 +265,14 @@ const structuredData = {
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
     const revealNodes = Array.from(root.querySelectorAll("[data-reveal]"));
 
-    const reveal = (element) => {
+    const reveal = (element: Element) => {
       if (!(element instanceof HTMLElement)) return;
       const delay = Number(element.dataset.revealDelay ?? "0");
       element.style.setProperty("--reveal-delay", `${delay}ms`);
       element.dataset.revealed = "true";
     };
 
-    const clearReveal = (element) => {
+    const clearReveal = (element: Element) => {
       if (!(element instanceof HTMLElement)) return;
       element.dataset.revealed = "false";
     };
@@ -295,7 +308,7 @@ const structuredData = {
       observer.observe(node);
     });
 
-    const onChange = (event) => {
+    const onChange = (event: MediaQueryListEvent) => {
       if (!event.matches) return;
       revealNodes.forEach((node) => reveal(node));
       observer.disconnect();

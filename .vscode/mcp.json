@@ -7,6 +7,9 @@
         "agentation-mcp",
         "server"
       ]
+    },
+    "polar": {
+      "url": "https://mcp.polar.sh/mcp/polar-mcp"
     }
   }
 }
