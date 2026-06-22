@@ -157,7 +157,7 @@ const agentHarnesses = [
       <article data-reveal data-reveal-delay={String(index * 80)}>
         <span>{String(index + 1).padStart(2, "0")}</span>
         <h2>{point.title}</h2>
-        <p>{point.copy}</p>
+        {point.copy && <p>{point.copy}</p>}
       </article>
     ))}
   </section>

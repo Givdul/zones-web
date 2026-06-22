@@ -287,18 +287,18 @@ export const apps: AppRecord[] = [
     ],
     proofPoints: [
       {
-        title: "Attention only",
-        copy: "Atoll stays out of the way until a session is active, waiting, or newly complete.",
+        title: "Minimal Overview",
+        copy: "",
         icon: "window",
       },
       {
-        title: "Local harnesses",
-        copy: "Built for Codex, Claude Code, OpenCode, and Gemini CLI session stores on your Mac.",
+        title: "All your agents",
+        copy: "",
         icon: "gesture",
       },
       {
-        title: "Free on purpose",
-        copy: "Atoll is a free utility and a lightweight entry point into the rest of the Givdul Mac apps.",
+        title: "Built for me, free for you",
+        copy: "",
         icon: "star",
       },
     ],
