@@ -909,6 +909,7 @@ const agentHarnesses = [
     max-height: 0;
     opacity: 0;
     transform: translateY(-10px);
+    transition-duration: 0ms;
   }
 
   .atoll-island[data-visible-state="running"][data-running-expanded="true"] .atoll-island__rows {
@@ -956,7 +957,8 @@ const agentHarnesses = [
   .atoll-row--permission { outline-color: rgb(255 56 87 / 0.28); }
   .atoll-row--done { outline-color: rgb(61 240 112 / 0.2); }
 
-  .atoll-island[data-visible-state="running"] .atoll-row--running:nth-of-type(-n + 3),
+  .atoll-island[data-visible-state="running"][data-running-expanded="true"] .atoll-row--running:nth-of-type(-n + 3),
+  .atoll-island[data-visible-state="running"]:hover .atoll-row--running:nth-of-type(-n + 3),
   .atoll-island[data-visible-state="input"] .atoll-row--input,
   .atoll-island[data-visible-state="permission"] .atoll-row--permission,
   .atoll-island[data-visible-state="done"] .atoll-row--done {
