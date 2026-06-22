@@ -11,13 +11,14 @@ interface Props {
 const { app, ctaLabel, revealOnScroll = false } = Astro.props;
 const ctaHref = app?.downloadUrl ?? app?.appStoreUrl;
 const resolvedCtaLabel = ctaLabel ?? (app?.downloadUrl ? "Download for Mac" : "Download on the App Store");
+const brandIconPath = app?.iconPath ?? (app?.slug === "atoll" ? "/atoll-icon.png" : null);
 ---
 
 <header class:list={["site-header", revealOnScroll && "site-header--scroll-reveal"]}>
   <div class="site-header__inner">
     <a class="brandmark" href={app ? app.landingPath : "/"} aria-label={`${app ? app.name : site.name} home`}>
-      {app?.iconPath ? (
-        <img src={app.iconPath} alt="" width="44" height="44" />
+      {brandIconPath ? (
+        <img src={brandIconPath} alt="" width="44" height="44" />
       ) : (
         <span class="brandmark__tile" aria-hidden="true">{site.brand.slice(0, 1)}</span>
       )}
