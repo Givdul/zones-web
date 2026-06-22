@@ -28,13 +28,11 @@ const appStoreUrls = {
 const downloadUrls = {
   zones: import.meta.env.PUBLIC_ZONES_DOWNLOAD_URL?.trim() || null,
   portal: import.meta.env.PUBLIC_PORTAL_DOWNLOAD_URL?.trim() || null,
+  atoll: import.meta.env.PUBLIC_ATOLL_DOWNLOAD_URL?.trim() || null,
 } as const;
 
 const checkoutUrls = {
-  portalIntro: import.meta.env.PUBLIC_POLAR_PORTAL_INTRO_CHECKOUT_URL?.trim() || null,
   portalLicense: import.meta.env.PUBLIC_POLAR_PORTAL_LICENSE_CHECKOUT_URL?.trim() || null,
-  portalAnnual: import.meta.env.PUBLIC_POLAR_PORTAL_ANNUAL_CHECKOUT_URL?.trim() || null,
-  portalMonthly: import.meta.env.PUBLIC_POLAR_PORTAL_MONTHLY_CHECKOUT_URL?.trim() || null,
 } as const;
 
 export interface AppProofPoint {
@@ -261,6 +259,114 @@ export const apps: AppRecord[] = [
     ],
   }),
   createApp({
+    slug: "atoll",
+    status: "live",
+    name: "Atoll",
+    productLabel: "Agent status island",
+    appStoreUrl: null,
+    downloadUrl: downloadUrls.atoll,
+    title: "Atoll for Mac",
+    tagline: "See what your coding agents are doing.",
+    description:
+      "Atoll is a free macOS menu bar app that places a small Dynamic-Island-style session capsule around the notch, showing which local AI coding agents are running, waiting, or done.",
+    cardSummary:
+      "A free notch island for local coding agents: Codex, Claude Code, OpenCode, and Gemini CLI.",
+    supportSummary:
+      "Official support for Atoll, including agent session detection, test mode, menu bar behavior, and local configuration.",
+    privacySummary:
+      "Privacy details for Atoll, including local agent session reads, hook events, and local-only settings.",
+    heroTitle: "Atoll for Mac",
+    heroTagline: "Your agents, right at the notch.",
+    heroLede:
+      "A tiny island that appears only when a local coding agent is running, waiting for input, asking permission, or just finished.",
+    heroVisualLabel: "Interactive MacBook notch preview of Atoll agent sessions",
+    workflowSteps: [
+      { kind: "action", label: "Watch", icon: "window" },
+      { kind: "key", label: "Codex" },
+      { kind: "action", label: "Respond", icon: "plus" },
+    ],
+    proofPoints: [
+      {
+        title: "Attention only",
+        copy: "Atoll stays out of the way until a session is active, waiting, or newly complete.",
+        icon: "window",
+      },
+      {
+        title: "Local harnesses",
+        copy: "Built for Codex, Claude Code, OpenCode, and Gemini CLI session stores on your Mac.",
+        icon: "gesture",
+      },
+      {
+        title: "Free on purpose",
+        copy: "Atoll is a free utility and a lightweight entry point into the rest of the Givdul Mac apps.",
+        icon: "star",
+      },
+    ],
+    pricingIntro: {
+      headline: "Free, because it should be.",
+      subheadline:
+        "Atoll is a no-cost menu bar utility. No subscription, no trial timer, no paid unlock.",
+    },
+    pricingModel: "free",
+    pricing: [
+      {
+        name: "free",
+        label: "Free",
+        title: "Atoll",
+        price: "$0",
+        note: "Direct download",
+        lead: "The full app is free. It exists to make local agent work visible and point people toward the paid Givdul tools.",
+        items: [
+          "Notch island for live agent sessions",
+          "Running, waiting, permission, and done states",
+          "Local settings and session detection",
+        ],
+        cta: "Download free",
+      },
+    ],
+    supportFacts: [
+      "Atoll is a native macOS menu-bar app that shows local coding agent status in a small notch island.",
+      "The island appears for running, waiting-for-input, waiting-for-permission, and recently completed sessions.",
+      "Atoll is free and reads local agent session stores and hook events on your Mac.",
+    ],
+    privacySections: [
+      {
+        title: "What Atoll reads",
+        paragraphs: [
+          "Atoll watches local agent session stores and hook events so it can decide whether a session is running, waiting, needs permission, or has completed.",
+        ],
+      },
+      {
+        title: "Local settings",
+        paragraphs: [
+          "Atoll stores preferences such as enabled state, target screen, and test mode locally on your Mac in its configuration file.",
+        ],
+      },
+      {
+        title: "Accounts and payment",
+        paragraphs: [
+          "Atoll is free, does not require an account, and does not include a purchase or subscription entitlement.",
+        ],
+      },
+      {
+        title: "Contact",
+        paragraphs: [
+          "Questions about privacy or support: support@givdul.com. If data handling changes, this policy will be updated before a new build is distributed.",
+        ],
+      },
+    ],
+    keywords: [
+      "Atoll",
+      "Atoll for Mac",
+      "AI agent status",
+      "Codex CLI status",
+      "Claude Code status",
+      "OpenCode status",
+      "Gemini CLI status",
+      "macOS notch app",
+    ],
+  }),
+  createApp({
     slug: "portal",
     status: "live",
     name: "Portal",
@@ -270,7 +376,7 @@ export const apps: AppRecord[] = [
     title: "Portal for Mac",
     tagline: "Share part of a big screen—not the whole canvas.",
     description:
-      "Portal is a paid macOS utility for people on large or ultrawide displays who do not want every pixel in the call: capture a chosen region, expose it through a shareable app window, and share that window instead of your entire desktop. Start with a 14-day full-featured trial, then buy once or choose an optional subscription.",
+      "Portal is a paid macOS utility for people on large or ultrawide displays who do not want every pixel in the call: capture a chosen region, expose it through a shareable app window, and share that window instead of your entire desktop. Start with a 3-day full-featured trial, then buy once.",
     cardSummary:
       "Define what matters on a large monitor, pipe it through a 16:9 stage, and share it with one shortcut. Optional snap rails and bring-to-stage are extras for tidying the stage—not the headline.",
     supportSummary:
@@ -307,78 +413,32 @@ export const apps: AppRecord[] = [
     pricingIntro: {
       headline: "Buy once. Use it forever.",
       subheadline:
-        "Start with a 14-day full-featured trial. Portal is $19 during launch, then $29 with 1 year of updates included.",
+        "Start with a 3-day full-featured trial. Portal is $7.99 as a one-time purchase.",
     },
     pricingModel: "license_first",
     pricing: [
       {
-        name: "intro",
-        label: "Launch price",
-        title: "Intro license",
-        price: "$19",
-        note: "One-time purchase",
-        lead: "Buy Portal once during launch. Use it forever, with 1 year of updates included.",
-        items: [
-          "14-day full-featured trial",
-          "No account required for trial",
-          "Keep your current version forever",
-          "Renew only for another year of updates",
-        ],
-        cta: "Buy intro license",
-        ctaUrl: checkoutUrls.portalIntro,
-        emphasis: "recommended",
-      },
-      {
         name: "license",
-        label: "Standard",
+        label: "One-time purchase",
         title: "One-time license",
-        price: "$29",
-        note: "Includes 1 year of updates",
-        lead: "The long-term default: a native Mac utility you own, without needing an ongoing plan.",
+        price: "$7.99",
+        note: "One-time purchase",
+        lead: "Try the full app for 3 days, then pay once and keep using Portal.",
         items: [
-          "14-day full-featured trial",
+          "3-day full-featured trial",
           "Region sharing window",
           "Optional snapping helpers",
-          "Use the last eligible version forever",
+          "No subscription",
         ],
         cta: "Buy once",
         ctaUrl: checkoutUrls.portalLicense,
-      },
-      {
-        name: "annual",
-        label: "Optional",
-        title: "Annual",
-        price: "$19",
-        note: "per year",
-        lead: "For users who prefer ongoing updates as a plan instead of renewing a one-time license.",
-        items: [
-          "Same full Portal app",
-          "Updates while subscribed",
-          "Cancel future renewals anytime",
-        ],
-        cta: "Choose annual",
-        ctaUrl: checkoutUrls.portalAnnual,
-      },
-      {
-        name: "monthly",
-        label: "Optional",
-        title: "Monthly",
-        price: "$2.99",
-        note: "per month",
-        lead: "Low-friction access for short projects. Not the primary offer.",
-        items: [
-          "Same full Portal app",
-          "Month-to-month billing",
-          "Cancel future renewals anytime",
-        ],
-        cta: "Choose monthly",
-        ctaUrl: checkoutUrls.portalMonthly,
+        emphasis: "recommended",
       },
     ],
     supportFacts: [
       "Portal lets you share a chosen region of a large display through a dedicated 16:9 stage window instead of broadcasting your entire screen.",
       "Screen Recording feeds the stage, camera is optional, and Accessibility is only needed for features that move other app windows.",
-      "Portal is distributed directly from the website with a 14-day full-featured trial, one-time licenses, and optional subscription plans.",
+      "Portal is distributed directly from the website with a 3-day full-featured trial and a $7.99 one-time purchase.",
     ],
     privacySections: [
       {

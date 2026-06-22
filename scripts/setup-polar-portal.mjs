@@ -47,40 +47,13 @@ const productMetadata = (plan) => ({
 
 const plans = [
   {
-    key: "intro",
-    envKey: "PUBLIC_POLAR_PORTAL_INTRO_CHECKOUT_URL",
-    name: "Portal Intro License",
-    label: "Portal - Intro License",
-    description: "Launch-price one-time Portal license. Includes 1 year of updates.",
-    amount: 1900,
-    recurringInterval: null,
-  },
-  {
-    key: "license",
+    key: "license_799",
     envKey: "PUBLIC_POLAR_PORTAL_LICENSE_CHECKOUT_URL",
     name: "Portal One-Time License",
     label: "Portal - One-Time License",
-    description: "Standard one-time Portal license. Includes 1 year of updates.",
-    amount: 2900,
+    description: "One-time Portal license after a 3-day full-featured trial.",
+    amount: 799,
     recurringInterval: null,
-  },
-  {
-    key: "annual",
-    envKey: "PUBLIC_POLAR_PORTAL_ANNUAL_CHECKOUT_URL",
-    name: "Portal Annual",
-    label: "Portal - Annual",
-    description: "Optional annual Portal plan.",
-    amount: 1900,
-    recurringInterval: "year",
-  },
-  {
-    key: "monthly",
-    envKey: "PUBLIC_POLAR_PORTAL_MONTHLY_CHECKOUT_URL",
-    name: "Portal Monthly",
-    label: "Portal - Monthly",
-    description: "Optional month-to-month Portal plan.",
-    amount: 299,
-    recurringInterval: "month",
   },
 ];
 

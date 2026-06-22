@@ -9,6 +9,7 @@
     "dev": "astro dev",
     "build": "astro build",
     "polar:setup-portal": "node scripts/setup-polar-portal.mjs",
+    "polar:setup-zones": "node scripts/setup-polar-zones.mjs",
     "preview": "astro preview",
     "astro": "astro"
   },
@@ -19,7 +20,8 @@
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "svelte": "^5.55.9",
-    "svelte-bits": "^0.0.2"
+    "svelte-bits": "^0.0.2",
+    "three": "^0.184.0"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.8",

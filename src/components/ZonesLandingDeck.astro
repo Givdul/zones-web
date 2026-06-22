@@ -1,6 +1,7 @@
 ---
 import ZonesDemo from "./ZonesDemo.astro";
 import ZonesEditorDemo from "./ZonesEditorDemo.astro";
+import BorderGlow from "./BorderGlow.svelte";
 import type { AppRecord } from "../data/site";
 
 interface Props {
@@ -165,10 +166,19 @@ const ctaHref = app.downloadUrl ?? app.appStoreUrl;
 
           <div class="quiet-orbit-cards quiet-orbit-cards--simple-monthly">
             <article
-              class="orbit-card orbit-card--free orbit-card--recommended"
+              class="orbit-card orbit-card--free orbit-card--recommended has-border-glow"
               data-reveal
               data-reveal-delay="110"
             >
+              <BorderGlow
+                client:load
+                edgeSensitivity={26}
+                glowColor="205 36 78"
+                glowRadius={38}
+                glowIntensity={0.66}
+                coneSpread={24}
+                animated
+              />
               <div class="orbit-card__header">
                 <div class="orbit-card__badge">
                   <span class="orbit-card__label">{freeTier.label}</span>

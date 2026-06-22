@@ -1,5 +1,6 @@
 ---
 import SiteHeader from "../../components/SiteHeader.astro";
+import AtollLandingDeck from "../../components/AtollLandingDeck.astro";
 import PortalLandingDeck from "../../components/PortalLandingDeck.astro";
 import ZonesLandingDeck from "../../components/ZonesLandingDeck.astro";
 import { apps, site } from "../../data/site";
@@ -53,6 +54,8 @@ const structuredData = {
 
   {app.slug === "zones" ? (
     <ZonesLandingDeck app={app} />
+  ) : app.slug === "atoll" ? (
+    <AtollLandingDeck app={app} />
   ) : app.slug === "portal" ? (
     <PortalLandingDeck app={app} />
   ) : (

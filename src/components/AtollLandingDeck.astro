@@ -1,0 +1,966 @@
+---
+import type { AppRecord } from "../data/site";
+
+interface Props {
+  app: AppRecord;
+}
+
+const { app } = Astro.props;
+const ctaHref = app.downloadUrl ?? app.appStoreUrl;
+const agentHarnesses = [
+  ["amp", "Amp"],
+  ["claude", "Claude Code"],
+  ["codebuddy", "CodeBuddy"],
+  ["codex", "Codex"],
+  ["copilot", "Copilot"],
+  ["cursor", "Cursor"],
+  ["deepseek", "DeepSeek"],
+  ["droid", "Factory Droid"],
+  ["gemini", "Gemini CLI"],
+  ["hermes", "Hermes"],
+  ["kimi", "Kimi"],
+  ["kiro", "Kiro"],
+  ["opencode", "OpenCode"],
+  ["pi", "Pi"],
+  ["qoder", "Qoder"],
+  ["qwen", "Qwen"],
+];
+---
+
+<main class="atoll-page givdul-app-landing" data-motion-root aria-label="Atoll for Mac">
+  <section class="atoll-hero" aria-label="Overview">
+    <div class="atoll-hero__copy">
+      <h1 data-reveal data-reveal-delay="60">Atoll</h1>
+      <p class="atoll-hero__lede" data-reveal data-reveal-delay="120">
+        A free Mac menu bar app that shows local coding agent status in a small island around the notch.
+      </p>
+    </div>
+
+    <div class="atoll-hero__stage" data-reveal data-reveal-delay="120">
+      <section class="macbook" aria-label={app.heroVisualLabel}>
+        <div class="macbook__screen">
+          <div class="macbook__bezel">
+            <div class="atoll-island" data-atoll-island data-state="permission" data-visible-state="permission" data-phase="settled" tabindex="0">
+              <div class="atoll-island__notch" aria-hidden="true">
+                <span class="atoll-notch-runner atoll-notch-runner--tail atoll-notch-runner--tail-12"></span>
+                <span class="atoll-notch-runner atoll-notch-runner--tail atoll-notch-runner--tail-11"></span>
+                <span class="atoll-notch-runner atoll-notch-runner--tail atoll-notch-runner--tail-10"></span>
+                <span class="atoll-notch-runner atoll-notch-runner--tail atoll-notch-runner--tail-9"></span>
+                <span class="atoll-notch-runner atoll-notch-runner--tail atoll-notch-runner--tail-8"></span>
+                <span class="atoll-notch-runner atoll-notch-runner--tail atoll-notch-runner--tail-7"></span>
+                <span class="atoll-notch-runner atoll-notch-runner--tail atoll-notch-runner--tail-6"></span>
+                <span class="atoll-notch-runner atoll-notch-runner--tail atoll-notch-runner--tail-5"></span>
+                <span class="atoll-notch-runner atoll-notch-runner--tail atoll-notch-runner--tail-4"></span>
+                <span class="atoll-notch-runner atoll-notch-runner--tail atoll-notch-runner--tail-3"></span>
+                <span class="atoll-notch-runner atoll-notch-runner--tail atoll-notch-runner--tail-2"></span>
+                <span class="atoll-notch-runner atoll-notch-runner--tail atoll-notch-runner--tail-1"></span>
+                <span class="atoll-notch-runner atoll-notch-runner--head"></span>
+                <svg class="atoll-notch-svg" viewBox="0 0 132 36" width="132" height="36">
+                  <path class="atoll-notch-svg__edge atoll-notch-svg__edge--base" d="M132 2V19.44Q132 36 115.44 36H16.56Q0 36 0 19.44V2"></path>
+                  <path class="atoll-notch-svg__fill" d="M0 0H132V19.44Q132 36 115.44 36H16.56Q0 36 0 19.44Z"></path>
+                  <path class="atoll-notch-svg__hairline" d="M0 0H132V19.44Q132 36 115.44 36H16.56Q0 36 0 19.44Z"></path>
+                </svg>
+              </div>
+
+              <div class="atoll-island__rows">
+                <div class="atoll-row atoll-row--running atoll-row--opencode" data-state-row="running">
+                  <span class="atoll-row__icon-well"><img src="/atoll-agent-icons/opencode.svg" alt="" /></span>
+                  <span class="atoll-row__title">Update checkout copy</span>
+                  <span class="atoll-row__status"><svg class="atoll-status-icon atoll-status-icon--terminal" viewBox="0 0 14 14" aria-hidden="true"><rect x="1.6" y="2.4" width="10.8" height="9.2" rx="1.8" /><path d="M3.7 5.4 5.5 7 3.7 8.6M6.6 8.7h3.1" /></svg><span class="atoll-row__timer" data-start-seconds="7">07s</span></span>
+                  <span class="atoll-row__activity" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span>
+                </div>
+                <div class="atoll-row atoll-row--running atoll-row--codex" data-state-row="running">
+                  <span class="atoll-row__icon-well"><img src="/atoll-agent-icons/codex.svg" alt="" /></span>
+                  <span class="atoll-row__title">Fix onboarding layout</span>
+                  <span class="atoll-row__status"><svg class="atoll-status-icon atoll-status-icon--terminal" viewBox="0 0 14 14" aria-hidden="true"><rect x="1.6" y="2.4" width="10.8" height="9.2" rx="1.8" /><path d="M3.7 5.4 5.5 7 3.7 8.6M6.6 8.7h3.1" /></svg><span class="atoll-row__timer" data-start-seconds="18">18s</span></span>
+                  <span class="atoll-row__activity" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span>
+                </div>
+                <div class="atoll-row atoll-row--running atoll-row--claude" data-state-row="running">
+                  <span class="atoll-row__icon-well"><img src="/atoll-agent-icons/claude.svg" alt="" /></span>
+                  <span class="atoll-row__title">Review auth edge case</span>
+                  <span class="atoll-row__status"><svg class="atoll-status-icon atoll-status-icon--terminal" viewBox="0 0 14 14" aria-hidden="true"><rect x="1.6" y="2.4" width="10.8" height="9.2" rx="1.8" /><path d="M3.7 5.4 5.5 7 3.7 8.6M6.6 8.7h3.1" /></svg><span class="atoll-row__timer" data-start-seconds="42">42s</span></span>
+                  <span class="atoll-row__activity" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span>
+                </div>
+                <div class="atoll-row atoll-row--running atoll-row--gemini" data-state-row="running">
+                  <span class="atoll-row__icon-well"><img src="/atoll-agent-icons/gemini.svg" alt="" /></span>
+                  <span class="atoll-row__title">Trace billing webhook</span>
+                  <span class="atoll-row__status"><svg class="atoll-status-icon atoll-status-icon--terminal" viewBox="0 0 14 14" aria-hidden="true"><rect x="1.6" y="2.4" width="10.8" height="9.2" rx="1.8" /><path d="M3.7 5.4 5.5 7 3.7 8.6M6.6 8.7h3.1" /></svg><span class="atoll-row__timer" data-start-seconds="64">01m</span></span>
+                  <span class="atoll-row__activity" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span>
+                </div>
+                <div class="atoll-row atoll-row--running atoll-row--cursor" data-state-row="running">
+                  <span class="atoll-row__icon-well"><img src="/atoll-agent-icons/cursor.svg" alt="" /></span>
+                  <span class="atoll-row__title">Polish settings search</span>
+                  <span class="atoll-row__status"><svg class="atoll-status-icon atoll-status-icon--terminal" viewBox="0 0 14 14" aria-hidden="true"><rect x="1.6" y="2.4" width="10.8" height="9.2" rx="1.8" /><path d="M3.7 5.4 5.5 7 3.7 8.6M6.6 8.7h3.1" /></svg><span class="atoll-row__timer" data-start-seconds="91">01m</span></span>
+                  <span class="atoll-row__activity" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span>
+                </div>
+                <div class="atoll-row atoll-row--running atoll-row--droid" data-state-row="running">
+                  <span class="atoll-row__icon-well"><img src="/atoll-agent-icons/droid.svg" alt="" /></span>
+                  <span class="atoll-row__title">Draft release notes</span>
+                  <span class="atoll-row__status"><svg class="atoll-status-icon atoll-status-icon--terminal" viewBox="0 0 14 14" aria-hidden="true"><rect x="1.6" y="2.4" width="10.8" height="9.2" rx="1.8" /><path d="M3.7 5.4 5.5 7 3.7 8.6M6.6 8.7h3.1" /></svg><span class="atoll-row__timer" data-start-seconds="128">02m</span></span>
+                  <span class="atoll-row__activity" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span>
+                </div>
+                <div class="atoll-row atoll-row--input" data-state-row="input">
+                  <span class="atoll-row__icon-well"><img src="/atoll-agent-icons/codex.svg" alt="" /></span>
+                  <span class="atoll-row__title">Choose migration strategy</span>
+                  <span class="atoll-row__status"><svg class="atoll-status-icon" viewBox="0 0 14 14" aria-hidden="true"><path d="M5 4.6a2.1 2.1 0 1 1 3.2 1.8c-.8.5-1.2.9-1.2 1.8M7 10.7h.01" /></svg><span class="atoll-row__timer" data-start-seconds="3">03s</span></span>
+                </div>
+                <div class="atoll-row atoll-row--permission" data-state-row="permission">
+                  <span class="atoll-row__icon-well"><img src="/atoll-agent-icons/codex.svg" alt="" /></span>
+                  <span class="atoll-row__title">Approve git push</span>
+                  <span class="atoll-row__status"><svg class="atoll-status-icon atoll-status-icon--hand" viewBox="0 0 14 14" aria-hidden="true"><path d="M4.5 7.4V3.1a.8.8 0 0 1 1.6 0v3.2M6.1 6V2.4a.8.8 0 0 1 1.6 0V6M7.7 6.2V3a.8.8 0 0 1 1.6 0v3.8M9.3 7.1V4.6a.8.8 0 0 1 1.6 0v3.7c0 2.2-1.4 3.8-3.5 3.8H6.3c-1.1 0-1.9-.5-2.6-1.5L2.2 8.4a.85.85 0 0 1 1.3-1.1l1 1.2" /></svg><span class="atoll-row__timer" data-start-seconds="11">11s</span></span>
+                </div>
+                <div class="atoll-row atoll-row--done" data-state-row="done">
+                  <span class="atoll-row__icon-well"><img src="/atoll-agent-icons/codex.svg" alt="" /></span>
+                  <span class="atoll-row__title">Merged import cleanup</span>
+                  <span class="atoll-row__status"><svg class="atoll-status-icon" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 7.3 5.7 10 11 4" /></svg><span class="atoll-row__timer" data-start-seconds="8">08s</span></span>
+                </div>
+              </div>
+            </div>
+
+            <div class="macbook__wallpaper">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+
+            <div class="macbook__cta" data-reveal data-reveal-delay="220">
+              {ctaHref ? (
+                <a class="button button--pro" href={ctaHref} rel="noreferrer" aria-label="Download Atoll for Mac">
+                  <span>Download free</span>
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                    <path d="M8 2v8M5 7l3 3 3-3M3 13h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                </a>
+              ) : (
+                <span class="button button--pro button--disabled" aria-disabled="true">Download soon</span>
+              )}
+            </div>
+          </div>
+        </div>
+        <div class="macbook__base" aria-hidden="true"></div>
+
+      </section>
+      <section class="agent-marquee" aria-label="Supported agent harnesses" data-reveal data-reveal-delay="260">
+        <div class="agent-marquee__track">
+          {[...agentHarnesses, ...agentHarnesses].map(([slug, label]) => (
+            <span class="agent-marquee__item">
+              <img src={`/atoll-agent-icons/${slug}.svg`} alt={label} width="28" height="28" loading="lazy" />
+            </span>
+          ))}
+        </div>
+      </section>
+    </div>
+  </section>
+
+  <section class="atoll-strip" aria-label="What Atoll shows">
+    {app.proofPoints.map((point, index) => (
+      <article data-reveal data-reveal-delay={String(index * 80)}>
+        <span>{String(index + 1).padStart(2, "0")}</span>
+        <h2>{point.title}</h2>
+        <p>{point.copy}</p>
+      </article>
+    ))}
+  </section>
+
+  <section class="atoll-download" aria-label="Download Atoll">
+    {ctaHref ? (
+      <a class="button button--pro" href={ctaHref} rel="noreferrer">Download free</a>
+    ) : (
+      <span class="button button--pro button--disabled" aria-disabled="true">Download soon</span>
+    )}
+  </section>
+</main>
+
+<script>
+  const setupAtollPreview = () => {
+    const island = document.querySelector("[data-atoll-island]");
+    if (!(island instanceof HTMLElement)) return;
+    const states = ["running", "input", "permission"];
+    let cycleIndex = states.indexOf(island.dataset.state ?? "permission");
+    let cycleTimer;
+    let timerInterval;
+    let leaveTimer;
+    let enterTimer;
+    const timers = [...island.querySelectorAll(".atoll-row__timer")];
+
+    const formatElapsed = (seconds) => {
+      if (seconds < 60) return `${String(seconds).padStart(2, "0")}s`;
+      return `${String(Math.floor(seconds / 60)).padStart(2, "0")}m`;
+    };
+
+    const updateTimers = () => {
+      timers.forEach((timer) => {
+        const startSeconds = Number(timer.dataset.startSeconds ?? 0);
+        const startedAt = Number(timer.dataset.startedAt ?? Date.now());
+        timer.dataset.startedAt = String(startedAt);
+        timer.textContent = formatElapsed(startSeconds + Math.floor((Date.now() - startedAt) / 1000));
+      });
+    };
+
+    const setState = (state) => {
+      if (island.dataset.state === state && island.dataset.phase !== "leaving") return;
+      window.clearTimeout(leaveTimer);
+      window.clearTimeout(enterTimer);
+
+      const fromState = island.dataset.visibleState ?? island.dataset.state ?? state;
+      island.dataset.state = state;
+      island.dataset.visibleState = fromState;
+      island.dataset.phase = "leaving";
+
+      leaveTimer = window.setTimeout(() => {
+        if (island.dataset.state === state) {
+          island.dataset.visibleState = state;
+          island.dataset.phase = "entering";
+
+          enterTimer = window.setTimeout(() => {
+            if (island.dataset.state === state) {
+              island.dataset.phase = "settled";
+            }
+          }, 420);
+        }
+      }, 460);
+    };
+
+    const startCycle = () => {
+      window.clearInterval(cycleTimer);
+      cycleTimer = window.setInterval(() => {
+        cycleIndex = (cycleIndex + 1) % states.length;
+        setState(states[cycleIndex]);
+      }, 4600);
+    };
+
+    setState(states[cycleIndex]);
+    startCycle();
+    updateTimers();
+    timerInterval = window.setInterval(updateTimers, 1000);
+
+    window.addEventListener("pagehide", () => {
+      window.clearInterval(cycleTimer);
+      window.clearInterval(timerInterval);
+      window.clearTimeout(leaveTimer);
+      window.clearTimeout(enterTimer);
+    }, { once: true });
+  };
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", setupAtollPreview, { once: true });
+  } else {
+    setupAtollPreview();
+  }
+</script>
+
+<style>
+  .atoll-page {
+    --atoll-running: #ff851a;
+    --atoll-input: #38c7ff;
+    --atoll-permission: #ff334a;
+    --atoll-done: #38f26b;
+    width: 100%;
+    max-width: min(1360px, calc(100dvw - 1.5rem));
+    margin: 0 auto;
+    padding: clamp(1rem, 2vw, 2rem) 0 5rem;
+  }
+
+  .atoll-hero {
+    min-height: calc(100svh - 6rem);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: clamp(1.5rem, 4vw, 3rem);
+    padding-top: clamp(1.5rem, 3vw, 2.5rem);
+  }
+
+  .atoll-hero__copy {
+    max-width: 46rem;
+    margin-inline: auto;
+    text-align: center;
+  }
+
+  .atoll-hero h1 {
+    margin: 0;
+    font-family: var(--theme-font-display);
+    font-size: clamp(4.5rem, 12vw, 8.25rem);
+    line-height: 0.9;
+    letter-spacing: 0;
+  }
+
+  .atoll-hero__lede {
+    margin: 1rem auto 0;
+    max-width: 39rem;
+    color: var(--theme-text-secondary);
+    font-size: clamp(1rem, 1.7vw, 1.18rem);
+  }
+
+  .atoll-hero__stage {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .macbook {
+    position: relative;
+    width: min(100%, 1060px);
+    margin-inline: auto;
+    padding-bottom: 4.25rem;
+  }
+
+  .macbook__screen {
+    position: relative;
+    aspect-ratio: 1.58;
+    border-radius: 1.4rem 1.4rem 0.8rem 0.8rem;
+    padding: 0.7rem;
+    background:
+      linear-gradient(135deg, rgb(255 255 255 / 0.32), rgb(255 255 255 / 0.05) 32%, rgb(0 0 0 / 0.58)),
+      #171719;
+    box-shadow: 0 3rem 5rem rgb(0 0 0 / 0.38);
+  }
+
+  .macbook__bezel {
+    position: relative;
+    height: 100%;
+    overflow: hidden;
+    border-radius: 0.9rem 0.9rem 0.45rem 0.45rem;
+    background: #050506;
+  }
+
+  .macbook__wallpaper {
+    position: absolute;
+    inset: 1.4rem;
+    top: 2.1rem;
+    overflow: hidden;
+    border-radius: 0.45rem;
+    background:
+      radial-gradient(circle at 74% 30%, rgb(255 133 26 / 0.32), transparent 24%),
+      radial-gradient(circle at 34% 62%, rgb(56 199 255 / 0.2), transparent 30%),
+      linear-gradient(135deg, #202124, #0d0d0f 60%, #18191b);
+  }
+
+  .macbook__wallpaper span {
+    position: absolute;
+    inset: auto 9% 14%;
+    height: 1px;
+    background: rgb(255 255 255 / 0.14);
+  }
+
+  .macbook__wallpaper span:nth-child(2) {
+    bottom: 22%;
+    opacity: 0.5;
+  }
+
+  .macbook__wallpaper span:nth-child(3) {
+    bottom: 30%;
+    opacity: 0.24;
+  }
+
+  .agent-marquee {
+    width: min(100%, 860px);
+    margin: clamp(-2.7rem, -3vw, -1.1rem) auto 0;
+    overflow: hidden;
+    mask-image: linear-gradient(90deg, transparent, black 14%, black 86%, transparent);
+  }
+
+  .agent-marquee__track {
+    display: flex;
+    width: max-content;
+    gap: clamp(1.25rem, 3vw, 2.3rem);
+    padding: 0.6rem max(1rem, 4vw);
+    animation: atoll-agent-marquee 28s linear infinite;
+  }
+
+  .agent-marquee:hover .agent-marquee__track {
+    animation-play-state: paused;
+  }
+
+  .agent-marquee__item {
+    display: grid;
+    place-items: center;
+    width: 2.35rem;
+    height: 2.35rem;
+    opacity: 0.5;
+    transition:
+      opacity 160ms ease,
+      transform 160ms var(--ease-out-quart),
+      filter 160ms ease;
+  }
+
+  .agent-marquee__item:hover {
+    opacity: 1;
+    transform: translateY(-1px) scale(1.08);
+    filter: drop-shadow(0 0 14px rgb(255 255 255 / 0.18));
+  }
+
+  .agent-marquee__item img {
+    width: 1.75rem;
+    height: 1.75rem;
+    object-fit: contain;
+  }
+
+  .macbook__cta {
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+    display: grid;
+    place-items: center;
+    pointer-events: none;
+  }
+
+  .macbook__cta .button {
+    pointer-events: auto;
+    box-shadow:
+      0 1.25rem 3rem rgb(0 0 0 / 0.45),
+      0 0 0 1px rgb(255 255 255 / 0.08);
+  }
+
+  .macbook__base {
+    width: 108%;
+    height: 1.15rem;
+    margin-left: -4%;
+    border-radius: 0 0 44% 44%;
+    background: linear-gradient(180deg, #b8bbc1, #676a70 58%, #2b2d31);
+    box-shadow: 0 1.4rem 2.4rem rgb(0 0 0 / 0.28);
+  }
+
+  .macbook__base::before {
+    content: "";
+    display: block;
+    width: 16%;
+    height: 0.35rem;
+    margin: 0 auto;
+    border-radius: 0 0 1rem 1rem;
+    background: rgb(0 0 0 / 0.28);
+  }
+
+  .atoll-island {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    z-index: 2;
+    width: 392px;
+    max-width: 62%;
+    transform: translateX(-50%);
+    outline: none;
+  }
+
+  .atoll-island__notch {
+    position: relative;
+    width: 132px;
+    height: 36px;
+    margin: 0 auto;
+    filter: drop-shadow(0 1px 0 rgb(255 255 255 / 0.03));
+  }
+
+  .atoll-notch-svg {
+    display: block;
+    overflow: visible;
+  }
+
+  .atoll-notch-svg__fill {
+    fill: #000;
+  }
+
+  .atoll-notch-svg__hairline {
+    fill: none;
+    stroke: rgb(255 255 255 / 0.08);
+    stroke-width: 0.8;
+  }
+
+  .atoll-notch-svg__edge {
+    fill: none;
+    opacity: 0;
+    stroke: var(--atoll-running);
+    stroke-linecap: butt;
+    stroke-linejoin: round;
+  }
+
+  .atoll-notch-svg__edge--base {
+    stroke-width: 1;
+  }
+
+  .atoll-island[data-state="running"] .atoll-notch-svg__edge--base {
+    opacity: 0.22;
+  }
+
+  .atoll-notch-runner {
+    position: absolute;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 10px;
+    height: 10px;
+    border-radius: 2.5px;
+    background: var(--atoll-running);
+    box-shadow: 0 0 6px rgb(255 133 26 / 0.75);
+    opacity: 0;
+    offset-path: path("M132 2V19.44Q132 36 115.44 36H16.56Q0 36 0 19.44V2");
+    offset-anchor: center;
+    animation: atoll-notch-runner 3.15s linear infinite;
+    will-change: offset-distance;
+  }
+
+  .atoll-island[data-state="running"] .atoll-notch-runner--head {
+    opacity: 1;
+  }
+
+  .atoll-island[data-state="running"] .atoll-notch-runner--tail-1 {
+    opacity: 0.7;
+    animation-delay: 0.045s;
+  }
+
+  .atoll-island[data-state="running"] .atoll-notch-runner--tail-2 {
+    opacity: 0.58;
+    animation-delay: 0.09s;
+  }
+
+  .atoll-island[data-state="running"] .atoll-notch-runner--tail-3 {
+    opacity: 0.48;
+    animation-delay: 0.135s;
+  }
+
+  .atoll-island[data-state="running"] .atoll-notch-runner--tail-4 {
+    opacity: 0.39;
+    animation-delay: 0.18s;
+  }
+
+  .atoll-island[data-state="running"] .atoll-notch-runner--tail-5 {
+    opacity: 0.31;
+    animation-delay: 0.225s;
+  }
+
+  .atoll-island[data-state="running"] .atoll-notch-runner--tail-6 {
+    opacity: 0.24;
+    animation-delay: 0.27s;
+  }
+
+  .atoll-island[data-state="running"] .atoll-notch-runner--tail-7 {
+    opacity: 0.18;
+    animation-delay: 0.315s;
+  }
+
+  .atoll-island[data-state="running"] .atoll-notch-runner--tail-8 {
+    opacity: 0.13;
+    animation-delay: 0.36s;
+  }
+
+  .atoll-island[data-state="running"] .atoll-notch-runner--tail-9 {
+    opacity: 0.095;
+    animation-delay: 0.405s;
+  }
+
+  .atoll-island[data-state="running"] .atoll-notch-runner--tail-10 {
+    opacity: 0.07;
+    animation-delay: 0.45s;
+  }
+
+  .atoll-island[data-state="running"] .atoll-notch-runner--tail-11 {
+    opacity: 0.05;
+    animation-delay: 0.495s;
+  }
+
+  .atoll-island[data-state="running"] .atoll-notch-runner--tail-12 {
+    opacity: 0.035;
+    animation-delay: 0.54s;
+  }
+
+  .atoll-island[data-state="test"] .atoll-notch-svg__edge,
+  .atoll-island[data-state="input"] .atoll-notch-svg__edge,
+  .atoll-island[data-state="permission"] .atoll-notch-svg__edge {
+    opacity: 0;
+  }
+
+  .atoll-island[data-state="test"] .atoll-notch-svg__edge--base,
+  .atoll-island[data-state="input"] .atoll-notch-svg__edge--base,
+  .atoll-island[data-state="permission"] .atoll-notch-svg__edge--base {
+    opacity: 0.74;
+    stroke-width: 8.64;
+  }
+
+  .atoll-island[data-state="test"] .atoll-notch-svg__edge--base {
+    stroke: var(--atoll-permission);
+  }
+
+  .atoll-island[data-state="input"] .atoll-notch-svg__edge--base {
+    stroke: var(--atoll-input);
+  }
+
+  .atoll-island[data-state="permission"] .atoll-notch-svg__edge--base {
+    stroke: var(--atoll-permission);
+  }
+
+  .atoll-island__rows {
+    position: relative;
+    z-index: 3;
+    display: grid;
+    gap: 3px;
+    margin-top: 3px;
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: none;
+    overflow: hidden;
+    max-height: 102px;
+    transition:
+      max-height 400ms cubic-bezier(0.2, 0.8, 0.2, 1),
+      opacity 320ms cubic-bezier(0.2, 0.8, 0.2, 1),
+      transform 320ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  .atoll-island[data-visible-state="input"] .atoll-island__rows,
+  .atoll-island[data-visible-state="permission"] .atoll-island__rows,
+  .atoll-island[data-visible-state="done"] .atoll-island__rows {
+    max-height: 32px;
+  }
+
+  .atoll-row {
+    position: relative;
+    display: none;
+    align-items: center;
+    gap: 9px;
+    width: 392px;
+    height: 32px;
+    min-height: 32px;
+    padding: 0 6.5px;
+    border-radius: 9px;
+    color: white;
+    background:
+      linear-gradient(180deg, rgb(255 255 255 / 0.18), transparent 1px),
+      linear-gradient(115deg, rgb(255 255 255 / 0.015), rgb(255 255 255 / 0.05), rgb(255 255 255 / 0.01)),
+      rgb(0 0 0 / 0.98);
+    box-shadow:
+      inset 0 0 0 1px rgb(0 0 0 / 0.42),
+      inset 0 -12px 24px rgb(255 255 255 / 0.055),
+      0 10px 22px rgb(0 0 0 / 0.38);
+    font-family: ui-rounded, "SF Pro Rounded", var(--theme-font-sans);
+    outline: 0.9px solid transparent;
+    outline-offset: -1px;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(-18px);
+    transition:
+      opacity 320ms cubic-bezier(0.2, 0.8, 0.2, 1),
+      transform 320ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  .atoll-row--running { outline-color: transparent; }
+  .atoll-row--input { outline-color: rgb(46 204 255 / 0.28); }
+  .atoll-row--permission { outline-color: rgb(255 56 87 / 0.28); }
+  .atoll-row--done { outline-color: rgb(61 240 112 / 0.2); }
+
+  .atoll-island[data-visible-state="running"] .atoll-row--running:nth-of-type(-n + 3),
+  .atoll-island[data-visible-state="input"] .atoll-row--input,
+  .atoll-island[data-visible-state="permission"] .atoll-row--permission,
+  .atoll-island[data-visible-state="done"] .atoll-row--done {
+    display: flex;
+  }
+
+  .atoll-island[data-phase="settled"] .atoll-row,
+  .atoll-island[data-phase="entering"] .atoll-row {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .atoll-island[data-phase="leaving"] .atoll-row {
+    opacity: 0;
+    transform: translateY(-18px);
+  }
+
+  .atoll-island[data-phase="leaving"][data-visible-state="running"] .atoll-row--running:nth-of-type(2) {
+    transition-delay: 45ms;
+  }
+
+  .atoll-island[data-phase="leaving"][data-visible-state="running"] .atoll-row--running:nth-of-type(3) {
+    transition-delay: 90ms;
+  }
+
+  .atoll-island[data-phase="entering"] .atoll-row {
+    animation: atoll-row-enter 400ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .atoll-island[data-phase="entering"][data-visible-state="running"] .atoll-row--running:nth-of-type(2) {
+    animation-delay: 45ms;
+  }
+
+  .atoll-island[data-phase="entering"][data-visible-state="running"] .atoll-row--running:nth-of-type(3) {
+    animation-delay: 90ms;
+  }
+
+  .atoll-row__icon-well {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    flex: 0 0 28px;
+  }
+
+  .atoll-row__icon-well img {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+    display: block;
+    filter: brightness(0) invert(1);
+    transform: scale(var(--icon-scale, 1));
+  }
+
+  .atoll-row__title {
+    position: relative;
+    z-index: 1;
+    min-width: 0;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 12px;
+    font-weight: 600;
+    opacity: 0.95;
+    text-shadow: 0 1px 0 rgb(0 0 0 / 0.5);
+    padding-left: 1px;
+    padding-right: 94px;
+  }
+
+  .atoll-row__status {
+    position: absolute;
+    z-index: 2;
+    top: 0;
+    right: 6.5px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 5px;
+    width: 82px;
+    height: 32px;
+    color: var(--atoll-running);
+    text-align: right;
+  }
+
+  .atoll-status-icon {
+    width: 14px;
+    height: 14px;
+    flex: 0 0 14px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .atoll-status-icon--hand {
+    stroke-width: 1.35;
+  }
+
+  .atoll-row__timer {
+    width: 28px;
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 10.5px;
+    font-weight: 900;
+    line-height: 32px;
+  }
+
+  .atoll-row--input,
+  .atoll-row--permission {
+    --icon-scale: 1.02;
+  }
+
+  .atoll-row--done {
+    --icon-scale: 0.94;
+  }
+
+  .atoll-row--input .atoll-row__title,
+  .atoll-row--permission .atoll-row__title {
+    font-weight: 700;
+    opacity: 1;
+  }
+
+  .atoll-row--done .atoll-row__title {
+    font-weight: 500;
+    opacity: 0.78;
+  }
+
+  .atoll-row--input .atoll-row__status { color: #2eccff; }
+  .atoll-row--permission .atoll-row__status { color: #ff3857; }
+  .atoll-row--done .atoll-row__status { color: #3df070; }
+
+  .atoll-row__activity {
+    position: absolute;
+    inset: 1.6px;
+    border-radius: 8.4px;
+    pointer-events: none;
+    box-shadow: inset 0 0 0 0.9px rgb(255 143 23 / 0.22);
+  }
+
+  .atoll-row__activity span {
+    position: absolute;
+    width: 4.5px;
+    height: 4.5px;
+    border-radius: 1.2px;
+    background: #ff8f17;
+    box-shadow: 0 0 4px rgb(255 143 23 / 0.78);
+    offset-path: path("M7.4 0H381.4Q388.8 0 388.8 7.4V21.4Q388.8 28.8 381.4 28.8H7.4Q0 28.8 0 21.4V7.4Q0 0 7.4 0");
+    animation: atoll-row-runner 4.15s linear infinite;
+    will-change: offset-distance;
+  }
+
+  .atoll-row__activity span:nth-child(1) {
+    opacity: 1;
+  }
+
+  .atoll-row__activity span:nth-child(2) {
+    opacity: 0.72;
+    animation-delay: 0.045s;
+  }
+
+  .atoll-row__activity span:nth-child(3) {
+    opacity: 0.52;
+    animation-delay: 0.09s;
+  }
+
+  .atoll-row__activity span:nth-child(4) {
+    opacity: 0.38;
+    animation-delay: 0.135s;
+  }
+
+  .atoll-row__activity span:nth-child(5) {
+    opacity: 0.27;
+    animation-delay: 0.18s;
+  }
+
+  .atoll-row__activity span:nth-child(6) {
+    opacity: 0.18;
+    animation-delay: 0.225s;
+  }
+
+  .atoll-row__activity span:nth-child(7) {
+    opacity: 0.12;
+    animation-delay: 0.27s;
+  }
+
+  .atoll-row__activity span:nth-child(8) {
+    opacity: 0.07;
+    animation-delay: 0.315s;
+  }
+
+  .atoll-strip {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    margin-top: clamp(2rem, 8vw, 6rem);
+    border-block: 1px solid var(--theme-border-inner);
+    background: var(--theme-border-inner);
+  }
+
+  .atoll-strip article {
+    padding: clamp(1.2rem, 3vw, 2rem);
+    background: var(--theme-canvas-bottom);
+  }
+
+  .atoll-strip span {
+    color: var(--theme-text-tertiary);
+    font-size: 0.78rem;
+    font-weight: 800;
+  }
+
+  .atoll-strip h2 {
+    margin: 2rem 0 0.65rem;
+    font-size: clamp(1.25rem, 2.4vw, 1.85rem);
+    line-height: 1.05;
+    letter-spacing: 0;
+  }
+
+  .atoll-strip p {
+    margin: 0;
+    color: var(--theme-text-secondary);
+  }
+
+  .atoll-download {
+    display: grid;
+    padding-top: clamp(3rem, 8vw, 7rem);
+  }
+
+  [data-motion-root][data-motion-ready="true"] [data-reveal] {
+    opacity: 0;
+    transform: translateY(18px);
+    transition:
+      opacity 520ms var(--ease-out-quint) var(--reveal-delay, 0ms),
+      transform 520ms var(--ease-out-quint) var(--reveal-delay, 0ms);
+  }
+
+  [data-motion-root] [data-reveal][data-revealed="true"] {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @keyframes atoll-notch-runner {
+    to {
+      offset-distance: 100%;
+    }
+  }
+
+  @keyframes atoll-row-runner {
+    to {
+      offset-distance: 100%;
+    }
+  }
+
+  @keyframes atoll-row-enter {
+    from {
+      opacity: 0;
+      transform: translateY(-18px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes atoll-agent-marquee {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .atoll-notch-runner,
+    .atoll-row__activity span,
+    .agent-marquee__track,
+    .atoll-island[data-phase="entering"] .atoll-row,
+    [data-motion-root][data-motion-ready="true"] [data-reveal] {
+      animation: none;
+      transition: none;
+    }
+  }
+
+  @media (max-width: 920px) {
+    .atoll-hero {
+      min-height: auto;
+      padding-top: 2rem;
+    }
+
+    .atoll-strip {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 620px) {
+    .atoll-page {
+      max-width: calc(100dvw - 1rem);
+      padding-bottom: 3rem;
+    }
+
+    .atoll-hero h1 {
+      font-size: clamp(4rem, 23vw, 6rem);
+    }
+
+    .macbook {
+      width: 116%;
+      margin-left: -8%;
+      padding-bottom: 5.6rem;
+    }
+
+    .atoll-island {
+      max-width: 76%;
+    }
+
+    .atoll-row__status {
+      width: 58px;
+    }
+
+  }
+</style>

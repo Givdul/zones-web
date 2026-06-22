@@ -1,5 +1,6 @@
 ---
 import "../styles/portal.css";
+import BorderGlow from "./BorderGlow.svelte";
 import PortalUsecaseShowcase from "./PortalUsecaseShowcase.astro";
 import type { AppRecord } from "../data/site";
 
@@ -8,7 +9,6 @@ interface Props {
 }
 
 const { app } = Astro.props;
-const introTier = app.pricing.find((tier) => tier.name === "intro");
 const licenseTier = app.pricing.find((tier) => tier.name === "license") ?? app.pricing[0] ?? {
   name: "license",
   label: "One-time license",
@@ -20,23 +20,11 @@ const licenseTier = app.pricing.find((tier) => tier.name === "license") ?? app.p
   cta: "Join waitlist",
   ctaUrl: null,
 };
-const annualTier = app.pricing.find((tier) => tier.name === "annual");
-const monthlyTier = app.pricing.find((tier) => tier.name === "monthly");
-const subscriptionTiers = [annualTier, monthlyTier].filter(Boolean);
 const oneTimeItems = [
-  "Full app during and after the trial",
-  "Includes 1 year of updates",
-  "Keep your current version forever",
-];
-const monthlyItems = [
-  "Full app during and after the trial",
-  "Month-to-month billing",
-  "Best for short projects",
-];
-const annualItems = [
-  "Full app during and after the trial",
-  "Updates while subscribed",
-  "Saves vs paying monthly",
+  "3-day full-featured trial",
+  "Region sharing window",
+  "Optional snapping helpers",
+  "No subscription",
 ];
 const whyPoints = [
   {
@@ -101,124 +89,32 @@ const whyPoints = [
 
     <section class="portal-pricing-simple">
       <section class="quiet-orbit-choices">
-        <div class="quiet-orbit-cards quiet-orbit-cards--portal-license">
+        <div class="quiet-orbit-cards quiet-orbit-cards--portal-license quiet-orbit-cards--portal-single">
           <article
-            class="orbit-card orbit-card--pro orbit-card--trial"
+            class="orbit-card orbit-card--pro orbit-card--trial orbit-card--recommended has-border-glow"
             data-reveal
             data-reveal-delay="130"
           >
-            <div class="orbit-card__header">
-              <h3>Monthly</h3>
-              <p class="orbit-card__price">
-                <span class="price-value">{monthlyTier?.price ?? "$2.99"}</span>
-                <span class="price-note">per month</span>
-              </p>
-              <p class="orbit-card__lead">
-                Low-friction access for short projects or occasional meetings.
-              </p>
-            </div>
-
-            <div class="orbit-card__tier-divider">
-              <span class="tier-label">Includes</span>
-            </div>
-
-            <ul class="orbit-card__list">
-              {monthlyItems.map((item) => (
-                <li>
-                  <svg class="check-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                    <path d="M3 8l3.5 3.5L13 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                  </svg>
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
-
-            {monthlyTier?.ctaUrl ? (
-              <a class="button button--secondary-paid" href={monthlyTier.ctaUrl} rel="noreferrer">
-                <span>Choose monthly</span>
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                  <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                </svg>
-              </a>
-            ) : (
-              <span class="button button--secondary-paid button--disabled" aria-disabled="true">Choose monthly</span>
-            )}
-          </article>
-
-          <article
-            class="orbit-card orbit-card--pro orbit-card--trial orbit-card--recommended"
-            data-reveal
-            data-reveal-delay="210"
-          >
+            <BorderGlow
+              client:load
+              edgeSensitivity={24}
+              glowColor="205 36 80"
+              glowRadius={44}
+              glowIntensity={0.78}
+              coneSpread={24}
+              animated
+            />
             <div class="orbit-card__header">
               <div class="orbit-card__badge">
-                <span class="orbit-card__label">Best value</span>
+                <span class="orbit-card__label">3-day trial</span>
               </div>
-              <h3>Annual</h3>
-              <p class="orbit-card__price">
-                <span class="price-value">{annualTier?.price ?? "$19"}</span>
-                <span class="price-note">
-                  per year · <span class="portal-price-was">$35.88</span> monthly
-                </span>
-              </p>
-              <p class="orbit-card__lead">
-                Same full Portal app, paid yearly at a discount.
-              </p>
-            </div>
-
-            <div class="orbit-card__tier-divider">
-              <span class="tier-label">Includes</span>
-            </div>
-
-            <ul class="orbit-card__list">
-              {annualItems.map((item) => (
-                <li>
-                  <svg class="check-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                    <path d="M3 8l3.5 3.5L13 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                  </svg>
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
-
-            {annualTier?.ctaUrl ? (
-              <a class="button button--pro" href={annualTier.ctaUrl} rel="noreferrer">
-                <span>Choose annual</span>
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                  <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                </svg>
-              </a>
-            ) : (
-              <span class="button button--pro button--disabled" aria-disabled="true">
-                Choose annual
-              </span>
-            )}
-          </article>
-
-          <article
-            class="orbit-card orbit-card--pro orbit-card--trial"
-            data-reveal
-            data-reveal-delay="290"
-          >
-            <div class="orbit-card__header">
               <h3>One-time</h3>
               <p class="orbit-card__price">
-                {introTier ? (
-                  <>
-                    <span class="price-value">{introTier.price}</span>
-                    <span class="price-note">
-                      intro · <span class="portal-price-was">{licenseTier.price}</span> normally
-                    </span>
-                  </>
-                ) : (
-                  <>
-                    <span class="price-value">{licenseTier.price}</span>
-                    <span class="price-note">{licenseTier.note}</span>
-                  </>
-                )}
+                <span class="price-value">{licenseTier.price}</span>
+                <span class="price-note">{licenseTier.note}</span>
               </p>
               <p class="orbit-card__lead">
-                Pay once and keep using your current version forever.
+                {licenseTier.lead}
               </p>
             </div>
 
@@ -237,15 +133,15 @@ const whyPoints = [
               ))}
             </ul>
 
-            {introTier?.ctaUrl ? (
-              <a class="button button--secondary-paid" href={introTier.ctaUrl} rel="noreferrer">
-                <span>Buy for {introTier.price}</span>
+            {licenseTier.ctaUrl ? (
+              <a class="button button--pro" href={licenseTier.ctaUrl} rel="noreferrer">
+                <span>Buy for {licenseTier.price}</span>
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
                   <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
                 </svg>
               </a>
             ) : (
-              <span class="button button--secondary-paid button--disabled" aria-disabled="true">
+              <span class="button button--pro button--disabled" aria-disabled="true">
                 {licenseTier.cta}
               </span>
             )}

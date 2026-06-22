@@ -28,7 +28,12 @@ const structuredData = {
   <SiteHeader />
 
   <main class="quiet-orbit-page givdul-catalog">
-    <div class="e1">
+    <section class="e1" aria-labelledby="catalog-title">
+      <div class="e1-head">
+        <p class="e1-kicker">Givdul catalog</p>
+        <h1 id="catalog-title">Focused Mac utilities.</h1>
+      </div>
+
       <div class="e1-list">
         {apps.map((app, i) => (
           <>
@@ -53,6 +58,6 @@ const structuredData = {
           </>
         ))}
       </div>
-    </div>
+    </section>
   </main>
 </BaseLayout>

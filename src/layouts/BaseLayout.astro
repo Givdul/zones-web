@@ -1,6 +1,7 @@
 ---
 import "../styles/global.css";
 import AgentationBridge from "../components/AgentationBridge.jsx";
+import SiteBackground from "../components/SiteBackground.svelte";
 import SiteFooter from "../components/SiteFooter.astro";
 import type { AppRecord } from "../data/site";
 import { site } from "../data/site";
@@ -65,6 +66,7 @@ const structuredDataPayload = structuredData
     )}
   </head>
   <body>
+    <SiteBackground client:load />
     <div class="site-shell">
       <div class="site-shell__fill">
         <slot />
