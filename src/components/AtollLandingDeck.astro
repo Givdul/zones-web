@@ -30,7 +30,7 @@ const agentHarnesses = [
 <main class="atoll-page givdul-app-landing" data-motion-root aria-label="Atoll for Mac">
   <section class="atoll-hero" aria-label="Overview">
     <div class="atoll-hero__copy">
-      <h1 data-reveal data-reveal-delay="60">Atoll</h1>
+      <h1 data-reveal data-reveal-delay="60"><span>At</span><span class="atoll-hero__glyph-slot"><img class="atoll-hero__glyph-o" src="/atoll-glyph.png" alt="o" width="96" height="96" decoding="async" /></span><span>ll</span></h1>
       <p class="atoll-hero__lede" data-reveal data-reveal-delay="120">
         A free Mac menu bar app that shows local coding agent status in a small island around the notch. Works with most popular agent harnesses.
       </p>
@@ -315,11 +315,37 @@ const agentHarnesses = [
   }
 
   .atoll-hero h1 {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
     margin: 0;
     font-family: var(--theme-font-display);
-    font-size: clamp(4.5rem, 12vw, 8.25rem);
+    font-size: clamp(3.7rem, 9vw, 6.15rem);
     line-height: 0.9;
     letter-spacing: 0;
+  }
+
+  .atoll-hero h1 span {
+    transition: opacity 180ms ease;
+  }
+
+  .atoll-hero h1:hover span {
+    opacity: 0.78;
+  }
+
+  .atoll-hero__glyph-slot {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 0.62em;
+    height: 0.48em;
+    margin: 0 0.03em;
+    transform: translateY(0.02em);
+  }
+
+  .atoll-hero__glyph-o {
+    width: auto;
+    height: 100%;
   }
 
   .atoll-hero__lede {
@@ -509,9 +535,9 @@ const agentHarnesses = [
       filter 180ms ease;
   }
 
-  .agent-dock__item:nth-child(1)::before,
-  .agent-dock__item:nth-child(4)::before,
-  .agent-dock__item:nth-child(6)::before {
+  .agent-dock__item:nth-child(6)::before,
+  .agent-dock__item:nth-child(10)::before,
+  .agent-dock__item:nth-child(14)::before {
     content: "";
     position: absolute;
     bottom: 0.3rem;
@@ -1236,7 +1262,7 @@ const agentHarnesses = [
     }
 
     .atoll-hero h1 {
-      font-size: clamp(4rem, 23vw, 6rem);
+      font-size: clamp(3.4rem, 18vw, 4.75rem);
     }
 
     .macbook {

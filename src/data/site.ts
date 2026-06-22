@@ -263,6 +263,7 @@ export const apps: AppRecord[] = [
     status: "live",
     name: "Atoll",
     productLabel: "Agent status island",
+    iconPath: "/atoll-icon.png",
     appStoreUrl: null,
     downloadUrl: downloadUrls.atoll,
     title: "Atoll for Mac",
