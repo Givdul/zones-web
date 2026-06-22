@@ -32,7 +32,7 @@ const agentHarnesses = [
     <div class="atoll-hero__copy">
       <h1 data-reveal data-reveal-delay="60">Atoll</h1>
       <p class="atoll-hero__lede" data-reveal data-reveal-delay="120">
-        A free Mac menu bar app that shows local coding agent status in a small island around the notch.
+        A free Mac menu bar app that shows local coding agent status in a small island around the notch. Works with most popular agent harnesses.
       </p>
     </div>
 
@@ -60,6 +60,7 @@ const agentHarnesses = [
                   <path class="atoll-notch-svg__fill" d="M0 0H132V19.44Q132 36 115.44 36H16.56Q0 36 0 19.44Z"></path>
                   <path class="atoll-notch-svg__hairline" d="M0 0H132V19.44Q132 36 115.44 36H16.56Q0 36 0 19.44Z"></path>
                 </svg>
+                <div class="atoll-island__hint" aria-hidden="true">Hover me</div>
               </div>
 
               <div class="atoll-island__rows">
@@ -124,24 +125,17 @@ const agentHarnesses = [
             </div>
 
             <div class="macbook__screen-content">
-              <section class="agent-marquee" aria-label="Supported agent harnesses">
-                <div class="agent-marquee__track">
-                  {[...agentHarnesses, ...agentHarnesses].map(([slug, label]) => (
-                    <span class="agent-marquee__item">
-                      <img src={`/atoll-agent-icons/${slug}.svg`} alt={label} width="28" height="28" loading="lazy" />
+              <section class="agent-dock" aria-label="Supported agent harnesses">
+                <div class="agent-dock__shelf">
+                  {agentHarnesses.map(([slug, label]) => (
+                    <span class="agent-dock__item" aria-label={label}>
+                      <span class="agent-dock__visual">
+                        <img src={`/atoll-agent-icons/${slug}.svg`} alt={label} width="28" height="28" loading="lazy" />
+                      </span>
+                      <span class="agent-dock__tooltip" aria-hidden="true">{label}</span>
                     </span>
                   ))}
                 </div>
-              </section>
-
-              <section class="atoll-strip" aria-label="What Atoll shows">
-                {app.proofPoints.map((point, index) => (
-                  <article>
-                    <span>{String(index + 1).padStart(2, "0")}</span>
-                    <h2>{point.title}</h2>
-                    {point.copy && <p>{point.copy}</p>}
-                  </article>
-                ))}
               </section>
             </div>
 
@@ -165,13 +159,6 @@ const agentHarnesses = [
     </div>
   </section>
 
-  <section class="atoll-download" aria-label="Download Atoll">
-    {ctaHref ? (
-      <a class="button button--pro" href={ctaHref} rel="noreferrer">Download free</a>
-    ) : (
-      <span class="button button--pro button--disabled" aria-disabled="true">Download soon</span>
-    )}
-  </section>
 </main>
 
 <script>
@@ -184,7 +171,13 @@ const agentHarnesses = [
     let timerInterval;
     let leaveTimer;
     let enterTimer;
+    let hintTimer;
+    let hasSeenRunningDetails = false;
     const timers = [...island.querySelectorAll(".atoll-row__timer")];
+    const stateDelay = {
+      input: 5000,
+      permission: 5000,
+    };
 
     const formatElapsed = (seconds) => {
       if (seconds < 60) return `${String(seconds).padStart(2, "0")}s`;
@@ -204,6 +197,9 @@ const agentHarnesses = [
       if (island.dataset.state === state && island.dataset.phase !== "leaving") return;
       window.clearTimeout(leaveTimer);
       window.clearTimeout(enterTimer);
+      window.clearTimeout(hintTimer);
+      delete island.dataset.runningExpanded;
+      delete island.dataset.showHint;
 
       const fromState = island.dataset.visibleState ?? island.dataset.state ?? state;
       island.dataset.state = state;
@@ -218,19 +214,57 @@ const agentHarnesses = [
           enterTimer = window.setTimeout(() => {
             if (island.dataset.state === state) {
               island.dataset.phase = "settled";
+              if (state === "running" && !hasSeenRunningDetails) {
+                hintTimer = window.setTimeout(() => {
+                  if (island.dataset.state === "running" && !island.dataset.runningExpanded) {
+                    island.dataset.showHint = "true";
+                  }
+                }, 1300);
+              }
             }
           }, 420);
         }
       }, 460);
     };
 
-    const startCycle = () => {
-      window.clearInterval(cycleTimer);
-      cycleTimer = window.setInterval(() => {
+    const scheduleNext = (delay) => {
+      window.clearTimeout(cycleTimer);
+      cycleTimer = window.setTimeout(() => {
         cycleIndex = (cycleIndex + 1) % states.length;
-        setState(states[cycleIndex]);
-      }, 4600);
+        const nextState = states[cycleIndex];
+        setState(nextState);
+        if (nextState !== "running") {
+          scheduleNext(stateDelay[nextState]);
+        }
+      }, delay);
     };
+
+    const startCycle = () => {
+      window.clearTimeout(cycleTimer);
+      if (states[cycleIndex] !== "running") {
+        scheduleNext(stateDelay[states[cycleIndex]]);
+      }
+    };
+
+    const expandRunning = () => {
+      if (island.dataset.state !== "running") return;
+      hasSeenRunningDetails = true;
+      window.clearTimeout(hintTimer);
+      delete island.dataset.showHint;
+      island.dataset.runningExpanded = "true";
+    };
+
+    const collapseRunning = () => {
+      if (island.dataset.state !== "running" || !island.dataset.runningExpanded) return;
+      delete island.dataset.runningExpanded;
+      cycleIndex = states.indexOf("running");
+      scheduleNext(900);
+    };
+
+    island.addEventListener("mouseenter", expandRunning);
+    island.addEventListener("pointerenter", expandRunning);
+    island.addEventListener("mouseleave", collapseRunning);
+    island.addEventListener("pointerleave", collapseRunning);
 
     setState(states[cycleIndex]);
     startCycle();
@@ -242,6 +276,7 @@ const agentHarnesses = [
       window.clearInterval(timerInterval);
       window.clearTimeout(leaveTimer);
       window.clearTimeout(enterTimer);
+      window.clearTimeout(hintTimer);
     }, { once: true });
   };
 
@@ -367,63 +402,228 @@ const agentHarnesses = [
     inset: 0;
     z-index: 1;
     display: grid;
-    grid-template-rows: 1fr auto auto;
+    grid-template-rows: 1fr auto;
     align-items: end;
-    gap: clamp(0.75rem, 1.8vw, 1.25rem);
-    padding: min(9vw, 5.9rem) clamp(2rem, 4.6vw, 4.2rem) clamp(1.5rem, 3.4vw, 2.7rem);
+    padding: min(9vw, 5.9rem) clamp(2rem, 4.6vw, 4.2rem) clamp(0.95rem, 2.1vw, 1.55rem);
     pointer-events: none;
   }
 
-  .agent-marquee {
-    width: min(100%, 720px);
-    margin-inline: auto;
-    overflow: hidden;
-    mask-image: linear-gradient(90deg, transparent, black 14%, black 86%, transparent);
-    border-radius: 999px;
-    background:
-      linear-gradient(180deg, rgb(255 255 255 / 0.18), rgb(255 255 255 / 0.04)),
-      rgb(0 0 0 / 0.34);
-    box-shadow:
-      inset 0 0 0 1px rgb(255 255 255 / 0.14),
-      0 1rem 2rem rgb(0 0 0 / 0.24);
-    backdrop-filter: blur(18px) saturate(1.15);
-  }
-
-  .agent-marquee__track {
-    display: flex;
+  .agent-dock {
+    --dock-icon-size: clamp(1.95rem, 3.55vw, 2.75rem);
+    --dock-dot-space: 0.72rem;
+    --dock-plate-height: calc(var(--dock-icon-size) + var(--dock-dot-space) + var(--dock-dot-space));
+    --dock-hover-lift: 1.28rem;
+    --dock-tooltip-scale-lift: clamp(1.15rem, 1.9vw, 1.55rem);
     width: max-content;
-    gap: clamp(1rem, 2.4vw, 1.8rem);
-    padding: 0.58rem max(1rem, 3vw);
-    animation: atoll-agent-marquee 28s linear infinite;
+    max-width: 100%;
+    margin-inline: auto;
+    pointer-events: auto;
   }
 
-  .agent-marquee:hover .agent-marquee__track {
-    animation-play-state: paused;
+  .agent-dock__shelf {
+    position: relative;
+    display: flex;
+    align-items: end;
+    justify-content: center;
+    gap: clamp(0.28rem, 0.8vw, 0.5rem);
+    min-height: calc(var(--dock-plate-height) + 1.25rem);
+    padding: 0 clamp(0.42rem, 0.9vw, 0.62rem);
+    border-radius: 1.65rem 1.65rem 1.25rem 1.25rem;
+    transform-origin: center bottom;
+    transition: transform 180ms var(--ease-out-quart);
   }
 
-  .agent-marquee__item {
+  .agent-dock:hover .agent-dock__shelf {
+    transform: translateY(-0.06rem);
+  }
+
+  .agent-dock__shelf::before,
+  .agent-dock__shelf::after {
+    content: "";
+    position: absolute;
+    pointer-events: none;
+  }
+
+  .agent-dock__shelf::before {
+    inset: auto 0 0;
+    z-index: 0;
+    height: var(--dock-plate-height);
+    border-radius: 1.65rem 1.65rem 1.25rem 1.25rem;
+    background:
+      linear-gradient(180deg, rgb(255 255 255 / 0.33), rgb(255 255 255 / 0.14) 12%, rgb(255 255 255 / 0.06) 70%, rgb(255 255 255 / 0.12)),
+      rgb(34 35 37 / 0.44);
+    box-shadow:
+      inset 0 0 0 1px rgb(255 255 255 / 0.18),
+      inset 0 1px 0 rgb(255 255 255 / 0.48),
+      0 0.35rem 0.9rem rgb(0 0 0 / 0.16);
+    backdrop-filter: blur(24px) saturate(1.18);
+    transition:
+      background 180ms ease,
+      box-shadow 180ms ease;
+  }
+
+  .agent-dock:hover .agent-dock__shelf::before {
+    background:
+      linear-gradient(180deg, rgb(255 255 255 / 0.38), rgb(255 255 255 / 0.17) 12%, rgb(255 255 255 / 0.075) 70%, rgb(255 255 255 / 0.14)),
+      rgb(34 35 37 / 0.48);
+    box-shadow:
+      inset 0 0 0 1px rgb(255 255 255 / 0.22),
+      inset 0 1px 0 rgb(255 255 255 / 0.54),
+      0 0.45rem 1rem rgb(0 0 0 / 0.18);
+  }
+
+  .agent-dock__shelf::after {
+    inset: auto 5% 0.18rem;
+    z-index: 0;
+    height: 0.42rem;
+    border-radius: 999px;
+    background: rgb(0 0 0 / 0.2);
+    filter: blur(5px);
+  }
+
+  .agent-dock__item {
+    position: relative;
+    z-index: 1;
     display: grid;
     place-items: center;
-    width: 2rem;
-    height: 2rem;
-    opacity: 0.68;
+    width: var(--dock-icon-size);
+    height: 4.6rem;
+    margin-inline: 0;
+    border-radius: 0.72rem;
+    opacity: 0.9;
     transition:
-      opacity 160ms ease,
-      transform 160ms var(--ease-out-quart),
-      filter 160ms ease;
+      margin 180ms var(--ease-out-quart),
+      opacity 180ms ease;
   }
 
-  .agent-marquee__item:hover {
+  .agent-dock__visual {
+    position: absolute;
+    bottom: var(--dock-dot-space);
+    display: grid;
+    place-items: center;
+    width: var(--dock-icon-size);
+    height: var(--dock-icon-size);
+    transform-origin: bottom center;
+    transition:
+      transform 180ms var(--ease-out-quart),
+      filter 180ms ease;
+  }
+
+  .agent-dock__item:nth-child(1)::before,
+  .agent-dock__item:nth-child(4)::before,
+  .agent-dock__item:nth-child(6)::before {
+    content: "";
+    position: absolute;
+    bottom: 0.3rem;
+    width: 0.24rem;
+    height: 0.24rem;
+    border-radius: 999px;
+    background: rgb(255 255 255 / 0.72);
+    box-shadow: 0 0 8px rgb(255 255 255 / 0.28);
+  }
+
+  .agent-dock__item:hover {
+    z-index: 8;
+    margin-inline: 0.38rem;
     opacity: 1;
-    transform: translateY(-1px) scale(1.08);
-    filter: drop-shadow(0 0 14px rgb(255 255 255 / 0.4));
   }
 
-  .agent-marquee__item img {
-    width: 1.45rem;
-    height: 1.45rem;
+  .agent-dock__item:hover .agent-dock__visual {
+    transform: translateY(calc(-1 * var(--dock-hover-lift)));
+    filter:
+      drop-shadow(0 1.1rem 1.25rem rgb(0 0 0 / 0.38))
+      drop-shadow(0 0 1rem rgb(255 255 255 / 0.16));
+  }
+
+  .agent-dock__item:has(+ .agent-dock__item:hover),
+  .agent-dock__item:hover + .agent-dock__item {
+    z-index: 5;
+    margin-inline: 0.16rem;
+    opacity: 0.94;
+  }
+
+  .agent-dock__item:has(+ .agent-dock__item:hover) .agent-dock__visual,
+  .agent-dock__item:hover + .agent-dock__item .agent-dock__visual {
+    transform: translateY(-0.68rem);
+  }
+
+  .agent-dock__item:has(+ .agent-dock__item + .agent-dock__item:hover),
+  .agent-dock__item:hover + .agent-dock__item + .agent-dock__item {
+    z-index: 3;
+    opacity: 0.9;
+  }
+
+  .agent-dock__item:has(+ .agent-dock__item + .agent-dock__item:hover) .agent-dock__visual,
+  .agent-dock__item:hover + .agent-dock__item + .agent-dock__item .agent-dock__visual {
+    transform: translateY(-0.26rem);
+  }
+
+  .agent-dock__visual img {
+    position: relative;
+    z-index: 1;
+    width: 74%;
+    height: 74%;
     object-fit: contain;
-    filter: drop-shadow(0 1px 5px rgb(0 0 0 / 0.45));
+    filter:
+      drop-shadow(0 1px 4px rgb(0 0 0 / 0.48))
+      drop-shadow(0 0.45rem 0.35rem rgb(0 0 0 / 0.18));
+    transform-origin: bottom center;
+    transition: transform 180ms var(--ease-out-quart);
+  }
+
+  .agent-dock__item:hover .agent-dock__visual img {
+    transform: scale(1.72);
+  }
+
+  .agent-dock__item:has(+ .agent-dock__item:hover) .agent-dock__visual img,
+  .agent-dock__item:hover + .agent-dock__item .agent-dock__visual img {
+    transform: scale(1.32);
+  }
+
+  .agent-dock__item:has(+ .agent-dock__item + .agent-dock__item:hover) .agent-dock__visual img,
+  .agent-dock__item:hover + .agent-dock__item + .agent-dock__item .agent-dock__visual img {
+    transform: scale(1.12);
+  }
+
+  .agent-dock__tooltip {
+    position: absolute;
+    left: 50%;
+    bottom: calc(var(--dock-dot-space) + var(--dock-icon-size) + var(--dock-hover-lift) + var(--dock-tooltip-scale-lift));
+    z-index: 10;
+    padding: 0.28rem 0.62rem 0.32rem;
+    border-radius: 999px;
+    color: rgb(67 67 72);
+    background: rgb(246 246 248 / 0.96);
+    box-shadow: 0 0.28rem 0.8rem rgb(0 0 0 / 0.16);
+    font-family: var(--theme-font-sans);
+    font-size: 0.72rem;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: 0;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(-50%, 0.28rem);
+    transform-origin: bottom center;
+    transition:
+      opacity 140ms ease,
+      transform 180ms var(--ease-out-quart);
+  }
+
+  .agent-dock__tooltip::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: calc(100% - 0.28rem);
+    width: 0.5rem;
+    height: 0.5rem;
+    background: rgb(246 246 248 / 0.96);
+    transform: translateX(-50%) rotate(45deg);
+  }
+
+  .agent-dock__item:hover .agent-dock__tooltip {
+    opacity: 1;
+    transform: translate(-50%, 0);
   }
 
   .macbook__cta {
@@ -463,7 +663,7 @@ const agentHarnesses = [
 
   .atoll-island {
     position: absolute;
-    top: 0;
+    top: 2.1rem;
     left: 50%;
     z-index: 2;
     width: 392px;
@@ -478,6 +678,42 @@ const agentHarnesses = [
     height: 36px;
     margin: 0 auto;
     filter: drop-shadow(0 1px 0 rgb(255 255 255 / 0.03));
+  }
+
+  .atoll-island__hint {
+    position: absolute;
+    left: 50%;
+    top: 10px;
+    z-index: 2;
+    border-radius: 999px;
+    color: rgb(255 255 255 / 1);
+    font-size: 0.82rem;
+    font-weight: 900;
+    line-height: 1;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(-50%, 0.18rem);
+    transition:
+      opacity 220ms ease,
+      transform 220ms var(--ease-out-quart);
+  }
+
+  .atoll-island[data-state="running"]:not([data-running-expanded="true"]) .atoll-island__hint,
+  .atoll-island[data-state="running"][data-show-hint="true"] .atoll-island__hint {
+    opacity: 1;
+    color: rgb(255 255 255 / 1);
+    animation: atoll-hover-hint 1.15s var(--ease-out-quart) infinite;
+    animation-delay: 1.3s;
+    transition-delay: 1.3s;
+  }
+
+  .atoll-island[data-state="running"]:hover .atoll-island__hint,
+  .atoll-island[data-state="running"][data-running-expanded="true"] .atoll-island__hint {
+    opacity: 0;
+    animation: none;
+    transform: translate(-50%, -0.1rem);
+    transition-delay: 0s;
   }
 
   .atoll-notch-svg {
@@ -508,7 +744,7 @@ const agentHarnesses = [
   }
 
   .atoll-island[data-state="running"] .atoll-notch-svg__edge--base {
-    opacity: 0.22;
+    opacity: 0;
   }
 
   .atoll-notch-runner {
@@ -516,16 +752,19 @@ const agentHarnesses = [
     z-index: 1;
     left: 0;
     top: 0;
-    width: 10px;
-    height: 10px;
-    border-radius: 2.5px;
+    width: 14px;
+    height: 3px;
+    border-radius: 999px;
     background: var(--atoll-running);
-    box-shadow: 0 0 6px rgb(255 133 26 / 0.75);
+    box-shadow:
+      0 0 3px rgb(255 133 26 / 0.72),
+      0 0 8px rgb(255 133 26 / 0.32);
     opacity: 0;
-    offset-path: path("M132 2V19.44Q132 36 115.44 36H16.56Q0 36 0 19.44V2");
+    offset-path: path("M129.8 3.8V19Q129.8 33.7 115.1 33.7H16.9Q2.2 33.7 2.2 19V3.8");
     offset-anchor: center;
-    animation: atoll-notch-runner 3.15s linear infinite;
-    will-change: offset-distance;
+    offset-rotate: auto;
+    animation: atoll-notch-runner 4.6s linear infinite;
+    will-change: offset-distance, opacity;
   }
 
   .atoll-island[data-state="running"] .atoll-notch-runner--head {
@@ -533,63 +772,63 @@ const agentHarnesses = [
   }
 
   .atoll-island[data-state="running"] .atoll-notch-runner--tail-1 {
-    opacity: 0.7;
-    animation-delay: 0.045s;
+    opacity: 0.45;
+    animation-delay: 0.03s;
   }
 
   .atoll-island[data-state="running"] .atoll-notch-runner--tail-2 {
-    opacity: 0.58;
-    animation-delay: 0.09s;
+    opacity: 0.32;
+    animation-delay: 0.06s;
   }
 
   .atoll-island[data-state="running"] .atoll-notch-runner--tail-3 {
-    opacity: 0.48;
-    animation-delay: 0.135s;
+    opacity: 0.22;
+    animation-delay: 0.09s;
   }
 
   .atoll-island[data-state="running"] .atoll-notch-runner--tail-4 {
-    opacity: 0.39;
-    animation-delay: 0.18s;
+    opacity: 0.15;
+    animation-delay: 0.12s;
   }
 
   .atoll-island[data-state="running"] .atoll-notch-runner--tail-5 {
-    opacity: 0.31;
-    animation-delay: 0.225s;
+    opacity: 0.1;
+    animation-delay: 0.15s;
   }
 
   .atoll-island[data-state="running"] .atoll-notch-runner--tail-6 {
-    opacity: 0.24;
-    animation-delay: 0.27s;
+    opacity: 0.065;
+    animation-delay: 0.18s;
   }
 
   .atoll-island[data-state="running"] .atoll-notch-runner--tail-7 {
-    opacity: 0.18;
-    animation-delay: 0.315s;
+    opacity: 0.04;
+    animation-delay: 0.21s;
   }
 
   .atoll-island[data-state="running"] .atoll-notch-runner--tail-8 {
-    opacity: 0.13;
-    animation-delay: 0.36s;
+    opacity: 0.025;
+    animation-delay: 0.24s;
   }
 
   .atoll-island[data-state="running"] .atoll-notch-runner--tail-9 {
-    opacity: 0.095;
-    animation-delay: 0.405s;
+    opacity: 0;
+    animation-delay: 0s;
   }
 
   .atoll-island[data-state="running"] .atoll-notch-runner--tail-10 {
-    opacity: 0.07;
-    animation-delay: 0.45s;
+    opacity: 0;
+    animation-delay: 0s;
   }
 
   .atoll-island[data-state="running"] .atoll-notch-runner--tail-11 {
-    opacity: 0.05;
-    animation-delay: 0.495s;
+    opacity: 0;
+    animation-delay: 0s;
   }
 
   .atoll-island[data-state="running"] .atoll-notch-runner--tail-12 {
-    opacity: 0.035;
-    animation-delay: 0.54s;
+    opacity: 0;
+    animation-delay: 0s;
   }
 
   .atoll-island[data-state="test"] .atoll-notch-svg__edge,
@@ -638,6 +877,22 @@ const agentHarnesses = [
   .atoll-island[data-visible-state="permission"] .atoll-island__rows,
   .atoll-island[data-visible-state="done"] .atoll-island__rows {
     max-height: 32px;
+  }
+
+  .atoll-island[data-visible-state="running"]:not([data-running-expanded="true"]) .atoll-island__rows {
+    max-height: 0;
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  .atoll-island[data-visible-state="running"][data-running-expanded="true"] .atoll-island__rows {
+    max-height: 102px;
+  }
+
+  .atoll-island[data-visible-state="running"]:hover .atoll-island__rows {
+    max-height: 102px;
+    opacity: 1;
+    transform: translateY(0);
   }
 
   .atoll-row {
@@ -869,52 +1124,6 @@ const agentHarnesses = [
     animation-delay: 0.315s;
   }
 
-  .atoll-strip {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1px;
-    width: 100%;
-    overflow: hidden;
-    border-radius: 1rem;
-    background: rgb(255 255 255 / 0.14);
-    box-shadow:
-      inset 0 0 0 1px rgb(255 255 255 / 0.14),
-      0 1.4rem 3rem rgb(0 0 0 / 0.3);
-    backdrop-filter: blur(22px) saturate(1.12);
-  }
-
-  .atoll-strip article {
-    min-width: 0;
-    padding: clamp(0.85rem, 2vw, 1.2rem);
-    background: rgb(0 0 0 / 0.46);
-  }
-
-  .atoll-strip span {
-    color: rgb(255 255 255 / 0.62);
-    font-size: 0.72rem;
-    font-weight: 800;
-  }
-
-  .atoll-strip h2 {
-    margin: clamp(1rem, 2.4vw, 1.7rem) 0 0;
-    color: white;
-    font-size: clamp(1rem, 1.8vw, 1.45rem);
-    line-height: 1;
-    letter-spacing: 0;
-    text-wrap: balance;
-    text-shadow: 0 1px 12px rgb(0 0 0 / 0.42);
-  }
-
-  .atoll-strip p {
-    margin: 0;
-    color: var(--theme-text-secondary);
-  }
-
-  .atoll-download {
-    display: grid;
-    padding-top: clamp(3rem, 8vw, 7rem);
-  }
-
   [data-motion-root][data-motion-ready="true"] [data-reveal] {
     opacity: 0;
     transform: translateY(18px);
@@ -929,8 +1138,41 @@ const agentHarnesses = [
   }
 
   @keyframes atoll-notch-runner {
-    to {
+    0% {
+      offset-distance: 50%;
+      transform: scaleX(1.08);
+    }
+    20% {
+      offset-distance: 94%;
+      transform: scaleX(0.76);
+    }
+    25% {
       offset-distance: 100%;
+      transform: scaleX(0.72);
+    }
+    30% {
+      offset-distance: 94%;
+      transform: scaleX(0.76);
+    }
+    50% {
+      offset-distance: 50%;
+      transform: scaleX(1.08);
+    }
+    70% {
+      offset-distance: 6%;
+      transform: scaleX(0.76);
+    }
+    75% {
+      offset-distance: 0%;
+      transform: scaleX(0.72);
+    }
+    80% {
+      offset-distance: 6%;
+      transform: scaleX(0.76);
+    }
+    100% {
+      offset-distance: 50%;
+      transform: scaleX(1.08);
     }
   }
 
@@ -951,16 +1193,20 @@ const agentHarnesses = [
     }
   }
 
-  @keyframes atoll-agent-marquee {
-    to {
-      transform: translateX(-50%);
+  @keyframes atoll-hover-hint {
+    0%,
+    100% {
+      transform: translate(-50%, 0.16rem);
+    }
+    45% {
+      transform: translate(-50%, -0.06rem);
     }
   }
 
   @media (prefers-reduced-motion: reduce) {
     .atoll-notch-runner,
     .atoll-row__activity span,
-    .agent-marquee__track,
+    .atoll-island[data-state="running"][data-show-hint="true"] .atoll-island__hint,
     .atoll-island[data-phase="entering"] .atoll-row,
     [data-motion-root][data-motion-ready="true"] [data-reveal] {
       animation: none;
@@ -974,20 +1220,16 @@ const agentHarnesses = [
       padding-top: 2rem;
     }
 
-    .atoll-strip {
-      grid-template-columns: repeat(3, 1fr);
-    }
-
-    .atoll-strip article {
-      padding: 0.8rem;
-    }
-
-    .atoll-strip h2 {
-      font-size: clamp(0.82rem, 2.7vw, 1.1rem);
-    }
   }
 
   @media (max-width: 620px) {
+    .agent-dock {
+      --dock-icon-size: 1.42rem;
+      --dock-dot-space: 0.46rem;
+      --dock-hover-lift: 0.48rem;
+      --dock-tooltip-scale-lift: 0.42rem;
+    }
+
     .atoll-page {
       max-width: calc(100dvw - 1rem);
       padding-bottom: 3rem;
@@ -1015,35 +1257,68 @@ const agentHarnesses = [
     }
 
     .macbook__screen-content {
-      gap: 0.5rem;
-      padding: 5rem 1.25rem 1rem;
+      padding: 5rem 1.1rem 1.25rem;
     }
 
-    .agent-marquee__track {
-      padding-block: 0.42rem;
+    .agent-dock__shelf {
+      min-height: calc(var(--dock-plate-height) + 0.95rem);
+      gap: 0.25rem;
+      padding: 0 0.65rem;
+      border-radius: 1rem;
     }
 
-    .agent-marquee__item {
-      width: 1.65rem;
-      height: 1.65rem;
+    .agent-dock__shelf::before {
+      border-radius: 1rem;
     }
 
-    .agent-marquee__item img {
-      width: 1.15rem;
-      height: 1.15rem;
+    .agent-dock__item {
+      height: 3.05rem;
+      border-radius: 0.42rem;
     }
 
-    .atoll-strip {
-      border-radius: 0.7rem;
+    .agent-dock__item:nth-child(n + 13) {
+      display: none;
     }
 
-    .atoll-strip article {
-      padding: 0.62rem;
+    .agent-dock__item:hover {
+      margin-inline: 0.12rem;
     }
 
-    .atoll-strip h2 {
-      margin-top: 0.7rem;
-      font-size: clamp(0.7rem, 3vw, 0.9rem);
+    .agent-dock__item:hover .agent-dock__visual {
+      transform: translateY(calc(-1 * var(--dock-hover-lift)));
+    }
+
+    .agent-dock__item:has(+ .agent-dock__item:hover),
+    .agent-dock__item:hover + .agent-dock__item {
+      margin-inline: 0.04rem;
+    }
+
+    .agent-dock__item:has(+ .agent-dock__item:hover) .agent-dock__visual,
+    .agent-dock__item:hover + .agent-dock__item .agent-dock__visual {
+      transform: translateY(-0.2rem);
+    }
+
+    .agent-dock__item:has(+ .agent-dock__item + .agent-dock__item:hover) .agent-dock__visual,
+    .agent-dock__item:hover + .agent-dock__item + .agent-dock__item .agent-dock__visual {
+      transform: none;
+    }
+
+    .agent-dock__tooltip {
+      font-size: 0.62rem;
+    }
+
+    .agent-dock__item:hover .agent-dock__visual img {
+      transform: scale(1.3);
+    }
+
+    .agent-dock__item:has(+ .agent-dock__item:hover) .agent-dock__visual img,
+    .agent-dock__item:hover + .agent-dock__item .agent-dock__visual img {
+      transform: scale(1.1);
+    }
+
+    .agent-dock__item:has(+ .agent-dock__item + .agent-dock__item:hover) .agent-dock__visual img,
+    .agent-dock__item:hover + .agent-dock__item + .agent-dock__item .agent-dock__visual img {
+      transform: none;
     }
 
     .atoll-row__status {
