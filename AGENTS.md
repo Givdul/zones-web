@@ -1,5 +1,15 @@
 # AGENTS.md
 
+## Application source repositories
+
+When work depends on an application's behavior, interface, assets, or implementation, inspect its source repository instead of inferring from this catalog site.
+
+- **Topside** (legacy product name and site slug: **Atoll**): https://github.com/Givdul/atoll
+- **Frame** (legacy product name and site slug: **Portal**): https://github.com/Givdul/portal
+- **Zones**: https://github.com/Givdul/zones
+
+This repository, https://github.com/Givdul/zones-web, is the web catalog and marketing site for these applications.
+
 ## Design Context
 
 ### Users
