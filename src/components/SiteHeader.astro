@@ -11,7 +11,7 @@ interface Props {
 const { app, ctaLabel, revealOnScroll = false } = Astro.props;
 const ctaHref = app?.downloadUrl ?? app?.appStoreUrl;
 const resolvedCtaLabel = ctaLabel ?? (app?.downloadUrl ? "Download for Mac" : "Download on the App Store");
-const brandIconPath = app?.iconPath ?? (app?.slug === "atoll" ? "/atoll-icon.png" : null);
+const brandIconPath = app?.iconPath ?? null;
 ---
 
 <header class:list={["site-header", revealOnScroll && "site-header--scroll-reveal"]}>

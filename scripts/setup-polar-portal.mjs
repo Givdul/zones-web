@@ -137,8 +137,8 @@ const createCheckoutLink = (plan, product) =>
     label: plan.label,
     allowDiscountCodes: true,
     requireBillingAddress: false,
-    successUrl: `${siteOrigin}/portal?checkout_id={CHECKOUT_ID}`,
-    returnUrl: `${siteOrigin}/portal`,
+    successUrl: `${siteOrigin}/frame?checkout_id={CHECKOUT_ID}`,
+    returnUrl: `${siteOrigin}/frame`,
     metadata: productMetadata(plan.key),
   });
 

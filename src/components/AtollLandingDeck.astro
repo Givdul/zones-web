@@ -8,31 +8,20 @@ interface Props {
 const { app } = Astro.props;
 const ctaHref = app.downloadUrl ?? app.appStoreUrl;
 const agentHarnesses = [
-  ["amp", "Amp"],
   ["claude", "Claude Code"],
-  ["codebuddy", "CodeBuddy"],
   ["codex", "Codex"],
-  ["copilot", "Copilot"],
-  ["cursor", "Cursor"],
-  ["deepseek", "DeepSeek"],
-  ["droid", "Factory Droid"],
-  ["gemini", "Gemini CLI"],
-  ["hermes", "Hermes"],
-  ["kimi", "Kimi"],
-  ["kiro", "Kiro"],
+  ["cursor", "Cursor Agent"],
   ["opencode", "OpenCode"],
   ["pi", "Pi"],
-  ["qoder", "Qoder"],
-  ["qwen", "Qwen"],
 ];
 ---
 
-<main class="atoll-page givdul-app-landing" data-motion-root aria-label="Atoll for Mac">
+<main class="atoll-page givdul-app-landing" data-motion-root aria-label="Topside for Mac">
   <section class="atoll-hero" aria-label="Overview">
     <div class="atoll-hero__copy">
-      <h1 data-reveal data-reveal-delay="60"><span>At</span><span class="atoll-hero__glyph-slot"><img class="atoll-hero__glyph-o" src="/atoll-glyph.png" alt="o" width="96" height="96" decoding="async" /></span><span>ll</span></h1>
+      <h1 data-reveal data-reveal-delay="60">Topside</h1>
       <p class="atoll-hero__lede" data-reveal data-reveal-delay="120">
-        A free Mac menu bar app that shows local coding agent status in a small island around the notch. Works with most popular agent harnesses.
+        A Mac menu bar app that shows local coding agent status in a small island around the notch.
       </p>
     </div>
 
@@ -40,7 +29,7 @@ const agentHarnesses = [
       <section class="macbook" aria-label={app.heroVisualLabel}>
         <div class="macbook__screen">
           <div class="macbook__bezel">
-            <div class="atoll-island" data-atoll-island data-state="permission" data-visible-state="permission" data-phase="settled" tabindex="0">
+            <div class="atoll-island" data-atoll-island data-state="permission" data-visible-state="permission" data-phase="settled" tabindex="0" aria-label="Topside agent lifecycle preview">
               <div class="atoll-island__notch" aria-hidden="true">
                 <span class="atoll-notch-runner atoll-notch-runner--tail atoll-notch-runner--tail-12"></span>
                 <span class="atoll-notch-runner atoll-notch-runner--tail atoll-notch-runner--tail-11"></span>
@@ -82,9 +71,9 @@ const agentHarnesses = [
                   <span class="atoll-row__status"><svg class="atoll-status-icon atoll-status-icon--terminal" viewBox="0 0 14 14" aria-hidden="true"><rect x="1.6" y="2.4" width="10.8" height="9.2" rx="1.8" /><path d="M3.7 5.4 5.5 7 3.7 8.6M6.6 8.7h3.1" /></svg><span class="atoll-row__timer" data-start-seconds="42">42s</span></span>
                   <span class="atoll-row__activity" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span>
                 </div>
-                <div class="atoll-row atoll-row--running atoll-row--gemini" data-state-row="running">
-                  <span class="atoll-row__icon-well"><img src="/atoll-agent-icons/gemini.svg" alt="" /></span>
-                  <span class="atoll-row__title">Trace billing webhook</span>
+                <div class="atoll-row atoll-row--running atoll-row--pi" data-state-row="running">
+                  <span class="atoll-row__icon-well"><img src="/atoll-agent-icons/pi.svg" alt="" /></span>
+                  <span class="atoll-row__title">Monitor agent lifecycle</span>
                   <span class="atoll-row__status"><svg class="atoll-status-icon atoll-status-icon--terminal" viewBox="0 0 14 14" aria-hidden="true"><rect x="1.6" y="2.4" width="10.8" height="9.2" rx="1.8" /><path d="M3.7 5.4 5.5 7 3.7 8.6M6.6 8.7h3.1" /></svg><span class="atoll-row__timer" data-start-seconds="64">01m</span></span>
                   <span class="atoll-row__activity" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span>
                 </div>
@@ -94,9 +83,9 @@ const agentHarnesses = [
                   <span class="atoll-row__status"><svg class="atoll-status-icon atoll-status-icon--terminal" viewBox="0 0 14 14" aria-hidden="true"><rect x="1.6" y="2.4" width="10.8" height="9.2" rx="1.8" /><path d="M3.7 5.4 5.5 7 3.7 8.6M6.6 8.7h3.1" /></svg><span class="atoll-row__timer" data-start-seconds="91">01m</span></span>
                   <span class="atoll-row__activity" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span>
                 </div>
-                <div class="atoll-row atoll-row--running atoll-row--droid" data-state-row="running">
-                  <span class="atoll-row__icon-well"><img src="/atoll-agent-icons/droid.svg" alt="" /></span>
-                  <span class="atoll-row__title">Draft release notes</span>
+                <div class="atoll-row atoll-row--running atoll-row--cursor" data-state-row="running">
+                  <span class="atoll-row__icon-well"><img src="/atoll-agent-icons/cursor.svg" alt="" /></span>
+                  <span class="atoll-row__title">Review generated changes</span>
                   <span class="atoll-row__status"><svg class="atoll-status-icon atoll-status-icon--terminal" viewBox="0 0 14 14" aria-hidden="true"><rect x="1.6" y="2.4" width="10.8" height="9.2" rx="1.8" /><path d="M3.7 5.4 5.5 7 3.7 8.6M6.6 8.7h3.1" /></svg><span class="atoll-row__timer" data-start-seconds="128">02m</span></span>
                   <span class="atoll-row__activity" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span>
                 </div>
@@ -110,10 +99,20 @@ const agentHarnesses = [
                   <span class="atoll-row__title">Approve git push</span>
                   <span class="atoll-row__status"><svg class="atoll-status-icon atoll-status-icon--hand" viewBox="0 0 14 14" aria-hidden="true"><path d="M4.5 7.4V3.1a.8.8 0 0 1 1.6 0v3.2M6.1 6V2.4a.8.8 0 0 1 1.6 0V6M7.7 6.2V3a.8.8 0 0 1 1.6 0v3.8M9.3 7.1V4.6a.8.8 0 0 1 1.6 0v3.7c0 2.2-1.4 3.8-3.5 3.8H6.3c-1.1 0-1.9-.5-2.6-1.5L2.2 8.4a.85.85 0 0 1 1.3-1.1l1 1.2" /></svg><span class="atoll-row__timer" data-start-seconds="11">11s</span></span>
                 </div>
-                <div class="atoll-row atoll-row--done" data-state-row="done">
+                <div class="atoll-row atoll-row--finished" data-state-row="finished">
                   <span class="atoll-row__icon-well"><img src="/atoll-agent-icons/codex.svg" alt="" /></span>
                   <span class="atoll-row__title">Merged import cleanup</span>
                   <span class="atoll-row__status"><svg class="atoll-status-icon" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 7.3 5.7 10 11 4" /></svg><span class="atoll-row__timer" data-start-seconds="8">08s</span></span>
+                </div>
+                <div class="atoll-row atoll-row--failed" data-state-row="failed">
+                  <span class="atoll-row__icon-well"><img src="/atoll-agent-icons/claude.svg" alt="" /></span>
+                  <span class="atoll-row__title">Build app bundle</span>
+                  <span class="atoll-row__status"><svg class="atoll-status-icon" viewBox="0 0 14 14" aria-hidden="true"><path d="m4 4 6 6M10 4l-6 6" /></svg><span class="atoll-row__timer" data-start-seconds="19">19s</span></span>
+                </div>
+                <div class="atoll-row atoll-row--cancelled" data-state-row="cancelled">
+                  <span class="atoll-row__icon-well"><img src="/atoll-agent-icons/cursor.svg" alt="" /></span>
+                  <span class="atoll-row__title">Stop generated changes</span>
+                  <span class="atoll-row__status"><svg class="atoll-status-icon" viewBox="0 0 14 14" aria-hidden="true"><path d="M4.2 4.2 9.8 9.8M9.8 4.2 4.2 9.8" /></svg><span class="atoll-row__timer" data-start-seconds="27">27s</span></span>
                 </div>
               </div>
             </div>
@@ -141,14 +140,14 @@ const agentHarnesses = [
 
             <div class="macbook__cta" data-reveal data-reveal-delay="220">
               {ctaHref ? (
-                <a class="button button--pro" href={ctaHref} rel="noreferrer" aria-label="Download Atoll for Mac">
-                  <span>Download free</span>
+                <a class="button button--pro" href={ctaHref} rel="noreferrer" aria-label="Download Topside for Mac">
+                  <span>Download Topside</span>
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
                     <path d="M8 2v8M5 7l3 3 3-3M3 13h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
                   </svg>
                 </a>
               ) : (
-                <span class="button button--pro button--disabled" aria-disabled="true">Download soon</span>
+                <span class="button button--pro button--disabled" aria-disabled="true">Coming soon</span>
               )}
             </div>
           </div>
@@ -165,7 +164,7 @@ const agentHarnesses = [
   const setupAtollPreview = () => {
     const island = document.querySelector("[data-atoll-island]");
     if (!(island instanceof HTMLElement)) return;
-    const states = ["running", "input", "permission"];
+    const states = ["running", "input", "permission", "finished", "failed", "cancelled"];
     let cycleIndex = states.indexOf(island.dataset.state ?? "permission");
     let cycleTimer;
     let timerInterval;
@@ -173,10 +172,15 @@ const agentHarnesses = [
     let enterTimer;
     let hintTimer;
     let hasSeenRunningDetails = false;
+    const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
     const timers = [...island.querySelectorAll(".atoll-row__timer")];
     const stateDelay = {
+      running: 4200,
       input: 5000,
       permission: 5000,
+      finished: 4200,
+      failed: 4200,
+      cancelled: 4200,
     };
 
     const formatElapsed = (seconds) => {
@@ -200,6 +204,13 @@ const agentHarnesses = [
       window.clearTimeout(hintTimer);
       delete island.dataset.runningExpanded;
       delete island.dataset.showHint;
+
+      if (motionQuery.matches) {
+        island.dataset.state = state;
+        island.dataset.visibleState = state;
+        island.dataset.phase = "settled";
+        return;
+      }
 
       const fromState = island.dataset.visibleState ?? island.dataset.state ?? state;
       island.dataset.state = state;
@@ -227,23 +238,34 @@ const agentHarnesses = [
       }, 460);
     };
 
+    const stopActivity = () => {
+      window.clearTimeout(cycleTimer);
+      window.clearInterval(timerInterval);
+      window.clearTimeout(leaveTimer);
+      window.clearTimeout(enterTimer);
+      window.clearTimeout(hintTimer);
+      cycleTimer = undefined;
+      timerInterval = undefined;
+      leaveTimer = undefined;
+      enterTimer = undefined;
+      hintTimer = undefined;
+    };
+
     const scheduleNext = (delay) => {
       window.clearTimeout(cycleTimer);
       cycleTimer = window.setTimeout(() => {
         cycleIndex = (cycleIndex + 1) % states.length;
-        const nextState = states[cycleIndex];
-        setState(nextState);
-        if (nextState !== "running") {
-          scheduleNext(stateDelay[nextState]);
-        }
+        setState(states[cycleIndex]);
+        scheduleNext(stateDelay[states[cycleIndex]]);
       }, delay);
     };
 
-    const startCycle = () => {
-      window.clearTimeout(cycleTimer);
-      if (states[cycleIndex] !== "running") {
-        scheduleNext(stateDelay[states[cycleIndex]]);
-      }
+    const startActivity = () => {
+      if (motionQuery.matches) return;
+      window.clearInterval(timerInterval);
+      updateTimers();
+      timerInterval = window.setInterval(updateTimers, 1000);
+      scheduleNext(stateDelay[states[cycleIndex]]);
     };
 
     const expandRunning = () => {
@@ -257,26 +279,37 @@ const agentHarnesses = [
     const collapseRunning = () => {
       if (island.dataset.state !== "running" || !island.dataset.runningExpanded) return;
       delete island.dataset.runningExpanded;
-      cycleIndex = states.indexOf("running");
-      scheduleNext(900);
+    };
+
+    const handleMotionPreference = () => {
+      if (motionQuery.matches) {
+        setState("permission");
+        stopActivity();
+        return;
+      }
+
+      cycleIndex = states.indexOf(island.dataset.state ?? "permission");
+      startActivity();
     };
 
     island.addEventListener("mouseenter", expandRunning);
     island.addEventListener("pointerenter", expandRunning);
+    island.addEventListener("focus", expandRunning);
     island.addEventListener("mouseleave", collapseRunning);
     island.addEventListener("pointerleave", collapseRunning);
+    island.addEventListener("blur", collapseRunning);
 
-    setState(states[cycleIndex]);
-    startCycle();
-    updateTimers();
-    timerInterval = window.setInterval(updateTimers, 1000);
+    setState(motionQuery.matches ? "permission" : states[cycleIndex]);
+    if (motionQuery.matches) {
+      stopActivity();
+    } else {
+      startActivity();
+    }
+    motionQuery.addEventListener("change", handleMotionPreference);
 
     window.addEventListener("pagehide", () => {
-      window.clearInterval(cycleTimer);
-      window.clearInterval(timerInterval);
-      window.clearTimeout(leaveTimer);
-      window.clearTimeout(enterTimer);
-      window.clearTimeout(hintTimer);
+      stopActivity();
+      motionQuery.removeEventListener("change", handleMotionPreference);
     }, { once: true });
   };
 
@@ -292,7 +325,9 @@ const agentHarnesses = [
     --atoll-running: #ff851a;
     --atoll-input: #38c7ff;
     --atoll-permission: #ff334a;
-    --atoll-done: #38f26b;
+    --atoll-finished: #38f26b;
+    --atoll-failed: #ff6b35;
+    --atoll-cancelled: #b88cff;
     flex: 1 1 auto;
     display: flex;
     width: 100%;
@@ -861,7 +896,10 @@ const agentHarnesses = [
 
   .atoll-island[data-state="test"] .atoll-notch-svg__edge,
   .atoll-island[data-state="input"] .atoll-notch-svg__edge,
-  .atoll-island[data-state="permission"] .atoll-notch-svg__edge {
+  .atoll-island[data-state="permission"] .atoll-notch-svg__edge,
+  .atoll-island[data-state="finished"] .atoll-notch-svg__edge,
+  .atoll-island[data-state="failed"] .atoll-notch-svg__edge,
+  .atoll-island[data-state="cancelled"] .atoll-notch-svg__edge {
     opacity: 0;
   }
 
@@ -884,6 +922,18 @@ const agentHarnesses = [
     stroke: var(--atoll-permission);
   }
 
+  .atoll-island[data-state="finished"] .atoll-notch-svg__edge--base {
+    stroke: var(--atoll-finished);
+  }
+
+  .atoll-island[data-state="failed"] .atoll-notch-svg__edge--base {
+    stroke: var(--atoll-failed);
+  }
+
+  .atoll-island[data-state="cancelled"] .atoll-notch-svg__edge--base {
+    stroke: var(--atoll-cancelled);
+  }
+
   .atoll-island__rows {
     position: relative;
     z-index: 3;
@@ -903,7 +953,9 @@ const agentHarnesses = [
 
   .atoll-island[data-visible-state="input"] .atoll-island__rows,
   .atoll-island[data-visible-state="permission"] .atoll-island__rows,
-  .atoll-island[data-visible-state="done"] .atoll-island__rows {
+  .atoll-island[data-visible-state="finished"] .atoll-island__rows,
+  .atoll-island[data-visible-state="failed"] .atoll-island__rows,
+  .atoll-island[data-visible-state="cancelled"] .atoll-island__rows {
     max-height: 32px;
   }
 
@@ -957,13 +1009,18 @@ const agentHarnesses = [
   .atoll-row--running { outline-color: transparent; }
   .atoll-row--input { outline-color: rgb(46 204 255 / 0.28); }
   .atoll-row--permission { outline-color: rgb(255 56 87 / 0.28); }
-  .atoll-row--done { outline-color: rgb(61 240 112 / 0.2); }
+  .atoll-row--finished { outline-color: rgb(61 240 112 / 0.2); }
+  .atoll-row--failed { outline-color: rgb(255 107 53 / 0.28); }
+  .atoll-row--cancelled { outline-color: rgb(184 140 255 / 0.28); }
+
 
   .atoll-island[data-visible-state="running"][data-running-expanded="true"] .atoll-row--running:nth-of-type(-n + 3),
   .atoll-island[data-visible-state="running"]:hover .atoll-row--running:nth-of-type(-n + 3),
   .atoll-island[data-visible-state="input"] .atoll-row--input,
   .atoll-island[data-visible-state="permission"] .atoll-row--permission,
-  .atoll-island[data-visible-state="done"] .atoll-row--done {
+  .atoll-island[data-visible-state="finished"] .atoll-row--finished,
+  .atoll-island[data-visible-state="failed"] .atoll-row--failed,
+  .atoll-island[data-visible-state="cancelled"] .atoll-row--cancelled {
     display: flex;
   }
 
@@ -1076,7 +1133,7 @@ const agentHarnesses = [
     --icon-scale: 1.02;
   }
 
-  .atoll-row--done {
+  .atoll-row--finished {
     --icon-scale: 0.94;
   }
 
@@ -1086,14 +1143,16 @@ const agentHarnesses = [
     opacity: 1;
   }
 
-  .atoll-row--done .atoll-row__title {
+  .atoll-row--finished .atoll-row__title {
     font-weight: 500;
     opacity: 0.78;
   }
 
   .atoll-row--input .atoll-row__status { color: #2eccff; }
   .atoll-row--permission .atoll-row__status { color: #ff3857; }
-  .atoll-row--done .atoll-row__status { color: #3df070; }
+  .atoll-row--finished .atoll-row__status { color: #3df070; }
+  .atoll-row--failed .atoll-row__status { color: #ff6b35; }
+  .atoll-row--cancelled .atoll-row__status { color: #b88cff; }
 
   .atoll-row__activity {
     position: absolute;
