@@ -2,7 +2,7 @@
   import { onMount } from "svelte";
 
   const prefix = "Share ";
-  const sequence = ["the part that matters", "in a friendly format", "Portal"];
+  const sequence = ["the part that matters", "in a friendly format", "Frame"];
   const typeDelay = 36;
   const eraseDelay = 24;
   const lingerDelay = 1600;
@@ -58,5 +58,5 @@
 </script>
 
 <span class="portal-typewriter" aria-live="polite">
-  <span class="portal-typewriter__prefix">{prefix}</span><span class:list={["portal-typewriter__suffix", suffix === "Portal" && "portal-typewriter__suffix--portal"]}>{suffix}</span>
+  <span class="portal-typewriter__prefix">{prefix}</span><span class:list={["portal-typewriter__suffix", suffix === "Frame" && "portal-typewriter__suffix--portal"]}>{suffix}</span>
 </span>

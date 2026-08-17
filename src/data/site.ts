@@ -9,27 +9,18 @@ const resolveUrl = (value: string, fallback: string) => {
   }
 };
 
-const resolveAppStoreUrl = (value?: string) => {
-  if (!value || !value.startsWith("https://apps.apple.com/")) {
-    return null;
-  }
-
-  return value;
-};
-
 const siteOrigin = configuredSiteOrigin
   ? resolveUrl(configuredSiteOrigin, fallbackSiteOrigin)
   : fallbackSiteOrigin;
 
-const appStoreUrls = {
-  portal: resolveAppStoreUrl(import.meta.env.PUBLIC_PORTAL_APP_STORE_URL?.trim()),
-} as const;
-
 const downloadUrls = {
   zones: import.meta.env.PUBLIC_ZONES_DOWNLOAD_URL?.trim() || null,
-  portal: import.meta.env.PUBLIC_PORTAL_DOWNLOAD_URL?.trim() || null,
   atoll: import.meta.env.PUBLIC_ATOLL_DOWNLOAD_URL?.trim() || null,
 } as const;
+
+// Read legacy Portal distribution variables for configuration compatibility, but keep Frame unpublished.
+void import.meta.env.PUBLIC_PORTAL_APP_STORE_URL;
+void import.meta.env.PUBLIC_PORTAL_DOWNLOAD_URL;
 
 const checkoutUrls = {
   portalLicense: import.meta.env.PUBLIC_POLAR_PORTAL_LICENSE_CHECKOUT_URL?.trim() || null,
@@ -138,7 +129,7 @@ export const site = {
   domain: new URL(siteOrigin).hostname,
   origin: siteOrigin,
   description:
-    "A compact catalog of focused Mac utilities from Givdul: window layout tools, region-based screen sharing for calls, direct downloads, and public support pages.",
+    "A compact catalog of focused Mac utilities from Givdul: window layout tools, fixed-aspect stage-window sharing for calls, direct downloads, and public support pages.",
   supportEmail: "support@givdul.com",
   supportMailto: "mailto:support@givdul.com",
   keywords: [
@@ -161,7 +152,7 @@ export const apps: AppRecord[] = [
     title: "Zones for Mac",
     tagline: "Window snapping from your menu bar.",
     description:
-      "Zones is a free, lightweight macOS menu bar app for snapping windows into clean layouts with a Shift-drag gesture. Download it directly from the website, signed and notarized for Mac.",
+      "Zones is a free, lightweight macOS menu bar app for snapping windows into clean layouts with a Shift-drag gesture. Preferences stay local, and Polar may process download metadata separately from the app.",
     cardSummary:
       "Snap windows into clean layouts from the menu bar with one gesture and no setup friction.",
     supportSummary:
@@ -181,24 +172,24 @@ export const apps: AppRecord[] = [
     proofPoints: [
       {
         title: "Menu bar first",
-        copy: "Zones sits in your menu bar for quick access—snap windows by holding Shift while you drag. No learning curve.",
+        copy: "Zones sits in your menu bar for quick access—snap windows by holding Shift while you drag.",
         icon: "window",
       },
       {
         title: "Simple by default",
-        copy: "One gesture: drag, hold Shift, drop. Feels native to macOS.",
+        copy: "Drag, hold Shift, and drop to arrange a window.",
         icon: "gesture",
       },
       {
-        title: "Free direct download",
-        copy: "Zones is free. Download it directly, grant Accessibility once, and use it without an account or subscription.",
+        title: "Free app",
+        copy: "Zones is free. Grant Accessibility once, then use it without an account or subscription.",
         icon: "star",
       },
     ],
     pricingIntro: {
       headline: "Free for Mac",
       subheadline:
-        "Zones is a direct download, signed and notarized for macOS. Optional support links can come later.",
+        "Zones is free, with distribution details kept separate from the app's local data handling.",
     },
     pricingModel: "free",
     pricing: [
@@ -207,20 +198,20 @@ export const apps: AppRecord[] = [
         label: "Free",
         title: "Zones",
         price: "$0",
-        note: "Direct download",
+        note: "Availability details coming soon",
         lead: "The full window manager is free. No account, no trial timer, no subscription.",
         items: [
           "Shift-drag snapping",
           "Custom layouts and preset zones",
           "Local preferences on your Mac",
         ],
-        cta: "Download free",
+        cta: "Coming soon",
       },
     ],
     supportFacts: [
       "Zones is a macOS menu bar app for snapping windows into saved layouts with a simple Shift-drag gesture.",
       "Accessibility access is required so Zones can inspect, move, and resize other app windows when you trigger snapping.",
-      "Zones is free and distributed as a direct Developer ID signed and notarized download.",
+      "Zones is free. Distribution metadata may be processed separately from the app.",
     ],
     privacySections: [
       {
@@ -238,7 +229,7 @@ export const apps: AppRecord[] = [
       {
         title: "Distribution",
         paragraphs: [
-          "Zones is distributed directly from the website. The app is free, so there is no purchase account or subscription entitlement for Zones.",
+          "Zones is free, so there is no purchase account or subscription entitlement. Distribution metadata may be processed separately from the app.",
         ],
       },
       {
@@ -259,28 +250,28 @@ export const apps: AppRecord[] = [
     ],
   }),
   createApp({
-    slug: "atoll",
+    slug: "topside",
     status: "live",
-    name: "Atoll",
+    name: "Topside",
     productLabel: "Agent status island",
     iconPath: "/atoll-icon.png",
     appStoreUrl: null,
     downloadUrl: downloadUrls.atoll,
-    title: "Atoll for Mac",
+    title: "Topside for Mac",
     tagline: "See what your coding agents are doing.",
     description:
-      "Atoll is a free macOS menu bar app that places a small Dynamic-Island-style session capsule around the notch, showing which local AI coding agents are running, waiting, or done.",
+      "Topside is a macOS menu bar app that places a small session capsule around the notch, showing local coding agent activity.",
     cardSummary:
-      "A free notch island for local coding agents: Codex, Claude Code, OpenCode, and Gemini CLI.",
+      "A notch island for local coding agents: Codex, Claude Code, Cursor Agent, OpenCode, and Pi.",
     supportSummary:
-      "Official support for Atoll, including agent session detection, test mode, menu bar behavior, and local configuration.",
+      "Official support for Topside, including local hook events, test mode, menu bar behavior, and local configuration.",
     privacySummary:
-      "Privacy details for Atoll, including local agent session reads, hook events, and local-only settings.",
-    heroTitle: "Atoll for Mac",
+      "Privacy details for Topside, including local hook events and persisted lifecycle state, and local-only settings.",
+    heroTitle: "Topside for Mac",
     heroTagline: "Your agents, right at the notch.",
     heroLede:
-      "A tiny island that appears only when a local coding agent is running, waiting for input, asking permission, or just finished.",
-    heroVisualLabel: "Interactive MacBook notch preview of Atoll agent sessions",
+      "A tiny island that shows when a local coding agent is running, needs input, needs permission, has finished, failed, or was cancelled.",
+    heroVisualLabel: "Interactive MacBook notch preview of Topside agent sessions",
     workflowSteps: [
       { kind: "action", label: "Watch", icon: "window" },
       { kind: "key", label: "Codex" },
@@ -288,65 +279,65 @@ export const apps: AppRecord[] = [
     ],
     proofPoints: [
       {
-        title: "Minimal Overview",
-        copy: "",
+        title: "Minimal overview",
+        copy: "Event-driven local hooks send minimal lifecycle events to a user-only Unix socket.",
         icon: "window",
       },
       {
-        title: "All your agents",
-        copy: "",
+        title: "Five confirmed providers",
+        copy: "Topside supports Codex, Claude Code, Cursor Agent, OpenCode, and Pi.",
         icon: "gesture",
       },
       {
-        title: "Built for me, free for you",
-        copy: "",
+        title: "One license, no account",
+        copy: "Try Topside for 72 hours, then unlock it with one $7.99 Polar license. No subscription.",
         icon: "star",
       },
     ],
     pricingIntro: {
-      headline: "Free, because it should be.",
+      headline: "Visible agent work, without a subscription.",
       subheadline:
-        "Atoll is a no-cost menu bar utility. No subscription, no trial timer, no paid unlock.",
+        "Topside includes a 72-hour trial, then uses one $7.99 Polar license. No account or subscription.",
     },
-    pricingModel: "free",
+    pricingModel: "license_first",
     pricing: [
       {
-        name: "free",
-        label: "Free",
-        title: "Atoll",
-        price: "$0",
-        note: "Direct download",
-        lead: "The full app is free. It exists to make local agent work visible and point people toward the paid Givdul tools.",
+        name: "license",
+        label: "One-time license",
+        title: "Topside",
+        price: "$7.99",
+        note: "One-time Polar license",
+        lead: "Try Topside for 72 hours, then unlock the full app with one license.",
         items: [
           "Notch island for live agent sessions",
-          "Running, waiting, permission, and done states",
-          "Local settings and session detection",
+          "Running, input, permission, finished, failed, and cancelled states",
+          "Five confirmed local agent providers",
         ],
-        cta: "Download free",
+        cta: "Coming soon",
       },
     ],
     supportFacts: [
-      "Atoll is a native macOS menu-bar app that shows local coding agent status in a small notch island.",
-      "The island appears for running, waiting-for-input, waiting-for-permission, and recently completed sessions.",
-      "Atoll is free and reads local agent session stores and hook events on your Mac.",
+      "Topside is a native macOS menu-bar app that shows local coding agent status in a small notch island.",
+      "The island appears for running, needs input, needs permission, finished, failed, and cancelled states.",
+      "Topside receives minimal lifecycle events from local hooks through a user-only Unix socket and persists lifecycle state locally.",
     ],
     privacySections: [
       {
-        title: "What Atoll reads",
+        title: "What Topside reads",
         paragraphs: [
-          "Atoll watches local agent session stores and hook events so it can decide whether a session is running, waiting, needs permission, or has completed.",
+          "Topside receives minimal lifecycle events from local hooks through a user-only Unix socket and stores relevant settings locally.",
         ],
       },
       {
-        title: "Local settings",
+        title: "Local settings and providers",
         paragraphs: [
-          "Atoll stores preferences such as enabled state, target screen, and test mode locally on your Mac in its configuration file.",
+          "Topside stores its settings locally on your Mac and supports Codex, Claude Code, Cursor Agent, OpenCode, and Pi.",
         ],
       },
       {
         title: "Accounts and payment",
         paragraphs: [
-          "Atoll is free, does not require an account, and does not include a purchase or subscription entitlement.",
+          "Topside offers one 72-hour trial and one $7.99 Polar license. It does not require an account or subscription.",
         ],
       },
       {
@@ -357,107 +348,108 @@ export const apps: AppRecord[] = [
       },
     ],
     keywords: [
-      "Atoll",
-      "Atoll for Mac",
+      "Topside",
+      "Topside for Mac",
       "AI agent status",
       "Codex CLI status",
       "Claude Code status",
       "OpenCode status",
-      "Gemini CLI status",
+      "Cursor Agent status",
       "macOS notch app",
     ],
   }),
   createApp({
-    slug: "portal",
+    slug: "frame",
     status: "live",
-    name: "Portal",
-    productLabel: "Region screen sharing",
-    appStoreUrl: appStoreUrls.portal,
-    downloadUrl: downloadUrls.portal,
-    title: "Portal for Mac",
-    tagline: "Share part of a big screen—not the whole canvas.",
+    name: "Frame",
+    productLabel: "Fixed-aspect stage window",
+    iconPath: "/frame-icon.png",
+    appStoreUrl: null,
+    downloadUrl: null,
+    title: "Frame for Mac",
+    tagline: "Share a fixed stage—not your whole canvas.",
     description:
-      "Portal is a paid macOS utility for people on large or ultrawide displays who do not want every pixel in the call: capture a chosen region, expose it through a shareable app window, and share that window instead of your entire desktop. Start with a 3-day full-featured trial, then buy once.",
+      "Frame is a host-only fixed-aspect stage window for meeting and streaming apps. Share the Frame window instead of your entire desktop.",
     cardSummary:
-      "Define what matters on a large monitor, pipe it through a 16:9 stage, and share it with one shortcut. Optional snap rails and bring-to-stage are extras for tidying the stage—not the headline.",
+      "Share a fixed-aspect stage window from a large or ultrawide display. Choose a 720p, 1080p, or 1440p 16:9 preset.",
     supportSummary:
-      "Support for Portal: region capture, Screen Recording, camera, Accessibility (optional), shortcuts, purchases, and contact.",
+      "Support for Frame: the stage window, Screen Recording, optional Accessibility for live Shift-drag snapping, presets, and contact.",
     privacySummary:
-      "How Portal uses Screen Recording for your chosen region, optional Accessibility for snapping, direct purchases, and what stays on your Mac.",
-    heroTitle: "Portal for Mac",
-    heroTagline: "Region first. Calls stay legible.",
+      "How Frame uses Screen Recording for the live stage, optional Accessibility for live Shift-drag snapping, and what stays on your Mac.",
+    heroTitle: "Frame for Mac",
+    heroTagline: "Fixed stage. Calls stay legible.",
     heroLede:
-      "Stop sending the entire ultrawide. Portal lets you point at the rectangle you care about, then feeds a composed 16:9 surface you can drop into Zoom, Meet, or Teams like any other window.",
-    heroVisualLabel: "Diagram: wide display with one highlighted shared region flowing into a 16:9 stage",
+      "Share the Frame window in Zoom, Meet, Teams, or streaming apps. The live stage uses a fixed 16:9 aspect ratio.",
+    heroVisualLabel: "Diagram: wide display with a fixed 16:9 Frame stage window",
     workflowSteps: [
-      { kind: "action", label: "Region", icon: "plus" },
+      { kind: "action", label: "Stage", icon: "plus" },
       { kind: "key", label: "⇧⌘P" },
       { kind: "action", label: "Share", icon: "window" },
     ],
     proofPoints: [
       {
         title: "Big desk, small signal",
-        copy: "Ultrawide and 4K monitors are great for you and noisy for viewers. Portal keeps the share surface bounded to the content you choose.",
+        copy: "Frame gives meeting and streaming apps one fixed-aspect window instead of your full desktop canvas.",
         icon: "window",
       },
       {
         title: "One predictable stage",
-        copy: "That region is normalized into a 16:9 stage so remote participants see a familiar aspect—not your full bezel-to-bezel layout.",
+        copy: "Presets are 720p, 1080p, and 1440p, all at 16:9.",
         icon: "gesture",
       },
       {
         title: "Shortcut in muscle memory",
-        copy: "Shift-Command-P toggles capture once permissions are set. Screen Recording covers the pixels; camera is optional; Accessibility only if you use window moves or snap rails inside the stage.",
+        copy: "Screen Recording is required for the live stage. Accessibility is optional for live Shift-drag snapping.",
         icon: "star",
       },
     ],
     pricingIntro: {
-      headline: "Buy once. Use it forever.",
+      headline: "A stage window for sharing.",
       subheadline:
-        "Start with a 3-day full-featured trial. Portal is $7.99 as a one-time purchase.",
+        "Frame pricing, trial, and delivery details are coming soon.",
     },
     pricingModel: "license_first",
     pricing: [
       {
         name: "license",
-        label: "One-time purchase",
-        title: "One-time license",
-        price: "$7.99",
-        note: "One-time purchase",
-        lead: "Try the full app for 3 days, then pay once and keep using Portal.",
+        label: "Coming soon",
+        title: "Release details",
+        price: "Coming soon",
+        note: "Pricing details coming soon",
+        lead: "Frame pricing, trial, and delivery details are coming soon.",
         items: [
-          "3-day full-featured trial",
-          "Region sharing window",
-          "Optional snapping helpers",
-          "No subscription",
+          "Fixed-aspect stage window",
+          "720p, 1080p, and 1440p presets",
+          "Screen Recording for the live stage",
+          "Optional Accessibility for Shift-drag snapping",
         ],
-        cta: "Buy once",
-        ctaUrl: checkoutUrls.portalLicense,
+        cta: "Coming soon",
+        ctaUrl: null,
         emphasis: "recommended",
       },
     ],
     supportFacts: [
-      "Portal lets you share a chosen region of a large display through a dedicated 16:9 stage window instead of broadcasting your entire screen.",
-      "Screen Recording feeds the stage, camera is optional, and Accessibility is only needed for features that move other app windows.",
-      "Portal is distributed directly from the website with a 3-day full-featured trial and a $7.99 one-time purchase.",
+      "Frame provides a dedicated fixed-aspect stage window for meeting and streaming apps.",
+      "Screen Recording is required for the live stage. Accessibility is optional for live Shift-drag snapping.",
+      "Frame release, pricing, trial, commerce, and delivery details are coming soon.",
     ],
     privacySections: [
       {
-        title: "What Portal uses",
+        title: "What Frame uses",
         paragraphs: [
-          "Portal uses macOS Screen Recording to read pixels for the region you include in the stage, and may use the camera for an optional overlay. Composition happens locally on your Mac.",
+          "Frame uses macOS Screen Recording for the live stage. Composition happens locally on your Mac.",
         ],
       },
       {
         title: "Optional permissions and local data",
         paragraphs: [
-          "If you grant Accessibility, Portal can help align windows inside the stage or move another app window with Bring to Stage. Region capture still works without it, and app preferences such as presets and onboarding state are stored locally on your Mac.",
+          "If you grant Accessibility, Frame can support live Shift-drag snapping. App preferences such as presets and onboarding state are stored locally on your Mac.",
         ],
       },
       {
-        title: "Accounts, analytics, and purchases",
+        title: "Accounts and local data",
         paragraphs: [
-          "Portal does not include an in-app advertising SDK. Purchases are managed directly on the website, and license access is verified by the app when needed.",
+          "Frame does not include an in-app advertising SDK. Pricing, commerce, and license details remain unpublished.",
         ],
       },
       {
@@ -468,11 +460,11 @@ export const apps: AppRecord[] = [
       },
     ],
     keywords: [
-      "Portal",
-      "Portal for Mac",
-      "region screen share",
+      "Frame",
+      "Frame for Mac",
+      "fixed-aspect stage window",
       "ultrawide screen share Mac",
-      "share part of screen",
+      "share a stage window",
       "16:9 screen stage",
       "ScreenCaptureKit",
     ],
