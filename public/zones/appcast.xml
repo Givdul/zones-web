@@ -1,0 +1,16 @@
+<?xml version="1.0" standalone="yes"?>
+<rss xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" version="2.0">
+    <channel>
+        <title>Zones</title>
+        <item>
+            <title>1.0</title>
+            <pubDate>Tue, 13 Oct 2026 21:57:14 +0200</pubDate>
+            <link>https://apps.givdul.com/zones/</link>
+            <sparkle:version>1</sparkle:version>
+            <sparkle:shortVersionString>1.0</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+            <sparkle:releaseNotesLink>https://apps.givdul.com/zones/updates/Zones-1.0-1.html</sparkle:releaseNotesLink>
+            <enclosure url="https://apps.givdul.com/zones/updates/Zones-1.0-1.zip" length="2737491" type="application/octet-stream" sparkle:edSignature="7qTqk/KDEUiXaozxubGnZITDIiultD7S3qQK0YB/1cr8bsceqgOBb4cxbXS4VAvt7qXgmzsOFamCayQWnaX5DA=="/>
+        </item>
+    </channel>
+</rss>
