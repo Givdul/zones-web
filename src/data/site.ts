@@ -27,6 +27,9 @@ const checkoutUrls = {
   zonesLicense: import.meta.env.PUBLIC_POLAR_ZONES_LICENSE_CHECKOUT_URL?.trim() || null,
 } as const;
 
+// A Zones download starts a trial that only a license can extend, so hold downloads until the license checkout exists.
+const zonesDownloadUrl = checkoutUrls.zonesLicense ? downloadUrls.zones : null;
+
 /** End of the Zones launch discount, from `PUBLIC_ZONES_LAUNCH_OFFER_ENDS` (YYYY-MM-DD). Null when unset, invalid, or past at build time. */
 const resolveZonesLaunchOfferEnd = () => {
   const value = import.meta.env.PUBLIC_ZONES_LAUNCH_OFFER_ENDS?.trim();
@@ -163,7 +166,7 @@ export const apps: AppRecord[] = [
     productLabel: "Mac window manager",
     iconPath: "/zones-icon.png",
     appStoreUrl: null,
-    downloadUrl: downloadUrls.zones,
+    downloadUrl: zonesDownloadUrl,
     title: "Zones for Mac",
     tagline: "Window snapping from your menu bar.",
     description:
@@ -219,8 +222,8 @@ export const apps: AppRecord[] = [
           "Custom layouts and preset zones",
           "Local preferences on your Mac",
         ],
-        cta: "Download free trial",
-        ctaUrl: downloadUrls.zones,
+        cta: zonesDownloadUrl ? "Download free trial" : "Coming soon",
+        ctaUrl: zonesDownloadUrl,
       },
       {
         name: "license",
