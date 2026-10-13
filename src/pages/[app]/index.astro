@@ -18,6 +18,7 @@ const { app } = Astro.props;
 const pricingModel = app.pricingModel ?? "freemium";
 const isTrialThenPaid = pricingModel === "trial_then_paid";
 const downloadUrl = app.downloadUrl ?? app.appStoreUrl;
+const offerTier = app.pricing.find((tier) => tier.name === "license") ?? app.pricing[0];
 
 const structuredData = {
   "@context": "https://schema.org",
@@ -31,7 +32,7 @@ const structuredData = {
   ...(downloadUrl ? {
     offers: {
       "@type": "Offer",
-      price: app.pricing[0]?.price.replace(/[^0-9.]/g, "") ?? "0",
+      price: offerTier?.price.replace(/[^0-9.]/g, "") ?? "0",
       priceCurrency: "USD",
       availability: "https://schema.org/InStock",
     },

@@ -10,4 +10,7 @@ const processRef = /** @type {{ process?: { env?: Record<string, string | undefi
 export default defineConfig({
   integrations: [react(), svelte()],
   site: processRef?.env?.PUBLIC_SITE_ORIGIN ?? 'https://apps.givdul.com',
+  redirects: {
+    '/': '/zones',
+  },
 });

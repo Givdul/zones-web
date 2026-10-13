@@ -1,13 +1,15 @@
 # Apps by Givdul
 
-Static Astro site for a multi-app macOS catalog. The root acts as the app index, with per-app landing, support, and privacy pages under each slug.
+Static Astro site for Givdul's macOS apps. `/` redirects to `/zones`, and each app has landing, support, and privacy pages under its slug.
 
 ## Environment
 
 Set these before production deployment:
 
 - `PUBLIC_SITE_ORIGIN`: final public origin, for example `https://apps.givdul.com`
-- `PUBLIC_ZONES_DOWNLOAD_URL`: direct download URL for Zones
+- `PUBLIC_ZONES_DOWNLOAD_URL`: Zones download URL (the free Polar `Zones` product, which starts the 14-day trial). Only used once the license checkout below is set.
+- `PUBLIC_POLAR_ZONES_LICENSE_CHECKOUT_URL`: Polar checkout link for the paid `Zones License` product. While unset, the Buy button and every Zones download button stay disabled.
+- `PUBLIC_ZONES_LAUNCH_OFFER_ENDS`: optional last day of the $4.99 launch price, as `YYYY-MM-DD`. While unset or past at build time, the page shows $7.99 only.
 - `PUBLIC_PORTAL_DOWNLOAD_URL`: legacy Frame direct-download variable; retained for configuration compatibility and does not publish Frame
 - `PUBLIC_PORTAL_APP_STORE_URL`: legacy Frame App Store variable; retained for configuration compatibility and does not publish Frame
 - `PUBLIC_POLAR_PORTAL_LICENSE_CHECKOUT_URL`: legacy Frame checkout variable; retained for configuration compatibility while commerce details remain unpublished
