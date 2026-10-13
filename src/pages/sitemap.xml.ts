@@ -2,10 +2,7 @@ import { apps, site } from "../data/site";
 
 export const prerender = true;
 
-const paths = [
-  "/",
-  ...apps.flatMap((app) => [app.landingPath, app.supportPath, app.privacyPath]),
-];
+const paths = apps.flatMap((app) => [app.landingPath, app.supportPath, app.privacyPath]);
 
 export function GET() {
   const urls = paths

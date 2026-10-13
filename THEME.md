@@ -16,10 +16,9 @@ Future themes could add another `data-givdul-theme` value; CSS would scope overr
 
 | Page | Main classes | Role |
 |------|----------------|------|
-| `/` (app index) | `quiet-orbit-page givdul-catalog` | Same width/padding as app landings |
 | `/{slug}` | `quiet-orbit-page givdul-app-landing` | Product landing (e.g. `/zones`) |
 
-Inner catalog content uses `.e1` / `.e1-list` for the stacked app cards.
+`/` redirects to `/zones`.
 
 ## CSS variables
 

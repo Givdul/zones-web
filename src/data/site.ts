@@ -24,7 +24,24 @@ void import.meta.env.PUBLIC_PORTAL_DOWNLOAD_URL;
 
 const checkoutUrls = {
   portalLicense: import.meta.env.PUBLIC_POLAR_PORTAL_LICENSE_CHECKOUT_URL?.trim() || null,
+  zonesLicense: import.meta.env.PUBLIC_POLAR_ZONES_LICENSE_CHECKOUT_URL?.trim() || null,
 } as const;
+
+/** End of the Zones launch discount, from `PUBLIC_ZONES_LAUNCH_OFFER_ENDS` (YYYY-MM-DD). Null when unset, invalid, or past at build time. */
+const resolveZonesLaunchOfferEnd = () => {
+  const value = import.meta.env.PUBLIC_ZONES_LAUNCH_OFFER_ENDS?.trim();
+  if (!value) return null;
+  const end = new Date(`${value}T23:59:59Z`);
+  if (Number.isNaN(end.getTime()) || end.getTime() < Date.now()) return null;
+  return end;
+};
+
+const zonesLaunchOfferEnd = resolveZonesLaunchOfferEnd();
+const zonesLaunchOfferEndLabel = zonesLaunchOfferEnd?.toLocaleDateString("en-US", {
+  month: "long",
+  day: "numeric",
+  timeZone: "UTC",
+});
 
 export interface AppProofPoint {
   title: string;
@@ -128,8 +145,6 @@ export const site = {
   brand: "Givdul",
   domain: new URL(siteOrigin).hostname,
   origin: siteOrigin,
-  description:
-    "A compact catalog of focused Mac utilities from Givdul: window layout tools, fixed-aspect stage-window sharing for calls, direct downloads, and public support pages.",
   supportEmail: "support@givdul.com",
   supportMailto: "mailto:support@givdul.com",
   keywords: [
@@ -152,13 +167,13 @@ export const apps: AppRecord[] = [
     title: "Zones for Mac",
     tagline: "Window snapping from your menu bar.",
     description:
-      "Zones is a free, lightweight macOS menu bar app for snapping windows into clean layouts with a Shift-drag gesture. Preferences stay local, and Polar may process download metadata separately from the app.",
+      "Zones is a lightweight macOS menu bar app for snapping windows into clean layouts with a Shift-drag gesture. Try it free for 14 days, then buy a one-time $7.99 license. No subscription or account.",
     cardSummary:
       "Snap windows into clean layouts from the menu bar with one gesture and no setup friction.",
     supportSummary:
       "Official support for Zones, including common setup questions, Accessibility guidance, and direct contact.",
     privacySummary:
-      "Privacy details for Zones, including local-only preferences, Accessibility use, and direct downloads.",
+      "Privacy details for Zones, including local preferences, Accessibility use, license checks, and Polar downloads and purchases.",
     heroTitle: "Zones for Mac",
     heroTagline: "Snap windows in one gesture",
     heroLede:
@@ -181,37 +196,56 @@ export const apps: AppRecord[] = [
         icon: "gesture",
       },
       {
-        title: "Free app",
-        copy: "Zones is free. Grant Accessibility once, then use it without an account or subscription.",
+        title: "Try it, then keep it",
+        copy: "Every feature is free for 14 days. Then one $7.99 license, no account or subscription.",
         icon: "star",
       },
     ],
     pricingIntro: {
-      headline: "Free for Mac",
-      subheadline:
-        "Zones is free, with distribution details kept separate from the app's local data handling.",
+      headline: "Try it for 14 days.",
+      subheadline: "Then keep it for $7.99, once.",
     },
-    pricingModel: "free",
+    pricingModel: "trial_then_paid",
     pricing: [
       {
-        name: "free",
-        label: "Free",
+        name: "trial",
+        label: "Free trial",
         title: "Zones",
-        price: "$0",
-        note: "Availability details coming soon",
-        lead: "The full window manager is free. No account, no trial timer, no subscription.",
+        price: "14 days",
+        note: "Free from first launch",
+        lead: "Every feature, no account. Snapping pauses when the trial ends.",
         items: [
           "Shift-drag snapping",
           "Custom layouts and preset zones",
           "Local preferences on your Mac",
         ],
-        cta: "Coming soon",
+        cta: "Download free trial",
+        ctaUrl: downloadUrls.zones,
+      },
+      {
+        name: "license",
+        label: "One-time license",
+        title: "Zones License",
+        price: zonesLaunchOfferEndLabel ? "$4.99" : "$7.99",
+        note: zonesLaunchOfferEndLabel
+          ? `Launch price until ${zonesLaunchOfferEndLabel}, then $7.99`
+          : "One-time purchase",
+        lead: "Keep snapping after the trial. Enter the key in Settings.",
+        items: [
+          "Up to 2 Macs",
+          "No subscription or account",
+          "Manage activations in the Polar portal",
+        ],
+        cta: checkoutUrls.zonesLicense ? "Buy license" : "Coming soon",
+        ctaUrl: checkoutUrls.zonesLicense,
+        emphasis: "recommended",
       },
     ],
     supportFacts: [
       "Zones is a macOS menu bar app for snapping windows into saved layouts with a simple Shift-drag gesture.",
       "Accessibility access is required so Zones can inspect, move, and resize other app windows when you trigger snapping.",
-      "Zones is free. Distribution metadata may be processed separately from the app.",
+      "Zones is free for 14 days from first launch. After that, Shift-drag snapping stops until you enter a license key in Settings. Settings and the layout editor stay available.",
+      "A $7.99 one-time license covers up to 2 Macs. Manage or remove activations at polar.sh/hansen-software/portal.",
     ],
     privacySections: [
       {
@@ -223,13 +257,20 @@ export const apps: AppRecord[] = [
       {
         title: "What Zones does not collect",
         paragraphs: [
-          "Zones does not require an account, does not include third-party analytics or advertising SDKs, and does not send your layouts or preferences to a developer-controlled server.",
+          "Zones does not require an account and does not include third-party analytics or advertising SDKs. Your layouts, window activity, and Accessibility state are never sent anywhere.",
         ],
       },
       {
-        title: "Distribution",
+        title: "License checks",
         paragraphs: [
-          "Zones is free, so there is no purchase account or subscription entitlement. Distribution metadata may be processed separately from the app.",
+          "Zones stores the trial start date and your license key locally on your Mac.",
+          "It contacts Polar's license API only when you activate a license, when you remove it from a Mac, and once at launch to confirm a stored license is still valid. Those requests send the license key, the activation ID, and your Mac's computer name as the activation label, which you can see in the Polar customer portal.",
+        ],
+      },
+      {
+        title: "Downloads and purchases",
+        paragraphs: [
+          "Downloads and licenses are delivered through Polar, which is the merchant of record and processes payment. Polar may process the information needed for the download or purchase, such as the checkout request and your email address. Zones does not use this information.",
         ],
       },
       {
