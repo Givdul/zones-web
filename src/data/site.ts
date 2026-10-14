@@ -14,7 +14,11 @@ const siteOrigin = configuredSiteOrigin
   : fallbackSiteOrigin;
 
 const downloadUrls = {
-  zones: import.meta.env.PUBLIC_ZONES_DOWNLOAD_URL?.trim() || null,
+  // The free Polar `Zones` product checkout. setup-polar-zones.mjs writes the same link to both variables.
+  zones:
+    import.meta.env.PUBLIC_POLAR_ZONES_DOWNLOAD_CHECKOUT_URL?.trim() ||
+    import.meta.env.PUBLIC_ZONES_DOWNLOAD_URL?.trim() ||
+    null,
   atoll: import.meta.env.PUBLIC_ATOLL_DOWNLOAD_URL?.trim() || null,
 } as const;
 
@@ -161,11 +165,10 @@ export const apps: AppRecord[] = [
       "Official support for Zones, including common setup questions, Accessibility guidance, and direct contact.",
     privacySummary:
       "Privacy details for Zones, including local preferences, Accessibility use, license checks, and Polar downloads and purchases.",
-    heroTitle: "Zones for Mac",
-    heroTagline: "Snap windows in one gesture",
-    heroLede:
-      "A lightweight menu bar app that turns drag-and-drop into precise window arrangement. No shortcuts to memorize.",
-    heroVisualLabel: "Animated preview of Zones window snapping",
+    heroTitle: "Drag a window. Hold Shift. Drop it in a zone.",
+    heroTagline: "Zones for Mac",
+    heroLede: "A menu bar window manager for macOS.",
+    heroVisualLabel: "Interactive Zones window snapping sandbox",
     workflowSteps: [
       { kind: "action", label: "Drag", icon: "plus" },
       { kind: "key", label: "Shift" },
@@ -184,7 +187,7 @@ export const apps: AppRecord[] = [
       },
       {
         title: "Try it, then keep it",
-        copy: "Every feature is free for 7 days. Then one $7.99 license, no account or subscription.",
+        copy: "Every feature is free for 7 days. Then $7.99 once, with no account or subscription.",
         icon: "star",
       },
     ],
@@ -214,12 +217,12 @@ export const apps: AppRecord[] = [
         label: "One-time license",
         title: "Zones License",
         price: "$7.99",
-        note: "One-time purchase",
+        note: "One-time, 14-day money-back policy",
         lead: "Keep snapping after the trial. Enter the key in Settings.",
         items: [
           "Up to 2 Macs",
           "No subscription or account",
-          "14-day money-back policy",
+          "Refundable within 14 days through Polar",
           "Manage activations in the Polar portal",
         ],
         cta: checkoutUrls.zonesLicense ? "Buy license" : "Coming soon",
@@ -230,8 +233,9 @@ export const apps: AppRecord[] = [
     supportFacts: [
       "Zones is a macOS menu bar app for snapping windows into saved layouts with a simple Shift-drag gesture.",
       "Accessibility access is required so Zones can inspect, move, and resize other app windows when you trigger snapping.",
-      "Zones is free for 7 days from first launch. After that, Shift-drag snapping stops until you enter a license key in Settings. Settings and the layout editor stay available.",
-      "A $7.99 one-time license covers up to 2 Macs. Purchases can be refunded within 14 days through Polar or by emailing support@givdul.com. Manage or remove activations at polar.sh/hansen-software/portal.",
+      "Zones is free for 7 days from first launch. The menu and Settings show \"Free Trial\" with the days left, then \"Trial Ended\". After that, Shift-drag snapping stops until you enter a license key in Settings. Settings and the layout editor stay available.",
+      "A $7.99 one-time license covers up to 2 Macs, with no subscription or account. Purchases can be refunded within 14 days through Polar or by emailing support@givdul.com. Manage or remove activations at polar.sh/hansen-software/portal.",
+      "Zones checks your license with Polar only when you activate it, when you remove it from a Mac, and once at launch to confirm it is still valid. Your layouts and window activity are never sent.",
     ],
     privacySections: [
       {
@@ -243,20 +247,20 @@ export const apps: AppRecord[] = [
       {
         title: "What Zones does not collect",
         paragraphs: [
-          "Zones does not require an account and does not include third-party analytics or advertising SDKs. Your layouts, window activity, and Accessibility state are never sent anywhere.",
+          "Zones does not require an account and does not include third-party analytics or advertising SDKs.",
+        ],
+      },
+      {
+        title: "Trial and purchases",
+        paragraphs: [
+          "Zones is a direct download with a 7-day free trial. After the trial, snapping requires a one-time license purchased through Polar, which acts as the merchant of record and processes payment. Purchases can be refunded within 14 days through Polar. The app does not include subscriptions, account sign-in, or in-app payment processing.",
+          "Polar may process the information needed for the download or purchase, such as the checkout request and your email address. Zones does not use this information.",
         ],
       },
       {
         title: "License checks",
         paragraphs: [
-          "Zones stores the trial start date and your license key locally on your Mac.",
-          "It contacts Polar's license API only when you activate a license, when you remove it from a Mac, and once at launch to confirm a stored license is still valid. Those requests send the license key, the activation ID, and your Mac's computer name as the activation label, which you can see in the Polar customer portal.",
-        ],
-      },
-      {
-        title: "Downloads and purchases",
-        paragraphs: [
-          "Downloads and licenses are delivered through Polar, which is the merchant of record and processes payment. Polar may process the information needed for the download or purchase, such as the checkout request and your email address. Zones does not use this information. Purchases can be refunded within 14 days of checkout through Polar.",
+          "Zones stores the trial start date and your license key locally on your Mac. It contacts Polar's license API only when you activate a license, when you remove it from a Mac, and once at launch to confirm a stored license is still valid. Those requests send the license key, the activation ID, and your Mac's computer name as the activation label, which you can see in the Polar customer portal. Your layouts, window activity, and Accessibility state are never sent.",
         ],
       },
       {

@@ -1,7 +1,5 @@
 ---
-import ZonesDemo from "./ZonesDemo.astro";
-import ZonesEditorDemo from "./ZonesEditorDemo.astro";
-import BorderGlow from "./BorderGlow.svelte";
+import ZonesStage from "./ZonesStage.svelte";
 import type { AppRecord } from "../data/site";
 
 interface Props {
@@ -9,225 +7,114 @@ interface Props {
 }
 
 const { app } = Astro.props;
-const ctaHref = app.downloadUrl ?? app.appStoreUrl;
+const downloadHref = app.downloadUrl ?? app.appStoreUrl;
+const license = app.pricing.find((tier) => tier.name === "license");
+const buyHref = license?.ctaUrl ?? null;
 ---
 
-<div class="zones-landing">
-  <main
-    class="givdul-app-landing zones-landing__main"
-    data-motion-root
-    aria-label="Zones for Mac"
-  >
-    <section
-      id="zones-hero"
-      class="zones-landing__section zones-landing__section--hero"
-      aria-label="Overview"
-    >
-      <div class="zones-landing__inner">
-        <section class="quiet-orbit-hero">
-          <div class="quiet-orbit-hero__copy">
-            <h1 data-reveal data-reveal-delay="0">{app.heroTitle}</h1>
-            <p class="quiet-orbit-hero__tagline" data-reveal data-reveal-delay="75">{app.heroTagline}</p>
-            <p class="quiet-orbit-hero__lede" data-reveal data-reveal-delay="150">{app.heroLede}</p>
-            <div class="quiet-orbit-hero__actions" data-reveal data-reveal-delay="220">
-              {ctaHref ? (
-                <a
-                  class="button button--pro"
-                  href={ctaHref}
-                  rel="noreferrer"
-                  aria-label={`Download ${app.name} for Mac`}
-                >
-                  <span>Download for Mac</span>
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                    <path d="M8 2v8M5 7l3 3 3-3M3 13h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                  </svg>
-                </a>
-              ) : (
-                <span class="button button--catalog button--disabled" aria-disabled="true">Download pending</span>
-              )}
-            </div>
-            <div class="quiet-orbit-hero__workflow" data-reveal data-reveal-delay="290">
-              {app.workflowSteps.map((step, index) => (
-                <>
-                  {index > 0 && <span class="workflow-step__arrow" aria-hidden="true"></span>}
-                  {step.kind === "key" ? (
-                    <span class="workflow-step workflow-step--key">
-                      <kbd>{step.label}</kbd>
-                    </span>
-                  ) : (
-                    <span class="workflow-step">
-                      <span class="workflow-step__icon" aria-hidden="true">
-                        {step.icon === "window" ? (
-                          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.5"/></svg>
-                        ) : (
-                          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2v12M2 8h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-                        )}
-                      </span>
-                      <span class="workflow-step__label">{step.label}</span>
-                    </span>
-                  )}
-                </>
-              ))}
-            </div>
-          </div>
+<main class="givdul-app-landing zl" aria-labelledby="zl-title">
+  <h1 id="zl-title">{app.heroTitle}</h1>
+  <div class="zl-cta">
+    <div class="zl-actions">
+      {downloadHref && <a class="zl-button" href={downloadHref} rel="noreferrer">Download free trial</a>}
+      {buyHref && <a class="zl-button zl-button--secondary" href={buyHref} rel="noreferrer">Buy license</a>}
+      {!downloadHref && !buyHref && <span class="zl-button" aria-disabled="true">Coming soon</span>}
+    </div>
+    <p>Free for 7 days, then {license?.price} one-time. 14-day money-back policy.</p>
+  </div>
+  <ZonesStage client:load />
+</main>
 
-          <div class="quiet-orbit-hero__stage quiet-orbit-hero__stage--abstract" data-reveal data-reveal-delay="140">
-            <ZonesDemo />
-          </div>
-        </section>
-      </div>
-    </section>
+<style>
+  .zl {
+    display: grid;
+    justify-items: center;
+    width: min(var(--site-width), 100%);
+    margin-inline: auto;
+    padding-block: clamp(2.5rem, 7vw, 4.5rem) clamp(3rem, 8vw, 6rem);
+    text-align: center;
+  }
 
-    <section
-      id="zones-layouts"
-      class="zones-landing__section zones-landing__section--showcase"
-      aria-labelledby="zones-layouts-heading"
-    >
-      <div class="zones-landing__inner">
-        <section class="zones-showcase" aria-labelledby="zones-layouts-heading">
-          <div class="zones-showcase__copy" data-reveal data-reveal-delay="0">
-            <span class="zones-showcase__eyebrow">Custom layouts</span>
-            <h2 id="zones-layouts-heading">Slice your own bento, zone by zone.</h2>
-            <p class="zones-showcase__lede">
-              Click in the editor to place a vertical slice. Shift-click for a horizontal slice. Drag
-              an existing slice to move it. Build as deep a grid as you want, then toggle individual
-              zones on or off.
-            </p>
-            <p class="zones-showcase__lede zones-showcase__lede--muted">
-              In Zones, everything is a layer: preset grids, corner zones, and your custom bento
-              are all layers you can turn on or off wholesale or fine-tune zone by zone. Run only
-              custom targets, only presets, or any mix — you decide what stays live.
-            </p>
-          </div>
-          <div class="zones-showcase__stage" data-reveal data-reveal-delay="120">
-            <ZonesEditorDemo />
-          </div>
-        </section>
+  h1 {
+    margin: 0;
+    max-width: 16ch;
+    font-family: var(--theme-font-display);
+    font-size: clamp(2.5rem, 6vw, 4.25rem);
+    font-weight: 700;
+    line-height: 1.02;
+    letter-spacing: -0.035em;
+    color: var(--theme-text-primary);
+    text-wrap: balance;
+  }
 
-        <section class="quiet-orbit-proof" aria-label="Key product points">
-          {app.proofPoints.map((point, index) => (
-            <div class="quiet-orbit-proof__item" data-reveal data-reveal-delay={String(index * 90)}>
-              <div class="proof-item__icon" aria-hidden="true">
-                {point.icon === "window" && (
-                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                    <rect x="2" y="3" width="16" height="14" rx="2" stroke="currentColor" stroke-width="1.5"/>
-                    <path d="M2 7h16" stroke="currentColor" stroke-width="1.5"/>
-                    <circle cx="5" cy="5" r="1" fill="currentColor"/>
-                  </svg>
-                )}
-                {point.icon === "gesture" && (
-                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                    <path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-                  </svg>
-                )}
-                {point.icon === "star" && (
-                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                    <path d="M10 2l2.5 5.5L18 8l-4 4 1 5.5L10 14.5 5 17.5l1-5.5-4-4 5.5-.5L10 2z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
-                  </svg>
-                )}
-              </div>
-              <div class="proof-item__content">
-                <strong>{point.title}</strong>
-                <span>{point.copy}</span>
-              </div>
-            </div>
-          ))}
-        </section>
-      </div>
-    </section>
+  .zl-cta {
+    display: grid;
+    justify-items: center;
+    gap: 0.75rem;
+    margin-block: clamp(1.75rem, 3.5vw, 2.25rem) clamp(2.5rem, 5vw, 3.5rem);
+  }
 
-    <section
-      id="zones-pricing"
-      class="zones-landing__section zones-landing__section--pricing"
-      aria-label="Pricing"
-    >
-      <div class="zones-landing__inner">
-        <section class="quiet-orbit-choices" aria-labelledby={`${app.slug}-pricing-heading`}>
-          <div class="quiet-orbit-choices__intro">
-            <h2 id={`${app.slug}-pricing-heading`}>
-              <span class="quiet-orbit-choices__headline" data-reveal data-reveal-delay="0">
-                {app.pricingIntro?.headline ?? app.pricing[0]?.title ?? "Available soon."}
-              </span>
-              <span class="quiet-orbit-choices__subheadline" data-reveal data-reveal-delay="95">
-                {app.pricingIntro?.subheadline ?? app.pricing[1]?.title ?? "More details later."}
-              </span>
-            </h2>
-          </div>
+  .zl-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.625rem;
+  }
 
-          <div class="quiet-orbit-cards">
-            {app.pricing.map((tier, index) => {
-              const isRecommended = tier.emphasis === "recommended";
+  .zl-cta p {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--theme-text-secondary);
+  }
 
-              return (
-                <article
-                  class:list={[
-                    "orbit-card",
-                    tier.name === "trial" ? "orbit-card--free" : "orbit-card--pro",
-                    isRecommended && "orbit-card--recommended has-border-glow",
-                  ]}
-                  data-reveal
-                  data-reveal-delay={String(110 + index * 110)}
-                >
-                  {isRecommended && (
-                    <BorderGlow
-                      client:load
-                      edgeSensitivity={26}
-                      glowColor="205 36 78"
-                      glowRadius={38}
-                      glowIntensity={0.66}
-                      coneSpread={24}
-                      animated
-                    />
-                  )}
-                  <div class="orbit-card__header">
-                    <div class="orbit-card__badge">
-                      <span class="orbit-card__label">{tier.label}</span>
-                    </div>
-                    <h3>{tier.title}</h3>
-                    <p class="orbit-card__price">
-                      <span class="price-value">{tier.price}</span>
-                      <span class="price-note">{tier.note}</span>
-                    </p>
-                    <p class="orbit-card__lead">{tier.lead}</p>
-                  </div>
+  .zl-button {
+    display: inline-flex;
+    align-items: center;
+    height: 2.875rem;
+    padding: 0 1.5rem;
+    border-radius: 999px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--theme-canvas-top);
+    background: var(--theme-text-primary);
+    transition:
+      background-color 160ms ease,
+      transform 100ms ease-out;
+  }
 
-                  <div class="orbit-card__tier-divider">
-                    <span class="tier-label">Includes</span>
-                  </div>
+  .zl-button:hover {
+    background: color-mix(in srgb, var(--theme-text-primary) 86%, var(--theme-canvas-top));
+  }
 
-                  <ul class="orbit-card__list">
-                    {tier.items.map((item) => (
-                      <li>
-                        <svg class="check-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                          <path d="M3 8l3.5 3.5L13 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                        </svg>
-                        <span>{item}</span>
-                      </li>
-                    ))}
-                  </ul>
+  .zl-button:active {
+    transform: scale(0.97);
+  }
 
-                  {tier.ctaUrl ? (
-                    <a
-                      class="button button--pro"
-                      href={tier.ctaUrl}
-                      rel="noreferrer"
-                    >
-                      <span>{tier.cta}</span>
-                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                        <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                      </svg>
-                    </a>
-                  ) : (
-                    <span class="button button--pro button--disabled" aria-disabled="true">
-                      {tier.cta}
-                    </span>
-                  )}
-                </article>
-              );
-            })}
-          </div>
-        </section>
-      </div>
-    </section>
-  </main>
-</div>
+  .zl-button:focus-visible {
+    outline: 2px solid var(--theme-text-primary);
+    outline-offset: 3px;
+  }
+
+  .zl-button--secondary {
+    color: var(--theme-text-primary);
+    background: var(--theme-frost);
+    box-shadow: inset 0 0 0 1px var(--theme-border-hairline);
+  }
+
+  .zl-button--secondary:hover {
+    background: color-mix(in srgb, var(--theme-text-primary) 8%, transparent);
+  }
+
+  .zl-button[aria-disabled="true"] {
+    color: var(--theme-text-secondary);
+    background: var(--theme-frost);
+    box-shadow: inset 0 0 0 1px var(--theme-border-hairline);
+    transform: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .zl-button {
+      transition: none;
+    }
+  }
+</style>

@@ -7,8 +7,8 @@ Static Astro site for Givdul's macOS apps. `/` redirects to `/zones`, and each a
 Set these before production deployment:
 
 - `PUBLIC_SITE_ORIGIN`: final public origin, for example `https://apps.givdul.com`
-- `PUBLIC_ZONES_DOWNLOAD_URL`: Zones download URL (the free Polar `Zones` product, which starts the 7-day trial). Only used once the license checkout below is set.
-- `PUBLIC_POLAR_ZONES_LICENSE_CHECKOUT_URL`: Polar checkout link for the paid `Zones License` product. While unset, the Buy button and every Zones download button stay disabled.
+- `PUBLIC_POLAR_ZONES_DOWNLOAD_CHECKOUT_URL`: checkout link for the free Polar `Zones` product, which starts the 7-day trial. `PUBLIC_ZONES_DOWNLOAD_URL` is read as a fallback; `scripts/setup-polar-zones.mjs` writes the same link to both. Only used once the license checkout below is set.
+- `PUBLIC_POLAR_ZONES_LICENSE_CHECKOUT_URL`: Polar checkout link for the paid `Zones License` product ($7.99 one-time, product `60762fd4`). The link has not been created yet. While unset, the Buy button and every Zones download button stay disabled.
 - `PUBLIC_PORTAL_DOWNLOAD_URL`: legacy Frame direct-download variable; retained for configuration compatibility and does not publish Frame
 - `PUBLIC_PORTAL_APP_STORE_URL`: legacy Frame App Store variable; retained for configuration compatibility and does not publish Frame
 - `PUBLIC_POLAR_PORTAL_LICENSE_CHECKOUT_URL`: legacy Frame checkout variable; retained for configuration compatibility while commerce details remain unpublished

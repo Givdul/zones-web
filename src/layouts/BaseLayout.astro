@@ -31,6 +31,8 @@ const {
   omitFooter = false,
 } = Astro.props;
 
+// Zones follows the macOS app's light/dark palette; other apps stay dark.
+const followsAppearance = app?.slug === "zones";
 const canonical = new URL(pathname, site.origin).toString();
 const ogImage = new URL(ogImagePath, site.origin).toString();
 const structuredDataPayload = structuredData
@@ -39,7 +41,7 @@ const structuredDataPayload = structuredData
 ---
 
 <!doctype html>
-<html lang="en" data-givdul-theme="fancy">
+<html lang="en" data-givdul-theme="fancy" data-zones-theme={followsAppearance ? "system" : undefined}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
@@ -57,7 +59,20 @@ const structuredDataPayload = structuredData
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImage} />
-    <meta name="theme-color" content="#141415" />
+    {followsAppearance ? (
+      <>
+        <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f0f0f2" />
+        <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#141415" />
+        <script is:inline>
+          try {
+            const saved = localStorage.getItem("zones-theme");
+            if (saved === "light" || saved === "dark") document.documentElement.dataset.zonesTheme = saved;
+          } catch {}
+        </script>
+      </>
+    ) : (
+      <meta name="theme-color" content="#141415" />
+    )}
     <link rel="canonical" href={canonical} />
     <link rel="icon" href="/favicon.png" type="image/png" />
     <title>{title}</title>
@@ -66,7 +81,7 @@ const structuredDataPayload = structuredData
     )}
   </head>
   <body class:list={[app && `app-${app.slug}`]}>
-    <SiteBackground client:load />
+    {app?.slug !== "zones" && <SiteBackground client:load />}
     <div class="site-shell">
       <div class="site-shell__fill">
         <slot />
