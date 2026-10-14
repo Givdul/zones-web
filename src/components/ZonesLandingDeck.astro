@@ -9,15 +9,15 @@ interface Props {
 }
 
 const { app } = Astro.props;
-const freeTier = app.pricing[0] ?? {
-  name: "free",
-  label: "Free",
+const licenseTier = app.pricing[0] ?? {
+  name: "license",
+  label: "One-time license",
   title: "Zones",
-  price: "Coming soon",
-  note: "Download details will be published shortly",
-  lead: "Join the waitlist to hear when the download goes live.",
+  price: "$7.99",
+  note: "One-time Polar license",
+  lead: "Try Zones free for 7 days, then unlock the full app with one license.",
   items: ["Full app access", "No subscription"],
-  cta: "Join waitlist",
+  cta: "Coming soon",
 };
 const ctaHref = app.downloadUrl ?? app.appStoreUrl;
 ---
@@ -181,14 +181,14 @@ const ctaHref = app.downloadUrl ?? app.appStoreUrl;
               />
               <div class="orbit-card__header">
                 <div class="orbit-card__badge">
-                  <span class="orbit-card__label">{freeTier.label}</span>
+                  <span class="orbit-card__label">{licenseTier.label}</span>
                 </div>
-                <h3>{freeTier.title}</h3>
+                <h3>{licenseTier.title}</h3>
                 <p class="orbit-card__price">
-                  <span class="price-value">{freeTier.price}</span>
-                  <span class="price-note">{freeTier.note}</span>
+                  <span class="price-value">{licenseTier.price}</span>
+                  <span class="price-note">{licenseTier.note}</span>
                 </p>
-                <p class="orbit-card__lead">{freeTier.lead}</p>
+                <p class="orbit-card__lead">{licenseTier.lead}</p>
               </div>
 
               <div class="orbit-card__tier-divider">
@@ -196,7 +196,7 @@ const ctaHref = app.downloadUrl ?? app.appStoreUrl;
               </div>
 
               <ul class="orbit-card__list">
-                {freeTier.items.map((item) => (
+                {licenseTier.items.map((item) => (
                   <li>
                     <svg class="check-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
                       <path d="M3 8l3.5 3.5L13 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
@@ -212,14 +212,14 @@ const ctaHref = app.downloadUrl ?? app.appStoreUrl;
                   href={ctaHref}
                   rel="noreferrer"
                 >
-                  <span>{freeTier.cta}</span>
+                  <span>{licenseTier.cta}</span>
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
                     <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
                   </svg>
                 </a>
               ) : (
                 <span class="button button--pro button--disabled" aria-disabled="true">
-                  {freeTier.cta}
+                  {licenseTier.cta}
                 </span>
               )}
             </article>

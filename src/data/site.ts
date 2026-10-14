@@ -152,7 +152,7 @@ export const apps: AppRecord[] = [
     title: "Zones for Mac",
     tagline: "Window snapping from your menu bar.",
     description:
-      "Zones is a free, lightweight macOS menu bar app for snapping windows into clean layouts with a Shift-drag gesture. Preferences stay local, and Polar may process download metadata separately from the app.",
+      "Zones is a lightweight macOS menu bar app for snapping windows into clean layouts with a Shift-drag gesture. Try it free for 7 days, then keep it with one $7.99 license. Preferences stay local, and Polar may process download and purchase metadata separately from the app.",
     cardSummary:
       "Snap windows into clean layouts from the menu bar with one gesture and no setup friction.",
     supportSummary:
@@ -181,29 +181,30 @@ export const apps: AppRecord[] = [
         icon: "gesture",
       },
       {
-        title: "Free app",
-        copy: "Zones is free. Grant Accessibility once, then use it without an account or subscription.",
+        title: "One license, no account",
+        copy: "Try Zones free for 7 days, then unlock it with one $7.99 Polar license. No subscription.",
         icon: "star",
       },
     ],
     pricingIntro: {
-      headline: "Free for Mac",
+      headline: "Try it for a week, then keep it.",
       subheadline:
-        "Zones is free, with distribution details kept separate from the app's local data handling.",
+        "Zones includes a 7-day trial, then uses one $7.99 Polar license for up to 2 Macs. No account or subscription, and a 14-day money-back policy.",
     },
-    pricingModel: "free",
+    pricingModel: "license_first",
     pricing: [
       {
-        name: "free",
-        label: "Free",
+        name: "license",
+        label: "One-time license",
         title: "Zones",
-        price: "$0",
-        note: "Availability details coming soon",
-        lead: "The full window manager is free. No account, no trial timer, no subscription.",
+        price: "$7.99",
+        note: "One-time Polar license",
+        lead: "Try Zones free for 7 days, then unlock the full app with one license.",
         items: [
           "Shift-drag snapping",
           "Custom layouts and preset zones",
-          "Local preferences on your Mac",
+          "One license for up to 2 Macs",
+          "14-day money-back policy",
         ],
         cta: "Coming soon",
       },
@@ -211,7 +212,7 @@ export const apps: AppRecord[] = [
     supportFacts: [
       "Zones is a macOS menu bar app for snapping windows into saved layouts with a simple Shift-drag gesture.",
       "Accessibility access is required so Zones can inspect, move, and resize other app windows when you trigger snapping.",
-      "Zones is free. Distribution metadata may be processed separately from the app.",
+      "Zones includes a 7-day free trial, then needs one $7.99 Polar license for up to 2 Macs. Purchases can be refunded within 14 days. Polar may process download and purchase metadata separately from the app.",
     ],
     privacySections: [
       {
@@ -229,7 +230,7 @@ export const apps: AppRecord[] = [
       {
         title: "Distribution",
         paragraphs: [
-          "Zones is free, so there is no purchase account or subscription entitlement. Distribution metadata may be processed separately from the app.",
+          "Zones is a direct download with a 7-day free trial. After the trial, snapping requires a one-time license purchased through Polar, which acts as the merchant of record and processes payment. Purchases can be refunded within 14 days through Polar. When you activate, validate, or deactivate a license, Zones sends only the license key, activation ID, organization ID, and your Mac\u2019s computer name to Polar. There is no subscription, account sign-in, or in-app payment processing.",
         ],
       },
       {
