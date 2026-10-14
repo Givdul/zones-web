@@ -1,6 +1,7 @@
 ---
 import type { AppRecord } from "../data/site";
 import { site } from "../data/site";
+import ZonesThemeSwitch from "./ZonesThemeSwitch.astro";
 
 interface Props {
   app?: AppRecord;
@@ -24,5 +25,6 @@ const year = new Date().getFullYear();
       <span class="site-footer__sep" aria-hidden="true">·</span>
       <a href={site.supportMailto}>{site.supportEmail}</a>
     </p>
+    {app?.slug === "zones" && <ZonesThemeSwitch />}
   </div>
 </footer>
