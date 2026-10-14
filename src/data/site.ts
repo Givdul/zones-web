@@ -30,22 +30,6 @@ const checkoutUrls = {
 // A Zones download starts a trial that only a license can extend, so hold downloads until the license checkout exists.
 const zonesDownloadUrl = checkoutUrls.zonesLicense ? downloadUrls.zones : null;
 
-/** End of the Zones launch discount, from `PUBLIC_ZONES_LAUNCH_OFFER_ENDS` (YYYY-MM-DD). Null when unset, invalid, or past at build time. */
-const resolveZonesLaunchOfferEnd = () => {
-  const value = import.meta.env.PUBLIC_ZONES_LAUNCH_OFFER_ENDS?.trim();
-  if (!value) return null;
-  const end = new Date(`${value}T23:59:59Z`);
-  if (Number.isNaN(end.getTime()) || end.getTime() < Date.now()) return null;
-  return end;
-};
-
-const zonesLaunchOfferEnd = resolveZonesLaunchOfferEnd();
-const zonesLaunchOfferEndLabel = zonesLaunchOfferEnd?.toLocaleDateString("en-US", {
-  month: "long",
-  day: "numeric",
-  timeZone: "UTC",
-});
-
 export interface AppProofPoint {
   title: string;
   copy: string;
@@ -170,7 +154,7 @@ export const apps: AppRecord[] = [
     title: "Zones for Mac",
     tagline: "Window snapping from your menu bar.",
     description:
-      "Zones is a lightweight macOS menu bar app for snapping windows into clean layouts with a Shift-drag gesture. Try it free for 14 days, then buy a one-time $7.99 license. No subscription or account.",
+      "Zones is a lightweight macOS menu bar app for snapping windows into clean layouts with a Shift-drag gesture. Try it free for 7 days, then buy a one-time $7.99 license. No subscription or account.",
     cardSummary:
       "Snap windows into clean layouts from the menu bar with one gesture and no setup friction.",
     supportSummary:
@@ -200,12 +184,12 @@ export const apps: AppRecord[] = [
       },
       {
         title: "Try it, then keep it",
-        copy: "Every feature is free for 14 days. Then one $7.99 license, no account or subscription.",
+        copy: "Every feature is free for 7 days. Then one $7.99 license, no account or subscription.",
         icon: "star",
       },
     ],
     pricingIntro: {
-      headline: "Try it for 14 days.",
+      headline: "Try it for 7 days.",
       subheadline: "Then keep it for $7.99, once.",
     },
     pricingModel: "trial_then_paid",
@@ -214,7 +198,7 @@ export const apps: AppRecord[] = [
         name: "trial",
         label: "Free trial",
         title: "Zones",
-        price: "14 days",
+        price: "7 days",
         note: "Free from first launch",
         lead: "Every feature, no account. Snapping pauses when the trial ends.",
         items: [
@@ -229,14 +213,13 @@ export const apps: AppRecord[] = [
         name: "license",
         label: "One-time license",
         title: "Zones License",
-        price: zonesLaunchOfferEndLabel ? "$4.99" : "$7.99",
-        note: zonesLaunchOfferEndLabel
-          ? `Launch price until ${zonesLaunchOfferEndLabel}, then $7.99`
-          : "One-time purchase",
+        price: "$7.99",
+        note: "One-time purchase",
         lead: "Keep snapping after the trial. Enter the key in Settings.",
         items: [
           "Up to 2 Macs",
           "No subscription or account",
+          "14-day money-back policy",
           "Manage activations in the Polar portal",
         ],
         cta: checkoutUrls.zonesLicense ? "Buy license" : "Coming soon",
@@ -247,8 +230,8 @@ export const apps: AppRecord[] = [
     supportFacts: [
       "Zones is a macOS menu bar app for snapping windows into saved layouts with a simple Shift-drag gesture.",
       "Accessibility access is required so Zones can inspect, move, and resize other app windows when you trigger snapping.",
-      "Zones is free for 14 days from first launch. After that, Shift-drag snapping stops until you enter a license key in Settings. Settings and the layout editor stay available.",
-      "A $7.99 one-time license covers up to 2 Macs. Manage or remove activations at polar.sh/hansen-software/portal.",
+      "Zones is free for 7 days from first launch. After that, Shift-drag snapping stops until you enter a license key in Settings. Settings and the layout editor stay available.",
+      "A $7.99 one-time license covers up to 2 Macs. Purchases can be refunded within 14 days through Polar or by emailing support@givdul.com. Manage or remove activations at polar.sh/hansen-software/portal.",
     ],
     privacySections: [
       {
@@ -273,7 +256,7 @@ export const apps: AppRecord[] = [
       {
         title: "Downloads and purchases",
         paragraphs: [
-          "Downloads and licenses are delivered through Polar, which is the merchant of record and processes payment. Polar may process the information needed for the download or purchase, such as the checkout request and your email address. Zones does not use this information.",
+          "Downloads and licenses are delivered through Polar, which is the merchant of record and processes payment. Polar may process the information needed for the download or purchase, such as the checkout request and your email address. Zones does not use this information. Purchases can be refunded within 14 days of checkout through Polar.",
         ],
       },
       {
