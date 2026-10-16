@@ -1,0 +1,505 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import { apps, site } from "../../data/site";
+
+const app = apps.find((a) => a.slug === "zones") ?? apps[0];
+const downloadBenefitId =
+  import.meta.env.PUBLIC_POLAR_ZONES_DOWNLOAD_BENEFIT_ID?.trim() ||
+  "60294014-3e28-4230-a74c-f945940e59f4";
+const portalUrl = "https://polar.sh/hansen-software/portal";
+const directFallbackUrl = "/zones/updates/Zones-1.0-1.zip";
+---
+
+<BaseLayout
+  title={`Thank you for choosing ${app.name} | ${site.name}`}
+  description={`Your ${app.name} download is ready. Access your installer and license key.`}
+  pathname="/zones/thanks"
+  robots="noindex,nofollow"
+  app={app}
+>
+  <SiteHeader app={app} />
+
+  <main class="thanks-page" aria-labelledby="thanks-title">
+    <div class="thanks-card">
+      <div class="thanks-badge">
+        <span class="badge-icon">✓</span> Order Confirmed
+      </div>
+
+      <h1 id="thanks-title" class="thanks-heading">Thank you for choosing Zones</h1>
+      <p class="thanks-subtitle" id="status-message">
+        Connecting to Polar to prepare your download and license details...
+      </p>
+
+      <!-- Primary Action Area: populated dynamically via client JS -->
+      <div class="thanks-actions" id="actions-container">
+        <div class="loading-spinner" id="loading-indicator" aria-label="Loading your download details">
+          <div class="spinner-ring"></div>
+        </div>
+
+        <a
+          id="btn-download"
+          class="zl-button thanks-btn is-hidden"
+          href={directFallbackUrl}
+          download
+        >
+          <svg class="btn-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          <span id="btn-download-text">Download Zones</span>
+        </a>
+
+        <a
+          id="btn-portal"
+          class="zl-button zl-button--secondary thanks-btn is-hidden"
+          href={portalUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Open Customer Portal
+        </a>
+      </div>
+
+      <!-- License Key Display (only when license was purchased) -->
+      <section class="license-box is-hidden" id="license-box" aria-labelledby="license-heading">
+        <div class="license-header">
+          <h2 id="license-heading" class="license-title">Your License Key</h2>
+          <span class="license-badge">One-Time License</span>
+        </div>
+        <div class="license-key-row">
+          <code class="license-key" id="license-key-text">Loading...</code>
+          <button type="button" class="btn-copy" id="btn-copy-license" aria-label="Copy license key to clipboard">
+            <svg class="copy-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+            <span id="copy-btn-label">Copy</span>
+          </button>
+        </div>
+        <p class="license-instructions">
+          To activate: Open <strong>Zones</strong> → <strong>Settings</strong> → <strong>General</strong> → <strong>License</strong> → paste your key.
+        </p>
+      </section>
+
+      <!-- Help & Direct Fallback Notice -->
+      <footer class="thanks-help">
+        <p>
+          Need assistance or downloading on another Mac? A confirmation with your receipt and links was sent to your email, or you can manage downloads directly on the
+          <a href={portalUrl} target="_blank" rel="noopener noreferrer" class="link-inline">Polar Customer Portal</a>.
+        </p>
+        <p class="thanks-back">
+          <a href="/zones" class="link-return">← Back to Zones Overview</a>
+        </p>
+      </footer>
+    </div>
+  </main>
+</BaseLayout>
+
+<script define:vars={{ downloadBenefitId, portalUrl, directFallbackUrl }}>
+  (async function initThanksPage() {
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get("customer_session_token");
+    const checkoutId = params.get("checkout_id");
+
+    const statusEl = document.getElementById("status-message");
+    const loadingEl = document.getElementById("loading-indicator");
+    const btnDownload = document.getElementById("btn-download");
+    const btnDownloadText = document.getElementById("btn-download-text");
+    const btnPortal = document.getElementById("btn-portal");
+    const licenseBox = document.getElementById("license-box");
+    const licenseKeyText = document.getElementById("license-key-text");
+    const btnCopy = document.getElementById("btn-copy-license");
+    const copyLabel = document.getElementById("copy-btn-label");
+
+    // Copy to clipboard helper
+    if (btnCopy && licenseKeyText && copyLabel) {
+      btnCopy.addEventListener("click", async () => {
+        const text = licenseKeyText.textContent || "";
+        try {
+          await navigator.clipboard.writeText(text.trim());
+          copyLabel.textContent = "Copied!";
+          btnCopy.classList.add("is-copied");
+          setTimeout(() => {
+            copyLabel.textContent = "Copy";
+            btnCopy.classList.remove("is-copied");
+          }, 2500);
+        } catch {
+          // Fallback selection
+          const range = document.createRange();
+          range.selectNodeContents(licenseKeyText);
+          const sel = window.getSelection();
+          sel?.removeAllRanges();
+          sel?.addRange(range);
+          copyLabel.textContent = "Selected";
+        }
+      });
+    }
+
+    // Function to render fallback / direct mode
+    const renderFallback = (message) => {
+      if (loadingEl) loadingEl.classList.add("is-hidden");
+      if (statusEl && message) statusEl.textContent = message;
+      if (btnDownload) {
+        btnDownload.href = directFallbackUrl;
+        btnDownload.classList.remove("is-hidden");
+        if (btnDownloadText) btnDownloadText.textContent = "Direct Download (Zones-1.0-1.zip)";
+      }
+      if (btnPortal) {
+        btnPortal.classList.remove("is-hidden");
+      }
+    };
+
+    if (!token) {
+      renderFallback(
+        "Your order is complete! Check your email for confirmation, or download directly below."
+      );
+      return;
+    }
+
+    try {
+      const authHeader = { Authorization: `Bearer ${token}` };
+
+      // 1. Fetch Downloadables Benefit
+      const dlPromise = fetch(
+        `https://api.polar.sh/v1/customer-portal/downloadables/?benefit_id=${encodeURIComponent(downloadBenefitId)}`,
+        { headers: authHeader }
+      )
+        .then((r) => (r.ok ? r.json() : null))
+        .catch(() => null);
+
+      // 2. Fetch License Keys
+      const licPromise = fetch("https://api.polar.sh/v1/customer-portal/license-keys/", {
+        headers: authHeader,
+      })
+        .then((r) => (r.ok ? r.json() : null))
+        .catch(() => null);
+
+      const [dlData, licData] = await Promise.all([dlPromise, licPromise]);
+
+      if (loadingEl) loadingEl.classList.add("is-hidden");
+
+      let downloadUrl = directFallbackUrl;
+      let filename = "Zones.zip";
+
+      if (dlData && Array.isArray(dlData.items) && dlData.items.length > 0) {
+        const item = dlData.items[0];
+        if (item.file?.download?.url) {
+          downloadUrl = item.file.download.url;
+          filename = item.file.name || "Zones.zip";
+        }
+      }
+
+      // Populate Download CTA
+      if (btnDownload) {
+        btnDownload.href = downloadUrl;
+        btnDownload.setAttribute("download", filename);
+        if (btnDownloadText) btnDownloadText.textContent = `Download ${filename}`;
+        btnDownload.classList.remove("is-hidden");
+
+        // Auto-trigger download
+        try {
+          const autoAnchor = document.createElement("a");
+          autoAnchor.href = downloadUrl;
+          autoAnchor.setAttribute("download", filename);
+          autoAnchor.style.display = "none";
+          document.body.appendChild(autoAnchor);
+          autoAnchor.click();
+          document.body.removeChild(autoAnchor);
+        } catch {
+          // Fallback to explicit user click
+        }
+      }
+
+      if (btnPortal) {
+        btnPortal.classList.remove("is-hidden");
+      }
+
+      // Check for License Key
+      if (licData && Array.isArray(licData.items) && licData.items.length > 0) {
+        const keyItem = licData.items[0];
+        const keyVal = keyItem.key || keyItem.license_key || "";
+        if (keyVal && licenseBox && licenseKeyText) {
+          licenseKeyText.textContent = keyVal;
+          licenseBox.classList.remove("is-hidden");
+        }
+      }
+
+      if (statusEl) {
+        statusEl.textContent =
+          "Your download has started. If it didn't start automatically, click the button below.";
+      }
+
+      // Clean customer_session_token from URL bar to prevent token leakage
+      if (window.history && window.history.replaceState) {
+        const cleanParams = new URLSearchParams();
+        if (checkoutId) cleanParams.set("checkout_id", checkoutId);
+        const newSearch = cleanParams.toString() ? `?${cleanParams.toString()}` : "";
+        window.history.replaceState(null, document.title, window.location.pathname + newSearch);
+      }
+    } catch (err) {
+      renderFallback(
+        "Your order is verified. Click below to download your installer directly."
+      );
+    }
+  })();
+</script>
+
+<style>
+  .thanks-page {
+    flex: 1 0 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: min(var(--site-width), 100%);
+    margin-inline: auto;
+    padding-block: clamp(2rem, 8svh, 6rem);
+    padding-inline: 1rem;
+  }
+
+  .thanks-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    width: 100%;
+    max-width: 42rem;
+    padding: clamp(2rem, 5vw, 3.5rem);
+    background: color-mix(in srgb, var(--fancy-menu-canvas) 85%, transparent);
+    backdrop-filter: blur(28px);
+    -webkit-backdrop-filter: blur(28px);
+    border: 1px solid var(--fancy-hairline);
+    border-radius: var(--radius-xl);
+    box-shadow: 0 24px 64px rgb(0 0 0 / 0.4), 0 2px 8px rgb(0 0 0 / 0.2);
+  }
+
+  .thanks-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.35rem 0.85rem;
+    margin-bottom: 1.5rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--fancy-text-primary);
+    background: color-mix(in srgb, var(--fancy-champagne) 15%, transparent);
+    border: 1px solid color-mix(in srgb, var(--fancy-champagne) 30%, transparent);
+    border-radius: 9999px;
+  }
+
+  .badge-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.1rem;
+    height: 1.1rem;
+    font-size: 0.75rem;
+    color: var(--fancy-canvas-bottom);
+    background: var(--fancy-text-primary);
+    border-radius: 50%;
+  }
+
+  .thanks-heading {
+    margin: 0 0 0.75rem;
+    font-family: var(--font-display);
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    font-weight: 600;
+    letter-spacing: -0.025em;
+    color: var(--fancy-text-primary);
+  }
+
+  .thanks-subtitle {
+    margin: 0 0 2rem;
+    max-width: 32rem;
+    font-size: 1.05rem;
+    line-height: 1.5;
+    color: var(--fancy-smoke);
+  }
+
+  .thanks-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2.5rem;
+    min-height: 3.5rem;
+  }
+
+  .thanks-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    text-decoration: none;
+    font-weight: 500;
+    transition: transform 0.15s ease, opacity 0.15s ease;
+  }
+
+  .thanks-btn:hover {
+    transform: translateY(-1px);
+  }
+
+  .btn-icon {
+    flex-shrink: 0;
+  }
+
+  /* License Key Card */
+  .license-box {
+    width: 100%;
+    margin-bottom: 2.5rem;
+    padding: 1.5rem;
+    background: color-mix(in srgb, var(--fancy-canvas-top) 80%, black 20%);
+    border: 1px solid color-mix(in srgb, var(--fancy-hairline) 70%, transparent);
+    border-radius: 1rem;
+    text-align: left;
+  }
+
+  .license-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.85rem;
+  }
+
+  .license-title {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--fancy-text-primary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .license-badge {
+    font-size: 0.75rem;
+    padding: 0.2rem 0.5rem;
+    background: var(--fancy-frost);
+    border: 1px solid var(--fancy-inner-line);
+    border-radius: 0.35rem;
+    color: var(--fancy-pearl);
+  }
+
+  .license-key-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    background: var(--fancy-canvas-bottom);
+    border: 1px solid var(--fancy-inner-line);
+    border-radius: 0.6rem;
+  }
+
+  .license-key {
+    flex: 1 1 auto;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 0.95rem;
+    letter-spacing: 0.04em;
+    color: var(--fancy-champagne);
+    word-break: break-all;
+    user-select: all;
+  }
+
+  .btn-copy {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.45rem 0.85rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--fancy-text-primary);
+    background: var(--fancy-menu-hover-fill);
+    border: 1px solid var(--fancy-hairline);
+    border-radius: 0.45rem;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease;
+  }
+
+  .btn-copy:hover {
+    background: color-mix(in srgb, var(--fancy-menu-hover-fill) 85%, white 15%);
+    border-color: var(--fancy-line-strong);
+  }
+
+  .btn-copy.is-copied {
+    color: #4ade80;
+    border-color: #4ade80;
+    background: rgba(74, 222, 128, 0.1);
+  }
+
+  .license-instructions {
+    margin: 0.85rem 0 0;
+    font-size: 0.85rem;
+    line-height: 1.45;
+    color: var(--fancy-smoke);
+  }
+
+  .license-instructions strong {
+    color: var(--fancy-text-primary);
+  }
+
+  /* Help & Footer */
+  .thanks-help {
+    font-size: 0.85rem;
+    line-height: 1.6;
+    color: var(--fancy-pearl);
+    max-width: 34rem;
+  }
+
+  .thanks-help p {
+    margin: 0 0 0.75rem;
+  }
+
+  .link-inline {
+    color: var(--fancy-champagne);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    transition: color 0.15s ease;
+  }
+
+  .link-inline:hover {
+    color: var(--fancy-text-primary);
+  }
+
+  .thanks-back {
+    margin-top: 1.5rem !important;
+  }
+
+  .link-return {
+    display: inline-block;
+    color: var(--fancy-smoke);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.15s ease;
+  }
+
+  .link-return:hover {
+    color: var(--fancy-text-primary);
+  }
+
+  /* Loading Spinner */
+  .loading-spinner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0.5rem;
+  }
+
+  .spinner-ring {
+    width: 2rem;
+    height: 2rem;
+    border: 2.5px solid var(--fancy-frost);
+    border-top-color: var(--fancy-champagne);
+    border-radius: 50%;
+    animation: spin 0.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .is-hidden {
+    display: none !important;
+  }
+</style>
