@@ -96,6 +96,10 @@ const buyHref = license?.ctaUrl ?? null;
 
   :global(.site-shell__fill:has(> .zl) > .site-header) {
     grid-area: 1 / 1;
+    position: static;
+    backdrop-filter: none;
+    mask-image: none;
+    -webkit-mask-image: none;
   }
 
   .zl {
