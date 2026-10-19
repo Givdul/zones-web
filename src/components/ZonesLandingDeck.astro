@@ -20,21 +20,90 @@ const buyHref = license?.ctaUrl ?? null;
       {buyHref && <a class="zl-button zl-button--secondary" href={buyHref} rel="noreferrer">Buy license</a>}
       {!downloadHref && !buyHref && <span class="zl-button" aria-disabled="true">Coming soon</span>}
     </div>
-    <p>Free for 7 days, then {license?.price} one-time. 14-day money-back policy.</p>
+    <p>
+      Free for 7 days, then {license?.price} one-time. 14-day money-back policy.
+      <a href="#pricing">What's included</a>
+    </p>
   </div>
   <div class="zl-stage">
     <ZonesStage client:load />
   </div>
 </main>
 
+<section id="pricing" class="zl-pricing" aria-labelledby="zl-pricing-title">
+  {app.pricingIntro && (
+    <header class="zl-pricing__intro">
+      <h2 id="zl-pricing-title">{app.pricingIntro.headline}</h2>
+      <p>{app.pricingIntro.subheadline}</p>
+    </header>
+  )}
+  <div class="zl-pricing__cards">
+    {app.pricing.map((tier) => (
+      <article class:list={["zl-card", tier.emphasis === "recommended" && "zl-card--recommended"]}>
+        <header class="zl-card__header">
+          <span class="zl-card__label">{tier.label}</span>
+          <h3>{tier.title}</h3>
+          <p class="zl-card__price">
+            <span class="zl-card__amount">{tier.price}</span>
+            <span class="zl-card__note">{tier.note}</span>
+          </p>
+          <p class="zl-card__lead">{tier.lead}</p>
+        </header>
+        <ul class="zl-card__list">
+          {tier.items.map((item) => (
+            <li>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path d="M3 8l3.5 3.5L13 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+              <span>{item}</span>
+            </li>
+          ))}
+        </ul>
+        {tier.ctaUrl ? (
+          <a
+            class:list={["zl-button", tier.emphasis !== "recommended" && "zl-button--secondary"]}
+            href={tier.ctaUrl}
+            rel="noreferrer"
+          >
+            {tier.cta}
+          </a>
+        ) : (
+          <span class="zl-button" aria-disabled="true">Coming soon</span>
+        )}
+      </article>
+    ))}
+  </div>
+</section>
+
 <style>
-  /* The header and landing share one viewport so the whole stage is visible without scrolling. */
+  /*
+   * The header and hero share one viewport so the whole stage is visible without scrolling.
+   * A phantom item spans the header and hero rows and holds them at 100svh, so the pricing
+   * section below adds height instead of taking it from the stage.
+   */
   :global(.site-shell__fill:has(> .zl)) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto 1fr auto;
+  }
+
+  :global(.site-shell__fill:has(> .zl))::before {
+    content: "";
+    grid-area: 1 / 1 / 3 / 2;
     min-height: 100svh;
+    pointer-events: none;
+  }
+
+  :global(.site-shell__fill:has(> .zl) > .site-header) {
+    grid-area: 1 / 1;
+    position: static;
+    backdrop-filter: none;
+    mask-image: none;
+    -webkit-mask-image: none;
   }
 
   .zl {
-    flex: 1 0 auto;
+    grid-area: 2 / 1;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -92,9 +161,30 @@ const buyHref = license?.ctaUrl ?? null;
     color: var(--theme-text-secondary);
   }
 
+  .zl-cta p a {
+    margin-left: 0.25em;
+    color: var(--theme-text-primary);
+    text-decoration: underline;
+    text-decoration-color: var(--theme-border-hairline);
+    text-underline-offset: 0.2em;
+    white-space: nowrap;
+    transition: text-decoration-color 160ms ease;
+  }
+
+  .zl-cta p a:hover {
+    text-decoration-color: currentColor;
+  }
+
+  .zl-cta p a:focus-visible {
+    outline: 2px solid var(--theme-text-primary);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
   .zl-button {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     height: 2.875rem;
     padding: 0 1.5rem;
     border-radius: 999px;
@@ -135,6 +225,154 @@ const buyHref = license?.ctaUrl ?? null;
     background: var(--theme-frost);
     box-shadow: inset 0 0 0 1px var(--theme-border-hairline);
     transform: none;
+  }
+
+  .zl-pricing {
+    grid-area: 3 / 1;
+    display: grid;
+    gap: clamp(1.5rem, 4vw, 2.5rem);
+    width: min(var(--site-width), 100%);
+    margin-inline: auto;
+    padding-block: clamp(3rem, 8svh, 6rem) 0;
+    scroll-margin-top: 1rem;
+  }
+
+  .zl-pricing__intro {
+    display: grid;
+    justify-items: center;
+    gap: 0.5rem;
+    text-align: center;
+  }
+
+  .zl-pricing__intro h2 {
+    margin: 0;
+    font-family: var(--theme-font-display);
+    font-size: clamp(1.75rem, 4vw, 2.75rem);
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    color: var(--theme-text-primary);
+    text-wrap: balance;
+  }
+
+  .zl-pricing__intro p {
+    margin: 0;
+    font-size: clamp(1rem, 1.6vw, 1.25rem);
+    color: var(--theme-text-secondary);
+  }
+
+  .zl-pricing__cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+    gap: 1rem;
+    width: min(100%, 52rem);
+    margin-inline: auto;
+  }
+
+  .zl-card {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    gap: 1.25rem;
+    min-width: 0;
+    padding: clamp(1.25rem, 2.2vw, 1.75rem);
+    border-radius: 1.5rem;
+    border: 1px solid var(--theme-border-hairline);
+    background: var(--theme-frost);
+    overflow-wrap: break-word;
+  }
+
+  .zl-card--recommended {
+    border-color: var(--theme-surface-stroke);
+    background: color-mix(in srgb, var(--theme-surface-base) 70%, transparent);
+  }
+
+  .zl-card__header {
+    display: grid;
+    justify-items: start;
+    gap: 0.5rem;
+  }
+
+  .zl-card__label {
+    padding: 0.3rem 0.7rem;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--theme-text-primary);
+    box-shadow: inset 0 0 0 1px var(--theme-border-hairline);
+  }
+
+  .zl-card--recommended .zl-card__label {
+    background: var(--theme-surface-raised);
+    box-shadow: inset 0 0 0 1px var(--theme-surface-stroke);
+  }
+
+  .zl-card h3 {
+    margin: 0.25rem 0 0;
+    font-family: var(--theme-font-display);
+    font-size: clamp(1.4rem, 2.1vw, 1.75rem);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    color: var(--theme-text-primary);
+  }
+
+  .zl-card__price {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.25rem 0.5rem;
+    margin: 0;
+  }
+
+  .zl-card__amount {
+    font-size: 1.45rem;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    color: var(--theme-text-primary);
+  }
+
+  .zl-card__note {
+    font-size: 0.9rem;
+    color: var(--theme-text-secondary);
+  }
+
+  .zl-card__lead {
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--theme-text-secondary);
+  }
+
+  .zl-card__list {
+    display: grid;
+    align-content: start;
+    gap: 0.75rem;
+    margin: 0;
+    padding: 1.25rem 0 0;
+    border-top: 1px solid var(--theme-border-hairline);
+    list-style: none;
+  }
+
+  .zl-card__list li {
+    display: flex;
+    align-items: baseline;
+    gap: 0.65rem;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: var(--theme-text-primary);
+  }
+
+  .zl-card__list svg {
+    flex: none;
+    align-self: flex-start;
+    margin-top: 0.2rem;
+    color: var(--theme-text-secondary);
+  }
+
+  .zl-card .zl-button {
+    width: 100%;
   }
 
   @media (prefers-reduced-motion: reduce) {
