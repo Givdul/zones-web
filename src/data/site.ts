@@ -220,7 +220,7 @@ export const apps: AppRecord[] = [
         note: "One-time, 14-day money-back policy",
         lead: "Keep snapping after the trial. Enter the key in Settings.",
         items: [
-          "Up to 2 Macs",
+          "Up to 3 Macs",
           "At least one year of updates included",
           "No subscription or account",
           "Refundable within 14 days through Polar",
@@ -235,7 +235,7 @@ export const apps: AppRecord[] = [
       "Zones is a macOS menu bar app for snapping windows into saved layouts with a simple Shift-drag gesture.",
       "Accessibility access is required so Zones can inspect, move, and resize other app windows when you trigger snapping.",
       "Zones is free for 7 days from first launch. The menu and Settings show \"Free Trial\" with the days left, then \"Trial Ended\". After that, Shift-drag snapping stops until you enter a license key in Settings. Settings and the layout editor stay available.",
-      "A $9.99 one-time license covers up to 2 Macs and includes at least one year of updates, with no subscription or account. Purchases can be refunded within 14 days through Polar or by emailing support@givdul.com. Manage or remove activations at polar.sh/hansen-software/portal.",
+      "A $9.99 one-time license covers up to 3 Macs and includes at least one year of updates, with no subscription or account. Purchases can be refunded within 14 days through Polar or by emailing support@givdul.com. Manage or remove activations at polar.sh/hansen-software/portal.",
       "Zones checks your license with Polar only when you activate it, when you remove it from a Mac, and once at launch to confirm it is still valid. Your layouts and window activity are never sent.",
     ],
     privacySections: [
