@@ -1,0 +1,72 @@
+---
+import { site } from "../data/site";
+import type { AppRecord } from "../data/site";
+import "../styles/zones.css";
+
+interface Props {
+  app: AppRecord;
+}
+
+const { app } = Astro.props;
+const polarPortalUrl = "https://polar.sh/hansen-software/portal";
+---
+
+<main class="zones-page zp" aria-labelledby="zp-title">
+  <header class="zl-intro">
+    <h1 id="zp-title">Support</h1>
+    <p>The basics for getting {app.name} running, understanding permissions, and reaching support.</p>
+  </header>
+  <div class="zl-cards">
+    <article class="zl-card zp-card--wide">
+      <header class="zl-card__header">
+        <span class="zl-card__label">Quick facts</span>
+        <h3>What you need to know</h3>
+      </header>
+      <ul class="zl-card__list">
+        {app.supportFacts.map((fact) => (
+          <li>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path d="M3 8l3.5 3.5L13 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            <span>{fact}</span>
+          </li>
+        ))}
+      </ul>
+    </article>
+    <article class="zl-card zp-card--action">
+      <header class="zl-card__header">
+        <span class="zl-card__label">Contact</span>
+        <h3>Still need help?</h3>
+        <p class="zl-card__lead">
+          Email for app issues, purchase questions, bug reports, or feedback. Replies usually come within a
+          business day.
+        </p>
+      </header>
+      <a class="zl-button zl-button--secondary" href={site.supportMailto}>Email support</a>
+    </article>
+    <article class="zl-card zp-card--action">
+      <header class="zl-card__header">
+        <span class="zl-card__label">License</span>
+        <h3>Manage your Macs</h3>
+        <p class="zl-card__lead">
+          See which Macs use your license and free one up from the Polar customer portal.
+        </p>
+      </header>
+      <a class="zl-button zl-button--secondary" href={polarPortalUrl} rel="noreferrer">Open Polar portal</a>
+    </article>
+  </div>
+</main>
+
+<style>
+  .zp-card--wide {
+    grid-column: 1 / -1;
+  }
+
+  .zp-card--action {
+    grid-template-rows: 1fr auto;
+  }
+
+  .zp-card--action .zl-card__header {
+    align-content: start;
+  }
+</style>

@@ -1,5 +1,6 @@
 ---
 import SiteHeader from "../../components/SiteHeader.astro";
+import ZonesSupportDeck from "../../components/ZonesSupportDeck.astro";
 import { apps, site } from "../../data/site";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 
@@ -23,47 +24,51 @@ const { app } = Astro.props;
 >
   <SiteHeader app={app} />
 
-  <main class="quiet-orbit-page" data-motion-root>
-    <section class="quiet-orbit-hero">
-      <div class="quiet-orbit-hero__copy" data-reveal data-reveal-delay="0">
-        <h1>Support</h1>
-        <p class="quiet-orbit-hero__tagline">Quick answers, direct help</p>
-        <p class="quiet-orbit-hero__lede">
-          The basics for getting {app.name} running, understanding permissions, and reaching support when
-          you need it.
-        </p>
-      </div>
-    </section>
-
-    <section class="support-content" aria-label="Support information">
-      <article class="support-section" data-reveal data-reveal-delay="0">
-        <div class="support-section__header">
-          <span class="support-section__badge">Quick Facts</span>
-          <h2>What you need to know</h2>
+  {app.slug === "zones" ? (
+    <ZonesSupportDeck app={app} />
+  ) : (
+    <main class="quiet-orbit-page" data-motion-root>
+      <section class="quiet-orbit-hero">
+        <div class="quiet-orbit-hero__copy" data-reveal data-reveal-delay="0">
+          <h1>Support</h1>
+          <p class="quiet-orbit-hero__tagline">Quick answers, direct help</p>
+          <p class="quiet-orbit-hero__lede">
+            The basics for getting {app.name} running, understanding permissions, and reaching support when
+            you need it.
+          </p>
         </div>
-        <div class="support-section__body">
-          {app.supportFacts.map((fact) => (
-            <p>{fact}</p>
-          ))}
-        </div>
-      </article>
+      </section>
 
-      <div class="support-mini-grid support-mini-grid--single">
-        <article class="support-mini-card" data-reveal data-reveal-delay="110">
-          <div class="support-mini-card__header">
-            <span class="support-mini-card__badge">Contact</span>
-            <h3>Still need help?</h3>
+      <section class="support-content" aria-label="Support information">
+        <article class="support-section" data-reveal data-reveal-delay="0">
+          <div class="support-section__header">
+            <span class="support-section__badge">Quick Facts</span>
+            <h2>What you need to know</h2>
           </div>
-          <div class="support-mini-card__body">
-            <p>
-              Email <a class="inline-link" href={site.supportMailto}>{site.supportEmail}</a> for app issues,
-              purchase questions, bug reports, or general feedback. Replies usually come within a business day.
-            </p>
+          <div class="support-section__body">
+            {app.supportFacts.map((fact) => (
+              <p>{fact}</p>
+            ))}
           </div>
         </article>
-      </div>
-    </section>
-  </main>
+
+        <div class="support-mini-grid support-mini-grid--single">
+          <article class="support-mini-card" data-reveal data-reveal-delay="110">
+            <div class="support-mini-card__header">
+              <span class="support-mini-card__badge">Contact</span>
+              <h3>Still need help?</h3>
+            </div>
+            <div class="support-mini-card__body">
+              <p>
+                Email <a class="inline-link" href={site.supportMailto}>{site.supportEmail}</a> for app issues,
+                purchase questions, bug reports, or general feedback. Replies usually come within a business day.
+              </p>
+            </div>
+          </article>
+        </div>
+      </section>
+    </main>
+  )}
 </BaseLayout>
 
 <script>
