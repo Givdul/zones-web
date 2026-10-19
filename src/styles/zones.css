@@ -1,0 +1,214 @@
+/* Design primitives shared by the Zones landing, support, and privacy pages. */
+
+/* A Zones page draws its own static header instead of the sticky blurred one. */
+.site-shell__fill:has(> .zones-page) > .site-header {
+  position: static;
+  backdrop-filter: none;
+  mask-image: none;
+  -webkit-mask-image: none;
+}
+
+/* Layout of the support and privacy pages. */
+.zp {
+  display: grid;
+  gap: clamp(1.5rem, 4vw, 2.5rem);
+  width: min(var(--site-width), 100%);
+  margin-inline: auto;
+  padding-block: clamp(3rem, 8svh, 5rem) clamp(3rem, 8svh, 6rem);
+}
+
+.zl-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 2.875rem;
+  padding: 0 1.5rem;
+  border-radius: 999px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--theme-canvas-top);
+  background: var(--theme-text-primary);
+  transition:
+    background-color 160ms ease,
+    transform 100ms ease-out;
+}
+
+.zl-button:hover {
+  background: color-mix(in srgb, var(--theme-text-primary) 86%, var(--theme-canvas-top));
+}
+
+.zl-button:active {
+  transform: scale(0.97);
+}
+
+.zl-button:focus-visible {
+  outline: 2px solid var(--theme-text-primary);
+  outline-offset: 3px;
+}
+
+.zl-button--secondary {
+  color: var(--theme-text-primary);
+  background: var(--theme-frost);
+  box-shadow: inset 0 0 0 1px var(--theme-border-hairline);
+}
+
+.zl-button--secondary:hover {
+  background: color-mix(in srgb, var(--theme-text-primary) 8%, transparent);
+}
+
+.zl-button[aria-disabled="true"] {
+  color: var(--theme-text-secondary);
+  background: var(--theme-frost);
+  box-shadow: inset 0 0 0 1px var(--theme-border-hairline);
+  transform: none;
+}
+
+.zl-intro {
+  display: grid;
+  justify-items: center;
+  gap: 0.5rem;
+  text-align: center;
+}
+
+.zl-intro :is(h1, h2) {
+  margin: 0;
+  font-family: var(--theme-font-display);
+  font-size: clamp(1.75rem, 4vw, 2.75rem);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: var(--theme-text-primary);
+  text-wrap: balance;
+}
+
+.zl-intro p {
+  margin: 0;
+  font-size: clamp(1rem, 1.6vw, 1.25rem);
+  color: var(--theme-text-secondary);
+}
+
+.zl-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+  gap: 1rem;
+  width: min(100%, 52rem);
+  margin-inline: auto;
+}
+
+.zl-card {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: 1.25rem;
+  min-width: 0;
+  padding: clamp(1.25rem, 2.2vw, 1.75rem);
+  border-radius: 1.5rem;
+  border: 1px solid var(--theme-border-hairline);
+  background: var(--theme-frost);
+  overflow-wrap: break-word;
+}
+
+.zl-card--recommended {
+  border-color: var(--theme-surface-stroke);
+  background: color-mix(in srgb, var(--theme-surface-base) 70%, transparent);
+}
+
+.zl-card__header {
+  display: grid;
+  justify-items: start;
+  gap: 0.5rem;
+}
+
+.zl-card__label {
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--theme-text-primary);
+  box-shadow: inset 0 0 0 1px var(--theme-border-hairline);
+}
+
+.zl-card--recommended .zl-card__label {
+  background: var(--theme-surface-raised);
+  box-shadow: inset 0 0 0 1px var(--theme-surface-stroke);
+}
+
+.zl-card h3 {
+  margin: 0.25rem 0 0;
+  font-family: var(--theme-font-display);
+  font-size: clamp(1.4rem, 2.1vw, 1.75rem);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--theme-text-primary);
+}
+
+.zl-card__price {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 0.5rem;
+  margin: 0;
+}
+
+.zl-card__amount {
+  font-size: 1.45rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--theme-text-primary);
+}
+
+.zl-card__note {
+  font-size: 0.9rem;
+  color: var(--theme-text-secondary);
+}
+
+.zl-card__lead {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--theme-text-secondary);
+}
+
+.zl-card__body {
+  display: grid;
+  align-content: start;
+  gap: 0.75rem;
+}
+
+.zl-card__list {
+  display: grid;
+  align-content: start;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 1.25rem 0 0;
+  border-top: 1px solid var(--theme-border-hairline);
+  list-style: none;
+}
+
+.zl-card__list li {
+  display: flex;
+  align-items: baseline;
+  gap: 0.65rem;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--theme-text-primary);
+}
+
+.zl-card__list svg {
+  flex: none;
+  align-self: flex-start;
+  margin-top: 0.2rem;
+  color: var(--theme-text-secondary);
+}
+
+.zl-card .zl-button {
+  width: 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .zl-button {
+    transition: none;
+  }
+}

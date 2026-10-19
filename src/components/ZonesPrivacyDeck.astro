@@ -1,0 +1,63 @@
+---
+import { site } from "../data/site";
+import type { AppRecord } from "../data/site";
+import "../styles/zones.css";
+
+interface Props {
+  app: AppRecord;
+}
+
+const { app } = Astro.props;
+const splitSupportEmail = (paragraph: string) => paragraph.split(site.supportEmail);
+---
+
+<main class="zones-page zp" aria-labelledby="zp-title">
+  <header class="zl-intro">
+    <h1 id="zp-title">Privacy</h1>
+    <p>What {app.name} stores, what it doesn't, and how purchases are handled.</p>
+  </header>
+  <div class="zl-cards">
+    {app.privacySections.map((section) => (
+      <article class="zl-card">
+        <header class="zl-card__header">
+          <h3>{section.title}</h3>
+        </header>
+        <div class="zl-card__body">
+          {section.paragraphs.map((paragraph) => (
+            <p class="zl-card__lead">
+              {paragraph.includes(site.supportEmail) ? (
+                <>{splitSupportEmail(paragraph)[0]}<a class="zp-link" href={site.supportMailto}>{site.supportEmail}</a>{splitSupportEmail(paragraph)[1]}</>
+              ) : (
+                paragraph
+              )}
+            </p>
+          ))}
+        </div>
+      </article>
+    ))}
+  </div>
+</main>
+
+<style>
+  .zl-card:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+
+  .zp-link {
+    color: var(--theme-text-primary);
+    text-decoration: underline;
+    text-decoration-color: var(--theme-border-hairline);
+    text-underline-offset: 0.2em;
+    transition: text-decoration-color 160ms ease;
+  }
+
+  .zp-link:hover {
+    text-decoration-color: currentColor;
+  }
+
+  .zp-link:focus-visible {
+    outline: 2px solid var(--theme-text-primary);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+</style>
