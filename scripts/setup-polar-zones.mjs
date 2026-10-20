@@ -38,6 +38,7 @@ if (!accessToken) {
 }
 
 const siteOrigin = (process.env.PUBLIC_SITE_ORIGIN || "https://apps.givdul.com").replace(/\/$/, "");
+const successUrl = `${siteOrigin}/zones/thanks?checkout_id={CHECKOUT_ID}`;
 const polarServer = process.env.POLAR_SERVER === "sandbox" ? "sandbox" : "production";
 const polar = new Polar({ accessToken, server: polarServer });
 const downloadFilePath = process.env.POLAR_ZONES_DOWNLOAD_FILE
@@ -217,7 +218,7 @@ const createCheckoutLink = (product) =>
     label: productConfig.label,
     allowDiscountCodes: false,
     requireBillingAddress: false,
-    successUrl: `${siteOrigin}/zones?checkout_id={CHECKOUT_ID}`,
+    successUrl,
     returnUrl: `${siteOrigin}/zones`,
     metadata,
   });
@@ -267,6 +268,15 @@ let checkoutLinkCreated = false;
 if (!checkoutLink) {
   checkoutLink = await createCheckoutLink(product);
   checkoutLinkCreated = true;
+} else if (checkoutLink.successUrl !== successUrl) {
+  await polar.checkoutLinks.update({
+    id: checkoutLink.id,
+    checkoutLinkUpdate: { successUrl },
+  });
+  checkoutLink = await polar.checkoutLinks.get({ id: checkoutLink.id });
+  if (checkoutLink.successUrl !== successUrl) {
+    throw new Error("Polar checkout success URL update could not be verified.");
+  }
 }
 
 const output = {
@@ -305,6 +315,7 @@ const envLines = [
 ];
 if (benefit) {
   envLines.push(`${productConfig.benefitEnvKey}=${benefit.id}`);
+  envLines.push(`PUBLIC_POLAR_ZONES_DOWNLOAD_BENEFIT_ID=${benefit.id}`);
 }
 writeFileSync(resolve(root, ".polar/zones-checkout.env"), `${envLines.join("\n")}\n`);
 
