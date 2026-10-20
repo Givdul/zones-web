@@ -217,7 +217,7 @@ const createCheckoutLink = (product) =>
     label: productConfig.label,
     allowDiscountCodes: false,
     requireBillingAddress: false,
-    successUrl: `${siteOrigin}/zones?checkout_id={CHECKOUT_ID}`,
+    successUrl: `${siteOrigin}/zones/thanks?checkout_id={CHECKOUT_ID}`,
     returnUrl: `${siteOrigin}/zones`,
     metadata,
   });
