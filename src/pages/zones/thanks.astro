@@ -1,0 +1,124 @@
+---
+import SiteHeader from "../../components/SiteHeader.astro";
+import { apps } from "../../data/site";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import "../../styles/zones.css";
+
+const app = apps.find((app) => app.slug === "zones")!;
+const downloadBenefitId = import.meta.env.PUBLIC_POLAR_ZONES_DOWNLOAD_BENEFIT_ID?.trim() || "60294014-3e28-4230-a74c-f945940e59f4";
+const licenseBenefitId = import.meta.env.PUBLIC_POLAR_ZONES_LICENSE_BENEFIT_ID?.trim() || "";
+---
+
+<BaseLayout title="Thank you | Zones for Mac" description="Download Zones and activate your license after checkout." pathname="/zones/thanks" robots="noindex,nofollow" app={app}>
+  <meta slot="head" name="referrer" content="no-referrer" />
+  <SiteHeader app={app} />
+  <main class="quiet-orbit-page givdul-app-landing zones-page zp" aria-labelledby="thanks-title" data-checkout-thanks data-download-benefit-id={downloadBenefitId} data-license-benefit-id={licenseBenefitId}>
+    <header class="zl-intro">
+      <h1 id="thanks-title">Thank you for choosing Zones.</h1>
+      <p>Your windows, in place.</p>
+    </header>
+    <div class="zl-cards">
+      <section class="zl-card thanks-card" aria-labelledby="download-title">
+        <header class="zl-card__header">
+          <span class="zl-card__label">Get started</span>
+          <h2 id="download-title">Download Zones</h2>
+          <p class="zl-card__lead" data-download-status role="status" aria-live="polite">Check your email for the confirmation, or open your Polar portal.</p>
+        </header>
+        <div data-downloads></div>
+      </section>
+      <section class="zl-card thanks-card" aria-labelledby="license-title">
+        <header class="zl-card__header">
+          <span class="zl-card__label">License purchases</span>
+          <h2 id="license-title">Make it yours.</h2>
+          <p class="zl-card__lead">Open Zones → Settings → General → License → paste → Activate.</p>
+        </header>
+        <div data-license-keys aria-live="polite"></div>
+        <p>Your license is also available in your confirmation email and Polar portal.</p>
+      </section>
+      <section class="zl-card thanks-card" aria-label="Checkout help">
+        <p>Check your email for the confirmation, or open your Polar portal to download Zones and find your license. Returning customers may need to sign in there.</p>
+        <a class="zl-button zl-button--secondary" href="https://polar.sh/hansen-software/portal" rel="noreferrer">Open Polar portal</a>
+        <a class="inline-link" href="/zones/support">Need help?</a>
+        <noscript>JavaScript is off. Use your confirmation email or the Polar portal to get your download and license.</noscript>
+      </section>
+    </div>
+  </main>
+</BaseLayout>
+
+<script>
+  const root = document.querySelector<HTMLElement>("[data-checkout-thanks]")!;
+  const url = new URL(window.location.href);
+  const token = url.searchParams.get("customer_session_token");
+  // Remove the bearer credential before any API requests or user navigation.
+  url.searchParams.delete("customer_session_token");
+  window.history.replaceState(window.history.state, "", url.pathname + url.search + url.hash);
+
+  const loadBenefits = async (kind: "downloadables" | "license-keys", benefitId: string) => {
+    const endpoint = new URL(`https://api.polar.sh/v1/customer-portal/${kind}/`);
+    endpoint.searchParams.set("benefit_id", benefitId);
+    endpoint.searchParams.set("limit", "100");
+    const response = await fetch(endpoint, {
+      headers: { Authorization: `Bearer ${token}` },
+      credentials: "omit",
+      cache: "no-store",
+      referrerPolicy: "no-referrer",
+      signal: AbortSignal.timeout(15000),
+    });
+    if (!response.ok) throw new Error("Polar benefits unavailable");
+    const payload = await response.json();
+    if (!Array.isArray(payload.items)) throw new Error("Invalid Polar response");
+    return payload.items;
+  };
+
+  if (token) {
+    const status = root.querySelector<HTMLElement>("[data-download-status]")!;
+    status.textContent = "Preparing your download…";
+    void (async () => {
+      try {
+        const items = await loadBenefits("downloadables", root.dataset.downloadBenefitId!);
+        const downloads = root.querySelector<HTMLElement>("[data-downloads]")!;
+        for (const item of items) {
+          if (item.benefit_id !== root.dataset.downloadBenefitId) continue;
+          const file = item.file;
+          if (typeof file?.name !== "string" || typeof file?.download?.url !== "string") continue;
+          const downloadUrl = new URL(file.download.url);
+          if (downloadUrl.protocol !== "https:" || downloadUrl.username || downloadUrl.password) continue;
+          const link = document.createElement("a");
+          link.className = "zl-button zl-button--primary";
+          link.href = downloadUrl.href;
+          link.download = file.name;
+          link.rel = "noreferrer";
+          link.textContent = `Download ${file.name}`;
+          downloads.append(link);
+        }
+        status.textContent = downloads.childElementCount ? "Your download is ready." : "Your download is not ready yet. Check your confirmation email or open your Polar portal.";
+      } catch {
+        status.textContent = "We couldn’t load your download. Check your confirmation email or open your Polar portal.";
+      }
+    })();
+
+    // Filter explicitly so keys for other products are never presented as Zones licenses.
+    if (root.dataset.licenseBenefitId) {
+      void (async () => {
+        try {
+          const items = await loadBenefits("license-keys", root.dataset.licenseBenefitId!);
+          const keys = root.querySelector<HTMLElement>("[data-license-keys]")!;
+          for (const item of items) {
+            if (item.benefit_id !== root.dataset.licenseBenefitId || item.status !== "granted" || typeof item.key !== "string") continue;
+            const key = document.createElement("code");
+            key.textContent = item.key;
+            keys.append(key);
+          }
+        } catch {
+          // The email/portal fallback remains visible, including while grants are pending.
+        }
+      })();
+    }
+  }
+</script>
+
+<style>
+  .thanks-card { grid-column: 1 / -1; }
+  [data-downloads], [data-license-keys] { display: grid; gap: 1rem; }
+  code { overflow-wrap: anywhere; user-select: all; }
+</style>
